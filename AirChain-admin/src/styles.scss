@@ -1,0 +1,83 @@
+/* You can add global styles to this file, and also import other style files */
+body,div,ol,ul,li,dl,dt,dd,p,form,fieldset,legend,input,button{ margin:0; padding:0; }
+body {  width:100%;margin: 0; -webkit-user-select: none; position: relative;font-size:12px;}
+input,button,select{ -webkit-appearance:none;outline:medium;}
+ul,li{list-style:none}
+
+$navTop: 3rem;
+
+html{
+  font-family: Roboto, Helvetica Neue, sans-serif !important;
+}
+nav {
+  background-color: #fff;
+  height: $navTop;
+  position: fixed;
+  font-size: $navTop/2;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  h1, i::before {
+    display: inline-block;
+  }
+  h1 {
+    font-weight: 500;
+    width: 100%;
+    font-size: $navTop/2;
+    line-height: $navTop;
+    text-align: center;
+  }
+  i {
+    position: absolute;
+    left: 1em;
+    &::before {
+      font-size: 1.5em;
+    }
+  }
+}
+
+body {
+  width: 100vw;
+  background-color: #F0F0F1;
+}
+main {
+  height: calc(100vh - #{$navTop});
+  overflow: hidden;
+  margin-top: $navTop;
+  position: relative;
+  font-size: 1rem;
+}
+
+
+tbody.substitute-rows {
+  display: none !important;
+}
+
+.pagination-page{
+  display: inline !important;
+
+}
+
+.pagination-box button{
+  margin-left: 5px;
+}
+
+.column-endDateString + th{
+  width: 20% !important;
+}
+
+.SCHEDULED,.PROCESSING{
+  color: orange;
+}
+
+.FINISHED,.SKIPPED{
+  color: #0aa89e;
+}
+
+.CANCELLED,.FAILED{
+  color: red;
+}
+
+.backdrop{
+  position: fixed !important;
+}

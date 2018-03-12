@@ -1,0 +1,27 @@
+@(title: String = "", shortDescption: String = "", js: Seq[String] = Seq(), css: Seq[String] = Seq())(content: Html)
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <title>Your Title | @title</title>
+        <meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport">
+            <!-- Bootstrap 3.3.6 -->
+        <link rel="stylesheet" href="/assets/bootstrap/css/bootstrap.min.css">
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.5.0/css/font-awesome.min.css">
+
+        @for(url <- css) {
+            <link href="@url" rel="stylesheet">
+            }
+    </head>
+    <body>
+
+        <div>
+            @content
+        </div>
+
+        @for(url <- js) {
+            <script src="@url"></script>
+        }
+    </body>
+</html>
