@@ -1,0 +1,82 @@
+/**
+ * Sample access control list.
+ */
+rule AllowAirlineReadAircraft {
+  description:  "Allow Airline Company to read their own aircrafts"
+  participant (p): "org.hyperledger.composer.system.Participant"
+  operation: READ
+  resource (r): "org.acme.sample.Aircraft"
+  condition: (p.aircrafts.filter(function(aircraft) {return aircraft.getIdentifier() == r.getIdentifier()}).length > 0)
+  action: ALLOW
+}
+
+rule AllowCargoCompanyReadAircraft {
+  description:  "Allow authorised Cargo Company to read their aircrafts"
+  participant (p): "org.hyperledger.composer.system.Participant"
+  operation: READ
+  resource (r): "org.acme.sample.Aircraft"
+  condition: (r.company.authorisedCargoCompanies.filter(function(cargoCompany) {return cargoCompany.getIdentifier() == p.getIdentifier()}).length > 0)
+  action: ALLOW
+}
+
+rule AllowGHACompanyReadAircraft {
+  description:  "Allow authorised GHA Company to read their aircrafts"
+  participant (p): "org.hyperledger.composer.system.Participant"
+  operation: READ
+  resource (r): "org.acme.sample.Aircraft"
+  condition: (r.company.authorisedGHAs.filter(function(ghaCompany) {return ghaCompany.getIdentifier() == p.getIdentifier()}).length > 0)
+  action: ALLOW
+}
+
+rule AllowAirlineUpdateAircraft {
+  description:  "Allow Airline Company to read their own aircrafts"
+  participant (p): "org.hyperledger.composer.system.Participant"
+  operation: UPDATE
+  resource (r): "org.acme.sample.Aircraft"
+  condition: (p.aircrafts.filter(function(aircraft) {return aircraft.getIdentifier() == r.getIdentifier()}).length > 0)
+  action: ALLOW
+}
+
+rule AllowCargoCompanyUpdateAircraft {
+  description:  "Allow authorised Cargo Company to read their aircrafts"
+  participant (p): "org.hyperledger.composer.system.Participant"
+  operation: UPDATE
+  resource (r): "org.acme.sample.Aircraft"
+  condition: (r.company.authorisedCargoCompanies.filter(function(cargoCompany) {return cargoCompany.getIdentifier() == p.getIdentifier()}).length > 0)
+  action: ALLOW
+}
+
+rule AllowGHACompanyUpdateAircraft {
+  description:  "Allow authorised GHA Company to read their aircrafts"
+  participant (p): "org.hyperledger.composer.system.Participant"
+  operation: UPDATE
+  resource (r): "org.acme.sample.Aircraft"
+  condition: (r.company.authorisedGHAs.filter(function(ghaCompany) {return ghaCompany.getIdentifier() == p.getIdentifier()}).length > 0)
+  action: ALLOW
+}
+
+
+
+rule SystemACL {
+  description:  "System ACL to permit all access"
+  participant: "org.hyperledger.composer.system.Participant"
+  operation: ALL
+  resource: "org.hyperledger.composer.system.**"
+  action: ALLOW
+}
+
+rule NetworkAdminUser {
+    description: "Grant business network administrators full access to user resources"
+    participant: "org.hyperledger.composer.system.NetworkAdmin"
+    operation: ALL
+    resource: "**"
+    action: ALLOW
+}
+
+rule NetworkAdminSystem {
+    description: "Grant business network administrators full access to system resources"
+    participant: "org.hyperledger.composer.system.NetworkAdmin"
+    operation: ALL
+    resource: "org.hyperledger.composer.system.**"
+    action: ALLOW
+}

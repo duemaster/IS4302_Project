@@ -1,0 +1,141 @@
+/**
+ * Sample business network definition.
+ */
+namespace org.acme.sample
+
+asset Aircraft identified by id {
+	o String id
+    o String model
+    o Integer passenger_capacity
+    o Double cargo_capacity
+    --> AirlineCompany company
+}
+
+asset Flight identified by id {
+	o String id
+    o String origin
+    o String destination
+    o DateTime time
+    --> Aircraft aircraft
+    --> Cargo[] cargos optional
+    --> Service[] services optional
+    --> AirlineCompany company
+}
+
+enum CARGO_STATUS {
+  	o PENDING
+  	o COLLECTED
+	o ON_FLIGHT
+    o UNLOADED
+  	o DELIVERED
+}
+
+asset Cargo identified by id {
+	o String id
+    o Double weight
+    o CARGO_STATUS status
+    --> CargoCompany cargoCompany
+}
+
+asset Service identified by id {
+	o String id
+ 	o Boolean isDelivered   
+    --> GHACompany ghaCompany
+}
+
+enum REQUEST_STATUS {
+	o PENDING
+    o APPROVED
+    o REJECTED
+}
+
+asset ServiceRequest identified by id {
+	o String id
+    o REQUEST_STATUS status
+    --> Flight flight
+    --> Service service
+}
+
+asset CargoAddOnRequest identified by id {
+	o String id
+    o REQUEST_STATUS status
+    --> Cargo[] cargos
+    --> CargoCompany cargoCompany
+}
+
+enum ROLE {
+	o STAFF
+    o OFFICER
+}
+
+participant AirlineCompany identified by id {
+	o String id
+    o String name
+    o ROLE role
+    o Flight[] flights
+    o Aircraft[] aircrafts
+    o GHACompany[] authorisedGHAs
+    o CargoCompany[] authorisedCargoCompanies
+}
+
+participant GHACompany identified by id {
+	o String id
+    o String name
+    o ROLE role
+    o Service[] services optional
+}
+
+participant CargoCompany identified by id {
+	o String id
+    o String name
+    o ROLE role
+    o Cargo[] cargos optional
+}
+
+transaction SampleTransaction {
+  o String newValue
+}
+
+transaction HandleFlightServiceRequest {
+	--> ServiceRequest request
+    o Boolean isApproved
+}
+
+transaction ConfirmFlightServiceDelivery {
+	--> Service service
+}
+
+transaction IssueFlightServiceRequest {
+	--> Flight flight
+    --> Service service
+}
+
+transaction CollectCargoFromWarehouse {
+	--> Cargo[] cargos
+}
+
+transaction LoadCargo {
+	--> Cargo[] cargos
+}
+
+transaction UnloadCargo {
+	--> Cargo[] cargos
+}
+
+transaction AssignCargoToFlight {
+	--> Cargo[] cargos
+}
+
+transaction SendCargoAddOnRequest {
+	--> Flight flight
+    --> Cargo[] cargos
+}
+
+transaction HandleCargoAddOnRequest {
+	--> CargoAddOnRequest request
+    o Boolean isApproved
+}
+
+transaction ConfirmCargoToWarehouse {
+	--> Cargo[] cargos
+}
