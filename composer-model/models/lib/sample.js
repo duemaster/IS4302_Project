@@ -12,6 +12,8 @@
  * limitations under the License.
  */
 
+var namespace = "org.airline.airChain";
+
 /**
  * Sample transaction processor function.
  * @param {org.acme.sample.SampleTransaction} tx The sample transaction instance.
@@ -41,7 +43,48 @@ function sampleTransaction(tx) {
             event.oldValue = oldValue;
             event.newValue = tx.newValue;
             emit(event);
-
         });
 
+}
+
+/**
+ * Sample transaction processor function.
+ * @param {org.airline.airChain} tx The sample transaction instance.
+ * @transaction
+ */
+function processFlightRequest(tx) {
+    let req = tx.request;
+    let isApproved = tx.isApproved;
+
+    //Update request status
+    getAssetRegistry('org.airline.airChain.ServiceRequest')
+}
+
+
+function saveAircraft(aircraft) {
+    return getAssetRegistry(`${namespace}.Aircraft`)
+        .then(function (aircraftRegistry) {
+            return aircraftRegistry.update(aircraft);
+        })
+}
+
+function saveFlight(flight) {
+    return getAssetRegistry(`${namespace}.Flight`)
+        .then(function (flightRegistry) {
+            return flightRegistry.update(flight);
+        })
+}
+
+function saveServiceRequest(serviceRequest) {
+    return getAssetRegistry(`${namespace}.ServiceRequest`)
+        .then(function (serviceRequestRegistry) {
+            return serviceRequestRegistry.update(serviceRequest);
+        })
+}
+
+function saveCargoAddOnRequest(cargoAddOnRequest) {
+    return getAssetRegistry(`${namespace}.CargoAddOnRequest`)
+        .then(function (cargoAddOnRequestRegistry) {
+            return cargoAddOnRequestRegistry.update(cargoAddOnRequest);
+        })
 }

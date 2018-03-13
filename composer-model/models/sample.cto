@@ -1,13 +1,37 @@
 /**
  * Sample business network definition.
  */
-namespace org.acme.sample
+namespace org.airline.airChain
+
+asset AirlineCompany identified by id {
+	o String id
+    o String name
+    --> Flight[] flights
+    --> Aircraft[] aircrafts
+    --> GHACompany[] authorisedGHAs
+    --> CargoCompany authorisedCargoCompany
+    --> Employee[] employees
+}
+
+asset GHACompany identified by id {
+	o String id
+    o String name
+    --> Service[] services
+    --> Employee[] employees
+}
+
+asset CargoCompany identified by id {
+	o String id
+    o String name
+   	--> Cargo[] cargos
+    --> Employee[] employees
+}
 
 asset Aircraft identified by id {
 	o String id
     o String model
-    o Integer passenger_capacity
-    o Double cargo_capacity
+    o Integer passengerCapacity
+    o Double cargoCapacity
     --> AirlineCompany company
 }
 
@@ -16,14 +40,18 @@ asset Flight identified by id {
     o String origin
     o String destination
     o DateTime time
+    o Integer paxCount
     --> Aircraft aircraft
-    --> Cargo[] cargos optional
-    --> Service[] services optional
+    --> Cargo[] cargos
+    --> Service[] services
     --> AirlineCompany company
+    --> Employee[] cabinCrews
 }
 
 enum CARGO_STATUS {
   	o PENDING
+    o APPROVED
+    o REJECTED
   	o COLLECTED
 	o ON_FLIGHT
     o UNLOADED
@@ -32,35 +60,31 @@ enum CARGO_STATUS {
 
 asset Cargo identified by id {
 	o String id
+    o String cargoDescription
     o Double weight
     o CARGO_STATUS status
     --> CargoCompany cargoCompany
 }
 
-asset Service identified by id {
-	o String id
- 	o Boolean isDelivered   
-    --> GHACompany ghaCompany
+enum SERVICE_TYPE {
+	o FOOD
+    o CLEAN
 }
 
-enum REQUEST_STATUS {
+enum SERVICE_STATUS {
 	o PENDING
     o APPROVED
     o REJECTED
+    o DONE
+    o NOT_DONE
 }
 
-asset ServiceRequest identified by id {
+asset Service identified by id {
 	o String id
-    o REQUEST_STATUS status
-    --> Flight flight
-    --> Service service
-}
-
-asset CargoAddOnRequest identified by id {
-	o String id
-    o REQUEST_STATUS status
-    --> Cargo[] cargos
-    --> CargoCompany cargoCompany
+    o String serviceDescription
+ 	o SERVICE_STATUS status
+    o SERVICE_TYPE type
+    --> GHACompany ghaCompany
 }
 
 enum ROLE {
@@ -68,36 +92,14 @@ enum ROLE {
     o OFFICER
 }
 
-participant AirlineCompany identified by id {
+participant Employee identified by id {
 	o String id
     o String name
     o ROLE role
-    o Flight[] flights
-    o Aircraft[] aircrafts
-    o GHACompany[] authorisedGHAs
-    o CargoCompany[] authorisedCargoCompanies
-}
-
-participant GHACompany identified by id {
-	o String id
-    o String name
-    o ROLE role
-    o Service[] services optional
-}
-
-participant CargoCompany identified by id {
-	o String id
-    o String name
-    o ROLE role
-    o Cargo[] cargos optional
-}
-
-transaction SampleTransaction {
-  o String newValue
 }
 
 transaction HandleFlightServiceRequest {
-	--> ServiceRequest request
+	--> Service[] services
     o Boolean isApproved
 }
 
@@ -132,7 +134,7 @@ transaction SendCargoAddOnRequest {
 }
 
 transaction HandleCargoAddOnRequest {
-	--> CargoAddOnRequest request
+	--> Cargo[] cargos
     o Boolean isApproved
 }
 
