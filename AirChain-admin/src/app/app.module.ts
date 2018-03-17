@@ -11,7 +11,6 @@ import {OrderModule} from "ngx-order-pipe";
 import {LayoutComponent} from './page/layout/layout.component';
 import {ToastModule} from 'ng2-toastr/ng2-toastr';
 import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
-import {DataTableModule} from 'angular-4-data-table';
 import {Util} from "./util/util";
 import {SettingService} from "./service/setting/setting.service";
 import { LoadingModule, ANIMATION_TYPES } from 'ngx-loading';
@@ -30,7 +29,6 @@ import { LoadingModule, ANIMATION_TYPES } from 'ngx-loading';
         OrderModule,
         BrowserAnimationsModule,
         ToastModule.forRoot(),
-        DataTableModule,
         LoadingModule.forRoot({
             animationType: ANIMATION_TYPES.rotatingPlane,
             backdropBackgroundColour: 'rgba(0,0,0,0.1)',
