@@ -16,75 +16,195 @@ var namespace = "org.airline.airChain";
 
 /**
  * Sample transaction processor function.
- * @param {org.acme.sample.SampleTransaction} tx The sample transaction instance.
+ * @param {org.airline.airChain.IssueFlightServiceRequest} tx The sample transaction instance.
  * @transaction
  */
-function sampleTransaction(tx) {
+function IssueFlightServiceRequest(tx) {
+    var services = tx.services;
+    var flight = tx.flight;
 
-    // Save the old value of the asset.
-    var oldValue = tx.asset.value;
+    //Add Services to Flight
+    flight.services = flight.services.concat(services);
 
-    // Update the asset with the new value.
-    tx.asset.value = tx.newValue;
-
-    // Get the asset registry for the asset.
-    return getAssetRegistry('org.acme.sample.SampleAsset')
-        .then(function (assetRegistry) {
-
-            // Update the asset in the asset registry.
-            return assetRegistry.update(tx.asset);
-
-        })
-        .then(function () {
-
-            // Emit an event for the modified asset.
-            var event = getFactory().newEvent('org.acme.sample', 'SampleEvent');
-            event.asset = tx.asset;
-            event.oldValue = oldValue;
-            event.newValue = tx.newValue;
-            emit(event);
-        });
-
+    //Save Flight
+    saveFlight(flight);
 }
 
 /**
  * Sample transaction processor function.
- * @param {org.airline.airChain} tx The sample transaction instance.
+ * @param {org.airline.airChain.HandleFlightServiceRequest} tx The sample transaction instance.
  * @transaction
  */
-function processFlightRequest(tx) {
-    let req = tx.request;
-    let isApproved = tx.isApproved;
+function HandleFlightServiceRequest(tx) {
+    var services = tx.services;
+    var isApproved = tx.isApproved;
 
-    //Update request status
-    getAssetRegistry('org.airline.airChain.ServiceRequest')
+    //Process Services
+    services.forEach(function(service) {service.type = isApproved ? SERVICE_STATUS.APPROVED : SERVICE_STATUS.REJECTED});
+
+    //Save services
+    services.forEach(function(service) {saveService(service)});
+}
+
+/**
+ * Sample transaction processor function.
+ * @param {org.airline.airChain.ConfirmFlightServiceDelivery} tx The sample transaction instance.
+ * @transaction
+ */
+function ConfirmFlightServiceDelivery(tx) {
+    var services = tx.services;
+
+    //Process Services
+    services.forEach(function(service) {service.type = SERVICE_STATUS.DONE});
+
+    //Save services
+    services.forEach(function(service) {saveService(service)});
+}
+
+/**
+ * Sample transaction processor function.
+ * @param {org.airline.airChain.AssignCargoToFlight} tx The sample transaction instance.
+ * @transaction
+ */
+function AssignCargoToFlight(tx) {
+    var cargos = tx.cargos;
+    var flight = tx.flight;
+
+    //Attach Cargos to flight
+    flight.cargos = flight.cargos.concat(cargos);
+
+    //Update Cargo status
+    cargos.forEach(function(cargo) {cargo.status = CARGO_STATUS.APPROVED});
+
+    //Save cargos
+    cargos.forEach(function(cargo) {saveService(cargo)});
+
+    //Save flight
+    saveFlight(flight);
+}
+
+/**
+ * Sample transaction processor function.
+ * @param {org.airline.airChain.SendCargoAddOnRequest} tx The sample transaction instance.
+ * @transaction
+ */
+function SendCargoAddOnRequest(tx) {
+    var cargos = tx.cargos;
+    var flight = tx.flight;
+
+    //Attach Cargos to flight
+    flight.cargos = flight.cargos.concat(cargos);
+
+    //Update Cargo status
+    cargos.forEach(function(cargo) {cargo.status = CARGO_STATUS.PENDING});
+
+    //Save cargos
+    cargos.forEach(function(cargo) {saveCargo(cargo)});
+
+    //Save flight
+    saveFlight(flight);
+}
+
+/**
+ * Sample transaction processor function.
+ * @param {org.airline.airChain.HandleCargoAddOnRequest} tx The sample transaction instance.
+ * @transaction
+ */
+function HandleCargoAddOnRequest(tx) {
+    var cargos = tx.cargos;
+    var isApproved = tx.isApproved;
+
+    cargos.forEach(function(cargo) {cargo.status = isApproved ? CARGO_STATUS.APPROVED : CARGO_STATUS.REJECTED});
+
+    //Save cargos
+    cargos.forEach(function(cargo) {saveCargo(cargo)});
+}
+
+/**
+ * Sample transaction processor function.
+ * @param {org.airline.airChain.CollectCargoFromWarehouse} tx The sample transaction instance.
+ * @transaction
+ */
+function CollectCargoFromWarehouse(tx) {
+    var cargos = tx.cargos;
+
+    //Update Cargo status
+    cargos.forEach(function(cargo) {cargo.status = CARGO_STATUS.COLLECTED});
+
+    //Save cargos
+    cargos.forEach(function(cargo) {saveCargo(cargo)});
+}
+
+/**
+ * Sample transaction processor function.
+ * @param {org.airline.airChain.LoadCargo} tx The sample transaction instance.
+ * @transaction
+ */
+function LoadCargo(tx) {
+    var cargos = tx.cargos;
+
+    //Update Cargo status
+    cargos.forEach(function(cargo) {cargo.status = CARGO_STATUS.ON_FLIGHT});
+
+    //Save cargos
+    cargos.forEach(function(cargo) {saveCargo(cargo)});
+}
+
+/**
+ * Sample transaction processor function.
+ * @param {org.airline.airChain.UnloadCargo} tx The sample transaction instance.
+ * @transaction
+ */
+function UnloadCargo(tx) {
+    var cargos = tx.cargos;
+
+    //Update Cargo status
+    cargos.forEach(function(cargo) {cargo.status = CARGO_STATUS.UNLOADED});
+
+    //Save cargos
+    cargos.forEach(function(cargo) {saveCargo(cargo)});
+}
+
+/**
+ * Sample transaction processor function.
+ * @param {org.airline.airChain.ConfirmCargoToWarehouse} tx The sample transaction instance.
+ * @transaction
+ */
+function ConfirmCargoToWarehouse(tx) {
+    var cargos = tx.cargos;
+
+    //Update Cargo status
+    cargos.forEach(function(cargo) {cargo.status = CARGO_STATUS.DELIVERED});
+
+    //Save cargos
+    cargos.forEach(function(cargo) {saveCargo(cargo)});
 }
 
 
+function saveCargo(cargo) {
+    return getAssetRegistry(namespace + ".Cargo")
+        .then(function (cargoRegistry) {
+            return cargoRegistry.update(cargo);
+        })
+}
+
+function saveService(service) {
+    return getAssetRegistry(namespace + ".Service")
+        .then(function (serviceRegistry) {
+            return serviceRegistry.update(service);
+        })
+}
+
 function saveAircraft(aircraft) {
-    return getAssetRegistry(`${namespace}.Aircraft`)
+    return getAssetRegistry(namespace + ".Aircraft")
         .then(function (aircraftRegistry) {
             return aircraftRegistry.update(aircraft);
         })
 }
 
 function saveFlight(flight) {
-    return getAssetRegistry(`${namespace}.Flight`)
+    return getAssetRegistry(namespace + ".Flight")
         .then(function (flightRegistry) {
             return flightRegistry.update(flight);
-        })
-}
-
-function saveServiceRequest(serviceRequest) {
-    return getAssetRegistry(`${namespace}.ServiceRequest`)
-        .then(function (serviceRequestRegistry) {
-            return serviceRequestRegistry.update(serviceRequest);
-        })
-}
-
-function saveCargoAddOnRequest(cargoAddOnRequest) {
-    return getAssetRegistry(`${namespace}.CargoAddOnRequest`)
-        .then(function (cargoAddOnRequestRegistry) {
-            return cargoAddOnRequestRegistry.update(cargoAddOnRequest);
         })
 }

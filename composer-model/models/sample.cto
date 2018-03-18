@@ -98,18 +98,18 @@ participant Employee identified by id {
     o ROLE role
 }
 
+transaction IssueFlightServiceRequest {
+	--> Flight flight
+    --> Service[] services
+}
+
 transaction HandleFlightServiceRequest {
 	--> Service[] services
     o Boolean isApproved
 }
 
 transaction ConfirmFlightServiceDelivery {
-	--> Service service
-}
-
-transaction IssueFlightServiceRequest {
-	--> Flight flight
-    --> Service service
+	--> Service[] services
 }
 
 transaction CollectCargoFromWarehouse {
@@ -126,6 +126,7 @@ transaction UnloadCargo {
 
 transaction AssignCargoToFlight {
 	--> Cargo[] cargos
+    --> Flight flight
 }
 
 transaction SendCargoAddOnRequest {
