@@ -70,6 +70,8 @@ function AssignCargoToFlight(tx) {
     var cargos = tx.cargos;
     var flight = tx.flight;
 
+    //TODO: Ensure Cargo does not exceed weight limit
+
     //Attach Cargos to flight
     flight.cargos = flight.cargos.concat(cargos);
 
@@ -113,6 +115,8 @@ function SendCargoAddOnRequest(tx) {
 function HandleCargoAddOnRequest(tx) {
     var cargos = tx.cargos;
     var isApproved = tx.isApproved;
+
+    //TODO: Ensure Cargo does not exceed weight limit
 
     cargos.forEach(function(cargo) {cargo.status = isApproved ? CARGO_STATUS.APPROVED : CARGO_STATUS.REJECTED});
 
