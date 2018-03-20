@@ -6,21 +6,23 @@ namespace org.airline.airChain
 abstract asset Company identified by id {
     o String id
     o String name
-    --> Employee[] employees
 }
 
 asset AirlineCompany extends Company {
     --> Flight[] flights
     --> Aircraft[] aircrafts
     --> CargoCompany authorisedCargoCompany
+    --> AirlineEmployee[] employees
 }
 
 asset GHACompany extends Company {
     --> Service[] services
+    --> GHAEmployee[] employees
 }
 
 asset CargoCompany extends Company {
     --> Cargo[] cargos
+    --> CargoEmployee[] employees
 }
 
 asset Aircraft identified by id {
@@ -37,13 +39,13 @@ asset Flight identified by id {
     o String destination
     o DateTime departureTime
     o Integer paxCount
-    
+
     --> Aircraft aircraft
     --> Cargo[] cargos
     --> Service[] services
     --> AirlineCompany company
-    --> Employee[] cabinCrews
-    
+    --> AirlineEmployee[] cabinCrews
+
     --> GHACompany collectCompany
     --> GHACompany deliverCompany
 }
@@ -90,8 +92,7 @@ asset Service identified by id {
 
 enum CARGO_SERVICE_STATUS {
     o PENDING
-    o SUCCESS
-    o CANCELED
+	o ACCEPTED
 }
 
 asset CargoRequest identified by id {
@@ -111,11 +112,20 @@ enum ROLE {
     o OFFICER
 }
 
-participant Employee identified by id {
+abstract participant Employee identified by id {
     o String id
     o String name
     o ROLE role
     --> Company company
+}
+
+participant AirlineEmployee extends Employee {
+}
+
+participant CargoEmployee extends Employee {
+}
+
+participant GHAEmployee extends Employee {
 }
 
 /*
@@ -157,7 +167,7 @@ transaction AssignCargoToFlight {
     --> Flight flight
 }
 
-transaction HandleCargoRequest {
+transaction AcceptCargoRequest {
     --> CargoRequest cargoRequest
     --> Flight flight
 }

@@ -2,23 +2,73 @@
  * Sample access control list.
  */
 
-rule AllowGHAIssueFlightServiceRequest {
-  description:  "Allow Authorised GHA to create Flight Service Request"
-  participant (p): "org.airline.airChain.Employee"
+rule AllowAirlineHandleFlightServiceRequest {
+  description:  "Allow Airline company to process flight request"
+  participant (p): "org.airline.airChain.AirlineEmployee"
   operation: CREATE
-  resource (r): "org.airline.airChain.IssueFlightServiceRequest"
-  condition: (p.role === ROLE.OFFICER && r.services.filter(function(service) {return service.company.getIdentifier() != p.company.getIdentifier();}).length === 0)
+  resource (r): "org.airline.airChain.HandleFlightServiceRequest"
+  condition: (p.role === ROLE.OFFICER)
   action: ALLOW
 }
 
-rule AllowAirlineProcessFlightServiceRequest {
+rule AllowAirlineProcessFlightServiceDelivery {
   description:  "Allow Airline company to process flight request"
-  participant (p): "org.airline.airChain.Employee"
+  participant (p): "org.airline.airChain.AirlineEmployee"
   operation: CREATE
-  resource (r): "org.airline.airChain.HandleFlightServiceRequest"
-  condition: (p.role === ROLE.OFFICER && r.services.filter(function(service) {return service.flight.company.getIdentifier() != p.company.getIndentifier()}).length === 0)
+  resource (r): "org.airline.airChain.ProcessFlightServiceDelivery"
+  condition: (p.role === ROLE.STAFF)
   action: ALLOW
 }
+
+rule AllowGHAIssueFlightServiceRequest {
+  description:  "Allow Authorised GHA to create Flight Service Request"
+  participant (p): "org.airline.airChain.GHAEmployee"
+  operation: CREATE
+  resource (r): "org.airline.airChain.IssueFlightServiceRequest"
+  condition: (p.role === ROLE.OFFICER)
+  action: ALLOW
+}
+
+rule AllowGHACollectCargoFromWarehouse {
+  description:  "Allow Authorised GHA to collect cargo from warehouse"
+  participant (p): "org.airline.airChain.GHAEmployee"
+  operation: CREATE
+  resource (r): "org.airline.airChain.CollectCargoFromWarehouse"
+  condition: (p.role === ROLE.STAFF)
+  action: ALLOW
+}
+
+rule AllowCargoConfirmCargoToWarehouse {
+  description:  "Allow Cargo Employee to collect cargo into warehouse"
+  participant (p): "org.airline.airChain.CargoEmployee"
+  operation: CREATE
+  resource (r): "org.airline.airChain.ConfirmCargoToWarehouse"
+  condition: (p.role === ROLE.STAFF)
+  action: ALLOW
+}
+
+rule AllowCargoAssignCargoToFlight {
+  description:  "Allow Cargo Employee assign cargo to flight"
+  participant (p): "org.airline.airChain.CargoEmployee"
+  operation: CREATE
+  resource (r): "org.airline.airChain.AssignCargoToFlight"
+  condition: (p.role === ROLE.OFFICER)
+  action: ALLOW
+}
+
+rule AllowCargoAcceptCargoRequest {
+  description:  "Allow Cargo Employee to accept incoming cargo request"
+  participant (p): "org.airline.airChain.CargoEmployee"
+  operation: CREATE
+  resource (r): "org.airline.airChain.AcceptCargoRequest"
+  condition: (p.role === ROLE.OFFICER)
+  action: ALLOW
+}
+
+
+
+
+
 
 rule AllowAirlineReadAircraft {
   description:  "Allow"

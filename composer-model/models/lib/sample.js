@@ -118,15 +118,15 @@ function AssignCargoToFlight(tx) {
 
     if(loadedWight+cargo.weight > limit)
         throw new Error('Total weight has exceeded limit');
-  
-  
+
+
     //Attach Cargo to flight
     flight.cargos.push(cargo);
 
     //Update Cargo status
     cargo.status = CARGO_STATUS.APPROVED;
     cargo.flight = flight;
-  
+
     //Save cargo
     saveCargo(cargo);
 
@@ -136,10 +136,10 @@ function AssignCargoToFlight(tx) {
 
 /**
  * Sample transaction processor function.
- * @param {org.airline.airChain.HandleCargoRequest} tx The sample transaction instance.
+ * @param {org.airline.airChain.AcceptCargoRequest} tx The sample transaction instance.
  * @transaction
  */
-function HandleCargoRequest(tx) {
+function AcceptCargoRequest(tx) {
     var cargoRequest = tx.cargoRequest;
     var flight = tx.flight;
 
