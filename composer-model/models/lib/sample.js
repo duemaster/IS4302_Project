@@ -139,35 +139,6 @@ function CollectCargoFromWarehouse(tx) {
     cargos.forEach(function(cargo) {saveCargo(cargo)});
 }
 
-/**
- * Sample transaction processor function.
- * @param {org.airline.airChain.LoadCargo} tx The sample transaction instance.
- * @transaction
- */
-function LoadCargo(tx) {
-    var cargos = tx.cargos;
-
-    //Update Cargo status
-    cargos.forEach(function(cargo) {cargo.status = CARGO_STATUS.ON_FLIGHT});
-
-    //Save cargos
-    cargos.forEach(function(cargo) {saveCargo(cargo)});
-}
-
-/**
- * Sample transaction processor function.
- * @param {org.airline.airChain.UnloadCargo} tx The sample transaction instance.
- * @transaction
- */
-function UnloadCargo(tx) {
-    var cargos = tx.cargos;
-
-    //Update Cargo status
-    cargos.forEach(function(cargo) {cargo.status = CARGO_STATUS.UNLOADED});
-
-    //Save cargos
-    cargos.forEach(function(cargo) {saveCargo(cargo)});
-}
 
 /**
  * Sample transaction processor function.

@@ -120,10 +120,6 @@ transaction LoadCargo {
     --> Cargo cargo
 }
 
-transaction UnloadCargo {
-    --> Cargo cargo
-}
-
 transaction AssignCargoToFlight {
     --> Cargo cargo
     --> Flight flight
