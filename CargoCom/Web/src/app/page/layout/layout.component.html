@@ -1,0 +1,149 @@
+<div class="menubar-hoverable header-fixed" [ngClass]="{'menubar-visible':!showMenu,'menubar-pin':!showMenu}">
+
+  <!-- BEGIN HEADER-->
+  <header id="header">
+    <div class="headerbar">
+      <!-- Brand and toggle get grouped for better mobile display -->
+      <div class="headerbar-left">
+        <ul class="header-nav header-nav-options">
+          <li class="header-nav-brand">
+            <div class="brand-holder">
+              <a href="../../html/dashboards/dashboard.html">
+                <span class="text-lg text-bold text-primary">Airchain Admin</span>
+              </a>
+            </div>
+          </li>
+          <li>
+            <a class="btn btn-icon-toggle"  href="javascript:void(0);" (click)="toggleMenu()">
+              <i class="fa fa-bars"></i>
+            </a>
+          </li>
+        </ul>
+      </div>
+      <!-- Collect the nav links, forms, and other content for toggling -->
+      <div class="headerbar-right">
+        <ul class="header-nav header-nav-options">
+          <li>
+            <!-- Search form -->
+            <form class="navbar-search" role="search" onsubmit="return false;">
+              <div class="form-group">
+                <input type="text" [(ngModel)]="text" name="search" class="form-control" name="text" placeholder="Enter your keyword">
+              </div>
+              <button type="button" class="btn btn-icon-toggle ink-reaction" (click)="search()"><i class="fa fa-search"></i></button>
+            </form>
+          </li>
+        </ul><!--end .header-nav-options -->
+        <ul class="header-nav header-nav-profile" *ngIf="authService.admin">
+          <li class="dropdown">
+            <a href="javascript:void(0);" class="dropdown-toggle ink-reaction" data-toggle="dropdown">
+              <img *ngIf="!authService.admin" src="../../assets/img/avatar1.jpg?1403934956" alt=""/>
+              <img *ngIf="authService.admin" src="../../assets/img/profile.jpg" alt=""/>
+              <span class="profile-info">
+									{{authService.admin}}
+									<small>Airchain Admin</small>
+								</span>
+            </a>
+            <ul class="dropdown-menu animation-dock">
+              <li><a href="javascript:void(0)" (click)="logout()"><i class="fa fa-fw fa-power-off text-danger"></i> Logout</a>
+              </li>
+            </ul><!--end .dropdown-menu -->
+          </li><!--end .dropdown -->
+        </ul><!--end .header-nav-profile -->
+
+
+        <ul class="header-nav header-nav-profile" *ngIf="!authService.admin">
+          <li class="dropdown">
+            <a href="javascript:void(0);" class="dropdown-toggle ink-reaction" data-toggle="dropdown">
+              <img src="../../assets/img/avatar1.jpg?1403934956" alt=""/>
+              <span class="profile-info">
+									Welcome
+									<small>Please login</small>
+								</span>
+            </a>
+            <ul class="dropdown-menu animation-dock">
+              <li>
+                <a href="javascript:void(0)" (click)="login()"><i class="fa fa-fw fa-power-off text-primary"></i> Login</a>
+              </li>
+            </ul><!--end .dropdown-menu -->
+          </li><!--end .dropdown -->
+        </ul><!--end .header-nav-profile -->
+
+      </div><!--end #header-navbar-collapse -->
+    </div>
+  </header>
+  <!-- END HEADER-->
+
+  <!-- BEGIN BASE-->
+  <div id="base">
+
+    <!-- BEGIN OFFCANVAS LEFT -->
+    <div class="offcanvas">
+    </div><!--end .offcanvas-->
+    <!-- END OFFCANVAS LEFT -->
+
+    <!-- BEGIN CONTENT-->
+    <div id="content"  class="container">
+      <router-outlet></router-outlet>
+    </div><!--end #content-->
+    <!-- END CONTENT -->
+
+    <!-- BEGIN MENUBAR-->
+    <div id="menubar" class="menubar-inverse ">
+      <div class="menubar-fixed-panel">
+        <div>
+          <a class="btn btn-icon-toggle btn-default menubar-toggle" data-toggle="menubar" href="javascript:void(0);">
+            <i class="fa fa-bars"></i>
+          </a>
+        </div>
+        <div class="expanded">
+          <a href="../../html/dashboards/dashboard.html">
+            <span class="text-lg text-bold text-primary ">Airchain Admin</span>
+          </a>
+        </div>
+      </div>
+      <div class="menubar-scroll-panel">
+
+        <!-- BEGIN MAIN MENU -->
+        <ul id="main-menu" class="gui-controls">
+
+          <!-- BEGIN DASHBOARD -->
+          <li>
+            <a href="../../html/dashboards/dashboard.html">
+              <div class="gui-icon"><i class="md md-home"></i></div>
+              <span class="title">Dashboard</span>
+            </a>
+          </li><!--end /menu-li -->
+          <!-- END DASHBOARD -->
+
+
+          <li [ngClass]="{'active':router.url=='/main/operation'}">
+            <a routerLink="/main/operation" routerLinkActive="active">
+              <div class="gui-icon"><i class="md md-store"></i></div>
+              <span class="title">Operations</span>
+            </a>
+          </li>
+
+          <li [ngClass]="{'active':router.url=='/main/merchantReport'}">
+            <a routerLink="/main/merchantReport" routerLinkActive="active">
+              <div class="gui-icon"><i class="md  md-insert-chart"></i></div>
+              <span class="title">Business Analytics</span>
+            </a>
+          </li>
+
+
+
+
+        </ul><!--end .main-menu -->
+        <!-- END MAIN MENU -->
+
+        <div class="menubar-foot-panel">
+          <small class="no-linebreak hidden-folded">
+            <span class="opacity-75">Copyright &copy; 2018</span> <strong>DGymOn </strong>
+          </small>
+        </div>
+      </div><!--end .menubar-scroll-panel-->
+    </div><!--end #menubar-->
+    <!-- END MENUBAR -->
+  </div><!--end #base-->
+  <!-- END BASE -->
+</div>
