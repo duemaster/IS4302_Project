@@ -43,6 +43,9 @@ asset Flight identified by id {
     --> Service[] services
     --> AirlineCompany company
     --> Employee[] cabinCrews
+    
+    --> GHACompany collectCompany
+    --> GHACompany deliverCompany
 }
 
 enum CARGO_STATUS {
@@ -50,8 +53,6 @@ enum CARGO_STATUS {
     o APPROVED
     o REJECTED
     o COLLECTED
-    o ON_FLIGHT
-    o UNLOADED
     o DELIVERED
 }
 
@@ -86,6 +87,25 @@ asset Service identified by id {
     --> Flight flight optional
 }
 
+
+enum CARGO_SERVICE_STATUS {
+    o PENDING
+    o SUCCESS
+    o CANCELED
+}
+
+asset CargoRequest identified by id {
+    o String id
+    o String description
+    o String origin
+    o String destination
+    o CARGO_SERVICE_STATUS status
+    o DateTime earlyDepartureTime
+    o DateTime lateDepartureTime
+    --> Cargo cargo
+    --> CargoCompany acceptedCompany optional
+}
+
 enum ROLE {
     o STAFF
     o OFFICER
@@ -98,17 +118,25 @@ participant Employee identified by id {
     --> Company company
 }
 
-transaction IssueFlightServiceRequest {
-    --> Flight flight
-    --> Service service
-}
+/*
+** Airline Company Action
+*/
 
 transaction HandleFlightServiceRequest {
     --> Service service
     o Boolean isApproved
 }
 
-transaction ConfirmFlightServiceDelivery {
+transaction ProcessFlightServiceDelivery {
+    --> Service service
+    o Boolean isApproved
+}
+
+/*
+** GHA Company Action
+*/
+transaction IssueFlightServiceRequest {
+    --> Flight flight
     --> Service service
 }
 
@@ -116,7 +144,11 @@ transaction CollectCargoFromWarehouse {
     --> Cargo cargo
 }
 
-transaction LoadCargo {
+/*
+** Cargo Company Action
+*/
+
+transaction ConfirmCargoToWarehouse {
     --> Cargo cargo
 }
 
@@ -125,16 +157,7 @@ transaction AssignCargoToFlight {
     --> Flight flight
 }
 
-transaction SendCargoAddOnRequest {
-    --> Flight flight
-    --> Cargo cargo
-}
-
-transaction HandleCargoAddOnRequest {
-    --> Cargo cargo
+transaction HandleCargoRequest {
+    --> CargoRequest cargoRequest
     o Boolean isApproved
-}
-
-transaction ConfirmCargoToWarehouse {
-    --> Cargo cargo
 }
