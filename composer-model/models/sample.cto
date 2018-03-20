@@ -159,5 +159,5 @@ transaction AssignCargoToFlight {
 
 transaction HandleCargoRequest {
     --> CargoRequest cargoRequest
-    o Boolean isApproved
+    --> Flight flight
 }

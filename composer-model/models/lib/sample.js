@@ -14,21 +14,9 @@
 
 var namespace = "org.airline.airChain";
 
-/**
- * Sample transaction processor function.
- * @param {org.airline.airChain.IssueFlightServiceRequest} tx The sample transaction instance.
- * @transaction
- */
-function IssueFlightServiceRequest(tx) {
-    var services = tx.services;
-    var flight = tx.flight;
-
-    //Add Services to Flight
-    flight.services = flight.services.concat(services);
-
-    //Save Flight
-    saveFlight(flight);
-}
+/*
+** Airline Company Action
+*/
 
 /**
  * Sample transaction processor function.
@@ -36,92 +24,47 @@ function IssueFlightServiceRequest(tx) {
  * @transaction
  */
 function HandleFlightServiceRequest(tx) {
-    var services = tx.services;
+    var service = tx.service;
     var isApproved = tx.isApproved;
 
     //Process Services
-    services.forEach(function(service) {service.type = isApproved ? SERVICE_STATUS.APPROVED : SERVICE_STATUS.REJECTED});
-
-    //Save services
-    services.forEach(function(service) {saveService(service)});
+    service.status = isApproved ? SERVICE_STATUS.APPROVED : SERVICE_STATUS.REJECTED;
+    saveService(service);
 }
+
 
 /**
  * Sample transaction processor function.
- * @param {org.airline.airChain.ConfirmFlightServiceDelivery} tx The sample transaction instance.
+ * @param {org.airline.airChain.ProcessFlightServiceDelivery} tx The sample transaction instance.
  * @transaction
  */
-function ConfirmFlightServiceDelivery(tx) {
-    var services = tx.services;
+function ProcessFlightServiceDelivery(tx) {
+    var service = tx.service;
 
     //Process Services
-    services.forEach(function(service) {service.type = SERVICE_STATUS.DONE});
-
-    //Save services
-    services.forEach(function(service) {saveService(service)});
+    service.status = isApproved ? SERVICE_STATUS.DONE : SERVICE_STATUS.NOT_DONE;
+    saveService(service);
 }
+
+
+/*
+** GHA Company Action
+*/
 
 /**
  * Sample transaction processor function.
- * @param {org.airline.airChain.AssignCargoToFlight} tx The sample transaction instance.
+ * @param {org.airline.airChain.IssueFlightServiceRequest} tx The sample transaction instance.
  * @transaction
  */
-function AssignCargoToFlight(tx) {
-    var cargos = tx.cargos;
+function IssueFlightServiceRequest(tx) {
+    var service = tx.service;
     var flight = tx.flight;
 
-    //TODO: Ensure Cargo does not exceed weight limit
+    //Add Services to Flight
+    flight.services.push(service);
 
-    //Attach Cargos to flight
-    flight.cargos = flight.cargos.concat(cargos);
-
-    //Update Cargo status
-    cargos.forEach(function(cargo) {cargo.status = CARGO_STATUS.APPROVED});
-
-    //Save cargos
-    cargos.forEach(function(cargo) {saveService(cargo)});
-
-    //Save flight
+    //Save Flight
     saveFlight(flight);
-}
-
-/**
- * Sample transaction processor function.
- * @param {org.airline.airChain.SendCargoAddOnRequest} tx The sample transaction instance.
- * @transaction
- */
-function SendCargoAddOnRequest(tx) {
-    var cargos = tx.cargos;
-    var flight = tx.flight;
-
-    //Attach Cargos to flight
-    flight.cargos = flight.cargos.concat(cargos);
-
-    //Update Cargo status
-    cargos.forEach(function(cargo) {cargo.status = CARGO_STATUS.PENDING});
-
-    //Save cargos
-    cargos.forEach(function(cargo) {saveCargo(cargo)});
-
-    //Save flight
-    saveFlight(flight);
-}
-
-/**
- * Sample transaction processor function.
- * @param {org.airline.airChain.HandleCargoAddOnRequest} tx The sample transaction instance.
- * @transaction
- */
-function HandleCargoAddOnRequest(tx) {
-    var cargos = tx.cargos;
-    var isApproved = tx.isApproved;
-
-    //TODO: Ensure Cargo does not exceed weight limit
-
-    cargos.forEach(function(cargo) {cargo.status = isApproved ? CARGO_STATUS.APPROVED : CARGO_STATUS.REJECTED});
-
-    //Save cargos
-    cargos.forEach(function(cargo) {saveCargo(cargo)});
 }
 
 /**
@@ -130,15 +73,19 @@ function HandleCargoAddOnRequest(tx) {
  * @transaction
  */
 function CollectCargoFromWarehouse(tx) {
-    var cargos = tx.cargos;
+    var cargo = tx.cargo;
 
     //Update Cargo status
-    cargos.forEach(function(cargo) {cargo.status = CARGO_STATUS.COLLECTED});
+    cargo.status = CARGO_STATUS.COLLECTED;
 
     //Save cargos
-    cargos.forEach(function(cargo) {saveCargo(cargo)});
+    saveCargo(cargo);
 }
 
+
+/*
+** Cargo Company Action
+*/
 
 /**
  * Sample transaction processor function.
@@ -146,14 +93,97 @@ function CollectCargoFromWarehouse(tx) {
  * @transaction
  */
 function ConfirmCargoToWarehouse(tx) {
-    var cargos = tx.cargos;
+    var cargo = tx.cargo;
 
     //Update Cargo status
-    cargos.forEach(function(cargo) {cargo.status = CARGO_STATUS.DELIVERED});
+    cargo.status = CARGO_STATUS.DELIVERED;
 
     //Save cargos
-    cargos.forEach(function(cargo) {saveCargo(cargo)});
+    saveCargo(cargo);
 }
+
+
+/**
+ * Sample transaction processor function.
+ * @param {org.airline.airChain.AssignCargoToFlight} tx The sample transaction instance.
+ * @transaction
+ */
+function AssignCargoToFlight(tx) {
+    var cargo = tx.cargo;
+    var flight = tx.flight;
+
+    //Ensure Cargo does not exceed weight limit
+    var limit = flight.aircraft.cargoCapacity;
+    var loadedWight = flight.cargos.reduce(function (a,b) { a+b.weight },0);
+
+    if(loadedWight+cargo.weight > limit)
+        throw new Error('Total weight has exceeded limit');
+  
+  
+    //Attach Cargo to flight
+    flight.cargos.push(cargo);
+
+    //Update Cargo status
+    cargo.status = CARGO_STATUS.APPROVED;
+    cargo.flight = flight;
+  
+    //Save cargo
+    saveCargo(cargo);
+
+    //Save flight
+    saveFlight(flight);
+}
+
+/**
+ * Sample transaction processor function.
+ * @param {org.airline.airChain.HandleCargoRequest} tx The sample transaction instance.
+ * @transaction
+ */
+function HandleCargoRequest(tx) {
+    var cargoRequest = tx.cargoRequest;
+    var flight = tx.flight;
+
+    //Ensure CargoRequest Requirement is meet
+    if(cargoRequest.origin != flight.origin)
+        throw new Error('CargoRequest origin mismatch with flight origin!');
+
+    if(cargoRequest.destination != flight.destination)
+        throw new Error('CargoRequest destination mismatch with flight destination!');
+
+    if(cargoRequest.lateDepartureTime <= flight.departureTime || cargoRequest.earlyDepartureTime >= flight.departureTime)
+        throw new Error('CargoRequest departureTime mismatch with flight departureTime!');
+
+    //Ensure Cargo does not exceed weight limit
+    var limit = flight.aircraft.cargoCapacity;
+    var loadedWight = flight.cargos.reduce(function (a,b) { a+b.weight },0);
+
+    if(loadedWight+cargoRequest.cargo.weight > limit)
+        throw new Error('Total weight has exceeded limit');
+
+    //Attach Cargos to flight
+    flight.cargos.push(cargo);
+
+    //Update Cargo status
+    cargo.status = CARGO_STATUS.APPROVED;
+    cargo.flight = flight;
+
+    //Update cargoRequest status
+    cargoRequest.acceptedCompany = flight.company.authorisedCargoCompany;
+
+    //Save cargos
+    saveCargo(cargo);
+
+    //Save flight
+    saveFlight(flight);
+
+    //Save cargoRequest
+    saveCargoRequest(cargoRequest);
+}
+
+
+
+
+
 
 
 function saveCargo(cargo) {
@@ -181,5 +211,12 @@ function saveFlight(flight) {
     return getAssetRegistry(namespace + ".Flight")
         .then(function (flightRegistry) {
             return flightRegistry.update(flight);
+        })
+}
+
+function saveCargoRequest(cargoRequest) {
+    return getAssetRegistry(namespace + ".CargoRequest")
+        .then(function (cargoRegistry) {
+            return cargoRegistry.update(cargoRequest);
         })
 }
