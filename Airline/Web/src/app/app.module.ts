@@ -14,12 +14,22 @@ import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
 import {Util} from "./util/util";
 import {SettingService} from "./service/setting/setting.service";
 import { LoadingModule, ANIMATION_TYPES } from 'ngx-loading';
+import { AircraftComponent } from './page/aircraft/aircraft.component';
+import { FlightComponent } from './page/flight/flight.component';
+import { DashboardComponent } from './page/dashboard/dashboard.component';
+import { MatFormFieldModule } from "@angular/material/form-field";
+import { MatTableModule} from "@angular/material/table";
+import { MatPaginatorModule } from "@angular/material/paginator"
+import {MatFormFieldControl, MatInputModule} from "@angular/material";
 
 @NgModule({
     declarations: [
         AppComponent,
         LoginComponent,
-        LayoutComponent
+        LayoutComponent,
+        AircraftComponent,
+        FlightComponent,
+        DashboardComponent
     ],
     imports: [
         FormsModule,
@@ -27,6 +37,10 @@ import { LoadingModule, ANIMATION_TYPES } from 'ngx-loading';
         HttpClientModule,
         BrowserModule,
         OrderModule,
+        MatTableModule,
+        MatFormFieldModule,
+        MatInputModule,
+        MatPaginatorModule,
         BrowserAnimationsModule,
         ToastModule.forRoot(),
         LoadingModule.forRoot({

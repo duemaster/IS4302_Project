@@ -2,16 +2,37 @@ import {RouterModule, Routes} from '@angular/router';
 import {ModuleWithProviders} from '@angular/core';
 import {LoginComponent} from './page/login/login.component';
 import {LayoutComponent} from './page/layout/layout.component';
+import {AircraftComponent} from "./page/aircraft/aircraft.component";
+import {FlightComponent} from "./page/flight/flight.component";
+import {DashboardComponent} from "./page/dashboard/dashboard.component";
 
 const APP_ROUTES: Routes = [
     {
-        path: '',
+        path: 'main',
         component: LayoutComponent,
-        pathMatch: 'full'
+        children:[
+            {
+                path: 'dashboard',
+                component: DashboardComponent
+            },
+            {
+                path: 'aircraft',
+                component: AircraftComponent
+            },
+            {
+                path: 'flight',
+                component: FlightComponent
+            }
+        ]
     },
     {
         path: 'login',
         component: LoginComponent
+    },
+    {
+        path: " ",
+        redirectTo: '/main',
+        pathMatch:'full'
     },
     {
         path: '**',
