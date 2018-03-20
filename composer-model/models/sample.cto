@@ -4,43 +4,40 @@
 namespace org.airline.airChain
 
 abstract asset Company identified by id {
-	o String id
+    o String id
     o String name
+    --> Employee[] employees
 }
 
 asset AirlineCompany extends Company {
     --> Flight[] flights
     --> Aircraft[] aircrafts
-    --> GHACompany[] authorisedGHAs
     --> CargoCompany authorisedCargoCompany
-    --> Employee[] employees
 }
 
 asset GHACompany extends Company {
     --> Service[] services
-    --> Employee[] employees
 }
 
 asset CargoCompany extends Company {
-   	--> Cargo[] cargos
-    --> Employee[] employees
+    --> Cargo[] cargos
 }
 
 asset Aircraft identified by id {
-	o String id
+    o String id
     o String model
     o Integer passengerCapacity
+    o Double cargoCapacity
     --> AirlineCompany company
-    --> Flight flight optional
 }
 
 asset Flight identified by id {
-	o String id
+    o String id
     o String origin
     o String destination
-    o DateTime time
+    o DateTime departureTime
     o Integer paxCount
-    o Double cargoCapacity
+    
     --> Aircraft aircraft
     --> Cargo[] cargos
     --> Service[] services
@@ -49,18 +46,18 @@ asset Flight identified by id {
 }
 
 enum CARGO_STATUS {
-  	o PENDING
+    o PENDING
     o APPROVED
     o REJECTED
-  	o COLLECTED
-	o ON_FLIGHT
+    o COLLECTED
+    o ON_FLIGHT
     o UNLOADED
-  	o DELIVERED
+    o DELIVERED
 }
 
 asset Cargo identified by id {
-	o String id
-    o String cargoDescription
+    o String id
+    o String description
     o Double weight
     o CARGO_STATUS status
     --> CargoCompany company
@@ -68,12 +65,12 @@ asset Cargo identified by id {
 }
 
 enum SERVICE_TYPE {
-	o FOOD
+    o FOOD
     o CLEAN
 }
 
 enum SERVICE_STATUS {
-	o PENDING
+    o PENDING
     o APPROVED
     o REJECTED
     o DONE
@@ -81,67 +78,67 @@ enum SERVICE_STATUS {
 }
 
 asset Service identified by id {
-	o String id
-    o String serviceDescription
- 	o SERVICE_STATUS status
+    o String id
+    o String description
+    o SERVICE_STATUS status
     o SERVICE_TYPE type
     --> GHACompany company
     --> Flight flight optional
 }
 
 enum ROLE {
-	o STAFF
+    o STAFF
     o OFFICER
 }
 
 participant Employee identified by id {
-	o String id
+    o String id
     o String name
     o ROLE role
-    --> Company company optional
+    --> Company company
 }
 
 transaction IssueFlightServiceRequest {
-	--> Flight flight
-    --> Service[] services
+    --> Flight flight
+    --> Service service
 }
 
 transaction HandleFlightServiceRequest {
-	--> Service[] services
+    --> Service service
     o Boolean isApproved
 }
 
 transaction ConfirmFlightServiceDelivery {
-	--> Service[] services
+    --> Service service
 }
 
 transaction CollectCargoFromWarehouse {
-	--> Cargo[] cargos
+    --> Cargo cargo
 }
 
 transaction LoadCargo {
-	--> Cargo[] cargos
+    --> Cargo cargo
 }
 
 transaction UnloadCargo {
-	--> Cargo[] cargos
+    --> Cargo cargo
 }
 
 transaction AssignCargoToFlight {
-	--> Cargo[] cargos
+    --> Cargo cargo
     --> Flight flight
 }
 
 transaction SendCargoAddOnRequest {
-	--> Flight flight
-    --> Cargo[] cargos
+    --> Flight flight
+    --> Cargo cargo
 }
 
 transaction HandleCargoAddOnRequest {
-	--> Cargo[] cargos
+    --> Cargo cargo
     o Boolean isApproved
 }
 
 transaction ConfirmCargoToWarehouse {
-	--> Cargo[] cargos
+    --> Cargo cargo
 }
