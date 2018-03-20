@@ -3,9 +3,12 @@
  */
 namespace org.airline.airChain
 
-asset AirlineCompany identified by id {
+abstract asset Company identified by id {
 	o String id
     o String name
+}
+
+asset AirlineCompany extends Company {
     --> Flight[] flights
     --> Aircraft[] aircrafts
     --> GHACompany[] authorisedGHAs
@@ -13,16 +16,12 @@ asset AirlineCompany identified by id {
     --> Employee[] employees
 }
 
-asset GHACompany identified by id {
-	o String id
-    o String name
+asset GHACompany extends Company {
     --> Service[] services
     --> Employee[] employees
 }
 
-asset CargoCompany identified by id {
-	o String id
-    o String name
+asset CargoCompany extends Company {
    	--> Cargo[] cargos
     --> Employee[] employees
 }
@@ -31,8 +30,8 @@ asset Aircraft identified by id {
 	o String id
     o String model
     o Integer passengerCapacity
-    o Double cargoCapacity
     --> AirlineCompany company
+    --> Flight flight optional
 }
 
 asset Flight identified by id {
@@ -41,6 +40,7 @@ asset Flight identified by id {
     o String destination
     o DateTime time
     o Integer paxCount
+    o Double cargoCapacity
     --> Aircraft aircraft
     --> Cargo[] cargos
     --> Service[] services
@@ -63,7 +63,8 @@ asset Cargo identified by id {
     o String cargoDescription
     o Double weight
     o CARGO_STATUS status
-    --> CargoCompany cargoCompany
+    --> CargoCompany company
+    --> Flight flight optional
 }
 
 enum SERVICE_TYPE {
@@ -84,7 +85,8 @@ asset Service identified by id {
     o String serviceDescription
  	o SERVICE_STATUS status
     o SERVICE_TYPE type
-    --> GHACompany ghaCompany
+    --> GHACompany company
+    --> Flight flight optional
 }
 
 enum ROLE {
@@ -96,6 +98,7 @@ participant Employee identified by id {
 	o String id
     o String name
     o ROLE role
+    --> Company company optional
 }
 
 transaction IssueFlightServiceRequest {

@@ -2,42 +2,30 @@
  * Sample access control list.
  */
 
-
 rule AllowGHAIssueFlightServiceRequest {
   description:  "Allow Authorised GHA to create Flight Service Request"
   participant (p): "org.airline.airChain.Employee"
   operation: CREATE
   resource (r): "org.airline.airChain.IssueFlightServiceRequest"
-  condition: (p.role === ROLE.OFFICER && r.flight.company.authorisedGHAs.employees.filter(function(employee) {return employee.getIdentifier() == p.getIndentifier();}).length > 0)
+  condition: (p.role === ROLE.OFFICER && r.services.filter(function(service) {return service.company.getIdentifier() != p.company.getIdentifier();}).length === 0)
   action: ALLOW
 }
 
-
+rule AllowAirlineProcessFlightServiceRequest {
+  description:  "Allow Airline company to process flight request"
+  participant (p): "org.airline.airChain.Employee"
+  operation: CREATE
+  resource (r): "org.airline.airChain.HandleFlightServiceRequest"
+  condition: (p.role === ROLE.OFFICER && r.services.filter(function(service) {return service.flight.company.getIdentifier() != p.company.getIndentifier()}).length === 0)
+  action: ALLOW
+}
 
 rule AllowAirlineReadAircraft {
-  description:  "Allow Airline Company to read their own aircrafts"
+  description:  "Allow"
   participant (p): "org.hyperledger.composer.system.Participant"
   operation: READ
   resource (r): "org.airline.airChain.Aircraft"
-  condition: (p.aircrafts.filter(function(aircraft) {return aircraft.getIdentifier() == r.getIdentifier()}).length > 0)
-  action: ALLOW
-}
-
-rule AllowCargoCompanyReadAircraft {
-  description:  "Allow authorised Cargo Company to read their aircrafts"
-  participant (p): "org.hyperledger.composer.system.Participant"
-  operation: READ
-  resource (r): "org.airline.airChain.Aircraft"
-  condition: (r.company.authorisedCargoCompanies.filter(function(cargoCompany) {return cargoCompany.getIdentifier() == p.getIdentifier()}).length > 0)
-  action: ALLOW
-}
-
-rule AllowGHACompanyReadAircraft {
-  description:  "Allow authorised GHA Company to read their aircrafts"
-  participant (p): "org.hyperledger.composer.system.Participant"
-  operation: READ
-  resource (r): "org.airline.airChain.Aircraft"
-  condition: (r.company.authorisedGHAs.filter(function(ghaCompany) {return ghaCompany.getIdentifier() == p.getIdentifier()}).length > 0)
+  condition: (true)
   action: ALLOW
 }
 
