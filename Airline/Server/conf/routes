@@ -1,0 +1,13 @@
+# Routes
+# This file defines all application routes (Higher priority routes first)
+# ~~~~
+
+# Map static resources from the /public folder to the /assets URL path
+GET        /assets/*file        controllers.Assets.versioned(path="/public", file: Asset)
+
+#*********************************************************************
+# 功能: Device System
+# 说明：无
+#*********************************************************************
+### Terminal Management Module
+GET        /                    controllers.Application.indexPage
