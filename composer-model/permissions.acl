@@ -2,6 +2,10 @@
  * Sample access control list.
  */
 
+ /**
+  * Transaction ACL
+  */
+
 rule AllowAirlineHandleFlightServiceRequest {
   description:  "Allow Airline company to process flight request"
   participant (p): "org.airline.airChain.AirlineEmployee"
@@ -68,45 +72,126 @@ rule AllowCargoAcceptCargoRequest {
 
 
 
-
+/*
+* Aircraft Management
+*/
 
 rule AllowAirlineReadAircraft {
-  description:  "Allow"
-  participant (p): "org.hyperledger.composer.system.Participant"
+  description: "Allow All to read Aircraft Information"
+  participant: "org.airline.airChain.*"
   operation: READ
-  resource (r): "org.airline.airChain.Aircraft"
-  condition: (true)
+  resource: "org.airline.airChain.Aircraft"
   action: ALLOW
 }
 
-rule AllowAirlineUpdateAircraft {
-  description:  "Allow Airline Company to read their own aircrafts"
-  participant (p): "org.hyperledger.composer.system.Participant"
-  operation: UPDATE
+rule AllowAirlineManageAircraft {
+  description:  "Allow Airline Company Officers to manage their own aircrafts"
+  participant (p): "org.airline.airChain.AirlineEmployee"
+  operation: ALL
   resource (r): "org.airline.airChain.Aircraft"
-  condition: (p.aircrafts.filter(function(aircraft) {return aircraft.getIdentifier() == r.getIdentifier()}).length > 0)
+  condition: (p.role === ROLE.OFFICER && p.company.aircrafts.filter(function(aircraft) {return aircraft.getIdentifier() === r.getIdentifier()}).length === 1)
   action: ALLOW
 }
 
-rule AllowCargoCompanyUpdateAircraft {
-  description:  "Allow authorised Cargo Company to read their aircrafts"
-  participant (p): "org.hyperledger.composer.system.Participant"
-  operation: UPDATE
-  resource (r): "org.airline.airChain.Aircraft"
-  condition: (r.company.authorisedCargoCompanies.filter(function(cargoCompany) {return cargoCompany.getIdentifier() == p.getIdentifier()}).length > 0)
+/*
+* Flight Management
+*/
+
+rule AllowGHAToViewFlight {
+  description:  "Allow all GHA to view flights"
+  participant: "org.airline.airChain.GHAEmployee"
+  operation: READ
+  resource: "org.airline.airChain.Flight"
   action: ALLOW
 }
 
-rule AllowGHACompanyUpdateAircraft {
-  description:  "Allow authorised GHA Company to read their aircrafts"
-  participant (p): "org.hyperledger.composer.system.Participant"
-  operation: UPDATE
-  resource (r): "org.airline.airChain.Aircraft"
-  condition: (r.company.authorisedGHAs.filter(function(ghaCompany) {return ghaCompany.getIdentifier() == p.getIdentifier()}).length > 0)
+rule AllowCargoToViewFlight {
+  description:  "Allow Cargo to view flights"
+  participant (p): "org.airline.airChain.GHAEmployee"
+  operation: READ
+  resource (r): "org.airline.airChain.Flight"
+  condition: (r.company.authorisedCargoCompany.getIdentifier() === p.company.getIdentifier())
+  action: ALLOW
+}
+
+rule AllowAirlineManageFlight {
+  description:  "Allow Airline Company to manage their own flights"
+  participant (p): "org.airline.airChain.AirlineEmployee"
+  operation: ALL
+  resource (r): "org.airline.airChain.Flight"
+  condition: (p.company.flights.filter(function(flight) {return flight.getIdentifier() === r.getIdentifier()}).length === 1)
   action: ALLOW
 }
 
 
+/*
+* Cargo Management
+*/
+
+rule AllowAirlineOfficerViewCargo {
+  description:  "Allow Airline Company Officers to view Cargo only if carog is attached to the flight"
+  participant (p): "org.airline.airChain.AirlineEmployee"
+  operation: READ
+  resource (r): "org.airline.airChain.Cargo"
+  condition: (p.role === ROLE.OFFICER && p.company.flights.filter(function(flight) {return flight.getIndentifier() === r.flight.getIdentifier()}).length === 1)
+  action: ALLOW
+}
+
+rule AllowGHAStaffViewCargo {
+  description:  "Allow GHA staff to view Cargo only they are assigned to manage the cargo"
+  participant (p): "org.airline.airChain.GHAEmployee"
+  operation: READ
+  resource (r): "org.airline.airChain.Cargo"
+  condition: (p.role === ROLE.STAFF && (r.flight.collectCompany.getIdentifier() === p.company.getIdentifier() || r.flight.deliverCompany.getIndentifier() === p.company.getIndentifier()))
+  action: ALLOW
+}
+
+rule AllowCargoCompanyToManageCargo {
+  description:  "Allow Cargo Company to manage their own cargo"
+  participant (p): "org.airline.airChain.CargoEmployee"
+  operation: ALL
+  resource (r): "org.airline.airChain.Cargo"
+  condition: (p.company.cargos.filter(function(cargo) {return cargo.getIdentifier() === r.getIdentifier()}).length === 1)
+  action: ALLOW
+}
+
+/*
+* Service Management
+*/
+rule AllowAirlineCompanyViewService {
+  description:  "Allow Airline Company to view services attached to their flights"
+  participant (p): "org.airline.airChain.AirlineEmployee"
+  operation: READ
+  resource (r): "org.airline.airChain.Service"
+  condition: (p.company.flights.filter(function(flight) {return flight.services.filter(function(service) {service.getIdentifier() === r.getIdentifier()}).length === 1}).length === 1)
+  action: ALLOW
+}
+
+rule AllowGHACompanyToManageService {
+  description:  "Allow Cargo Company to manage their own cargo"
+  participant (p): "org.airline.airChain.CargoEmployee"
+  operation: ALL
+  resource (r): "org.airline.airChain.Service"
+  condition: (p.company.services.filter(function(service) {return service.getIdentifier() === r.getIdentifier()}).length === 1)
+  action: ALLOW
+}
+
+/*
+* Cargo Request Management
+*/
+rule AllowCargoCompanyViewCargoRequest {
+  description:  "Allow all cargo company to view Cargo Request"
+  participant (p): "org.airline.airChain.CargoEmployee"
+  operation: READ, UPDATE
+  resource (r): "org.airline.airChain.CargoRequest"
+  condition: (p.role === ROLE.OFFICER)
+  action: ALLOW
+}
+
+
+/*
+* System Admin Access
+*/
 
 rule SystemACL {
   description:  "System ACL to permit all access"
