@@ -1,17 +1,46 @@
 <ion-header>
   <ion-navbar>
-    <ion-title>Home</ion-title>
+    <ion-title>Flight Service</ion-title>
   </ion-navbar>
 </ion-header>
 
 <ion-content padding>
-  <h2>Welcome to Ionic!</h2>
-  <p>
-    This starter project comes with simple tabs-based layout for apps
-    that are going to primarily use a Tabbed UI.
-  </p>
-  <p>
-    Take a look at the <code>src/pages/</code> directory to add or change tabs,
-    update any existing page or create new pages.
-  </p>
+  <ion-grid>
+    <ion-row>
+      <ion-col col-1></ion-col>
+      <ion-col col-5>
+        <ion-card class="departure">
+          <ion-card-content>
+            <p class="label">Departure</p>
+            <p class="place">SIN</p>
+            <p class="time">8:20a.m.</p>
+          </ion-card-content>
+        </ion-card>
+      </ion-col>
+      <ion-col col-5>
+        <ion-card class="landing">
+          <ion-card-content>
+            <p class="label">Landing</p>
+            <p class="place">CAN</p>
+            <p class="time">12:20p.m.</p>
+          </ion-card-content>
+        </ion-card>
+      </ion-col>
+      <ion-col col-1></ion-col>
+    </ion-row>
+  </ion-grid>
+  <ion-list>
+    <ion-list-header>
+      Ground Handling Agent: SATS
+    </ion-list-header>
+    <ion-item>Business Meal 20 sets</ion-item>
+    <ion-item>Economic Meal 270 sets</ion-item>
+    <ion-item>Pillow/Blanket 300 sets</ion-item>
+    <ion-item>Ear Piece 300 sets</ion-item>
+    <ion-item>Newspaper 100 sets</ion-item>
+    <ion-item>
+      <button ion-button color="primary" round>Confirm Service</button>
+    </ion-item>
+  </ion-list>
+
 </ion-content>

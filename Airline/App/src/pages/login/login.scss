@@ -1,0 +1,59 @@
+page-login {
+
+  .card-md{
+    margin: 0px !important;
+    width: 100%;
+  }
+  .text-input {
+    text-align: center;
+  }
+
+  .ion-item{
+    margin-bottom: 10px;
+  }
+
+  .button{
+    height: 1.2vh;
+    width: 100%;
+  }
+
+  .login{
+    margin-top: 20%;
+  }
+
+  .card-background-page {
+
+    ion-card {
+      position: relative;
+      text-align: center;
+      margin: -10px;
+      width: 100%;
+    }
+
+
+    .card img{
+      width: 100%;
+    }
+
+
+    .card-title {
+      position: absolute;
+      top: 25%;
+      left: 35%;
+      font-size: 2.0em;
+      width: 100%;
+      font-weight: bold;
+      color: #fff;
+    }
+
+    .card-subtitle {
+      font-size: 1.0em;
+      position: absolute;
+      top: 30%;
+      left: 40%;
+      width: 100%;
+      color: #fff;
+    }
+
+  }
+}
