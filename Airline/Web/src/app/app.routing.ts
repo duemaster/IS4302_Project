@@ -30,8 +30,8 @@ const APP_ROUTES: Routes = [
         component: LoginComponent
     },
     {
-        path: " ",
-        redirectTo: '/main',
+        path: '',
+        redirectTo: '/main/dashboard',
         pathMatch:'full'
     },
     {

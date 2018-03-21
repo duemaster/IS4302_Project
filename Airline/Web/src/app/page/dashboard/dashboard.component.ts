@@ -1,5 +1,5 @@
 import {Component, OnInit, ViewChild} from '@angular/core';
-import {MatTableDataSource, MatPaginator, MatFormFieldControl} from '@angular/material';
+import {MatTableDataSource, MatPaginator} from '@angular/material';
 
 @Component({
     selector: 'app-dashboard',

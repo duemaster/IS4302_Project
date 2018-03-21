@@ -1,3 +1,206 @@
-<p>
-  flight works!
-</p>
+<section>
+  <div class="section-body contain-lg">
+    <!-- BEGIN INTRO -->
+    <div class="row">
+      <div class="col-lg-12">
+        <h1 class="text-primary">Flight Management</h1>
+      </div>
+    </div>
+    <div class="row">
+      <div class="col-lg-12">
+        <div class="card style-default-bright">
+          <div class="card-body">
+            <div class="headerBar">
+              <div class="gui-icon headerBar" data-toggle="modal" data-target="#formModal"><i class="md  md-add" ></i></div>
+            </div>
+
+          </div>
+        </div>
+        <div class="table-container mat-elevation-z8">
+          <div class="table-header">
+            <mat-form-field>
+              <input matInput (keyup)="applyFilter($event.target.value)" placeholder="Filter">
+            </mat-form-field>
+          </div>
+
+          <mat-table #table [dataSource]="dataSource">
+
+            <!-- ID Column -->
+            <ng-container matColumnDef="FlightNo">
+              <mat-header-cell *matHeaderCellDef> Flight No. </mat-header-cell>
+              <mat-cell *matCellDef="let element"> {{element.id}} </mat-cell>
+            </ng-container>
+
+            <!-- Model Column -->
+            <ng-container matColumnDef="Date">
+              <mat-header-cell *matHeaderCellDef> Date </mat-header-cell>
+              <mat-cell *matCellDef="let element"> {{element.date}} </mat-cell>
+            </ng-container>
+
+            <!-- Manufacturer Column -->
+            <ng-container matColumnDef="Departure">
+              <mat-header-cell *matHeaderCellDef> Departure </mat-header-cell>
+              <mat-cell *matCellDef="let element"> {{element.departure}} </mat-cell>
+            </ng-container>
+
+            <!-- Cargo Capacity Column -->
+            <ng-container matColumnDef="Landing">
+              <mat-header-cell *matHeaderCellDef> Landing </mat-header-cell>
+              <mat-cell *matCellDef="let element"> {{element.landing}} </mat-cell>
+            </ng-container>
+
+            <!-- Cargo Capacity Column -->
+            <ng-container matColumnDef="Status">
+              <mat-header-cell *matHeaderCellDef> Status </mat-header-cell>
+              <mat-cell *matCellDef="let element"> {{element.status}} </mat-cell>
+            </ng-container>
+
+            <ng-container matColumnDef="Option">
+              <mat-header-cell *matHeaderCellDef> Option</mat-header-cell>
+              <mat-cell *matCellDef="let row">
+                <i data-toggle="modal" data-target="#formModal" class="fas fa-edit"></i>
+                <i data-toggle="modal" data-target="#deleteModal" class="fas fa-ban"></i>
+              </mat-cell>
+            </ng-container>
+
+
+
+            <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
+            <mat-row *matRowDef="let row; columns: displayedColumns;"></mat-row>
+          </mat-table>
+          <mat-paginator #paginator
+                         [pageSize]="10"
+                         [pageSizeOptions]="[5, 10, 20]"
+                         [showFirstLastButtons]="true">
+          </mat-paginator>
+        </div>
+      </div>
+    </div>
+  </div>
+  <!-- BEGIN FORM MODAL MARKUP -->
+  <div class="modal fade" id="formModal" tabindex="-1" role="dialog" aria-labelledby="formModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+          <h4 class="modal-title" id="formModalLabel">Add Flight</h4>
+        </div>
+        <form class="form-horizontal" role="form">
+          <div class="modal-body">
+            <div class="form-group">
+              <div class="col-sm-2">
+                <label for="flightNo" class="control-label">Flight No.</label>
+              </div>
+              <div class="col-sm-4">
+                <input type="text" name="flightNo" id="flightNo" class="form-control" placeholder="Flight No.">
+              </div>
+              <div class="col-sm-2">
+                <label for="departDate" class="control-label">Depart Date</label>
+              </div>
+              <div class="col-sm-4">
+                <mat-form-field id="departDate">
+                  <input matInput [matDatepicker]="picker" placeholder="Departure date">
+                  <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+                  <mat-datepicker #picker></mat-datepicker>
+                </mat-form-field>
+              </div>
+            </div>
+            <div class="form-group">
+              <div class="col-sm-2">
+                <label for="depart" class="control-label">Departure</label>
+              </div>
+              <div class="col-sm-4">
+                <input type="text" name="depart" id="depart" class="form-control" placeholder="Departure">
+              </div>
+              <div class="col-sm-2">
+                <label for="landing" class="control-label">Landing</label>
+              </div>
+              <div class="col-sm-4">
+                <input type="text" name="landing" id="landing" class="form-control" placeholder="Landing">
+              </div>
+            </div>
+            <div class="form-group">
+              <div class="col-sm-3">
+                <label for="ccs" class="control-label">Cabin Crew Supervisor</label>
+              </div>
+              <div class="col-sm-9">
+                <select id="ccs" name="ccs" class="form-control">
+                  <option value="officer">Lily</option>
+                  <option value="crew">Emily</option>
+                  <option value="crew">Tony</option>
+                </select>
+              </div>
+            </div>
+            <div class="form-group">
+              <div class="col-sm-3">
+                <label for="paxload" class="control-label">Passenger Loading</label>
+              </div>
+              <div class="col-sm-9">
+                <input type="number" name="paxload" id="paxload" class="form-control" placeholder="Number of Passengers">
+              </div>
+            </div>
+          </div>
+          <div class="panel-group" id="accordion1">
+            <div class="card panel">
+              <div class="card-head collapsed" data-toggle="collapse" data-parent="#accordion1" data-target="#accordion1-1">
+                <header>Cargo Attachment</header>
+                <div class="tools">
+                  <a class="btn btn-icon-toggle"><i class="fa fa-angle-down"></i></a>
+                </div>
+              </div>
+              <div id="accordion1-1" class="collapse">
+                <div class="card-body">
+                  <p>Item: Food  Owner: SIA Cargo  Weight: 78ton</p>
+                </div>
+              </div>
+            </div><!--end .panel -->
+            <div class="card panel">
+              <div class="card-head collapsed" data-toggle="collapse" data-parent="#accordion1" data-target="#accordion1-2">
+                <header>Service Attachment</header>
+                <div class="tools">
+                  <a class="btn btn-icon-toggle"><i class="fa fa-angle-down"></i></a>
+                </div>
+              </div>
+              <div id="accordion1-2" class="collapse">
+                <div class="card-body">
+                  <p>Item: Business Meal 30 sets</p>
+                  <p>Item: Economy Meal 200 sets</p>
+                  <p>Item: Pillow 250 sets</p>
+                  <div>
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Reject</button>
+                    <button type="button" class="btn btn-primary">Accept</button></div>
+                </div>
+              </div>
+            </div><!--end .panel -->
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+            <button type="button" class="btn btn-primary">Done</button>
+          </div>
+        </form>
+      </div><!-- /.modal-content -->
+    </div><!-- /.modal-dialog -->
+  </div><!-- /.modal -->
+  <!-- END FORM MODAL MARKUP -->
+
+  <!-- BEGIN SIMPLE MODAL MARKUP -->
+  <div class="modal fade" id="deleteModal" tabindex="-1" role="dialog" aria-labelledby="simpleModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+          <h4 class="modal-title" id="simpleModalLabel">Cancelling Flight</h4>
+        </div>
+        <div class="modal-body">
+          <p>Do you want to cancel this flight?</p>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+          <button type="button" class="btn btn-primary">Yes</button>
+        </div>
+      </div><!-- /.modal-content -->
+    </div><!-- /.modal-dialog -->
+  </div><!-- /.modal -->
+  <!-- END SIMPLE MODAL MARKUP -->
+
+</section>

@@ -20,12 +20,13 @@ import { DashboardComponent } from './page/dashboard/dashboard.component';
 import { MatFormFieldModule } from "@angular/material/form-field";
 import { MatTableModule} from "@angular/material/table";
 import { MatPaginatorModule } from "@angular/material/paginator"
-import {MatFormFieldControl, MatInputModule} from "@angular/material";
-
+import {MatFormFieldControl, MatInputModule, MatNativeDateModule} from "@angular/material";
+import {MatDatepickerModule} from '@angular/material/datepicker';
 @NgModule({
     declarations: [
         AppComponent,
         LoginComponent,
+
         LayoutComponent,
         AircraftComponent,
         FlightComponent,
@@ -40,6 +41,8 @@ import {MatFormFieldControl, MatInputModule} from "@angular/material";
         MatTableModule,
         MatFormFieldModule,
         MatInputModule,
+        MatNativeDateModule,
+        MatDatepickerModule,
         MatPaginatorModule,
         BrowserAnimationsModule,
         ToastModule.forRoot(),

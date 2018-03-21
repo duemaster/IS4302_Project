@@ -1,3 +1,150 @@
-<p>
-  aircraft works!
-</p>
+<section>
+  <div class="section-body contain-lg">
+    <!-- BEGIN INTRO -->
+    <div class="row">
+      <div class="col-lg-12">
+        <h1 class="text-primary">Aircraft Management</h1>
+      </div>
+    </div>
+    <div class="row">
+      <div class="col-lg-12">
+        <div class="card style-default-bright">
+          <div class="card-body">
+            <div class="headerBar">
+              <div class="gui-icon headerBar" data-toggle="modal" data-target="#formModal"><i class="md  md-add" ></i></div>
+            </div>
+
+          </div>
+        </div>
+        <div class="table-container mat-elevation-z8">
+          <div class="table-header">
+            <mat-form-field>
+              <input matInput (keyup)="applyFilter($event.target.value)" placeholder="Filter">
+            </mat-form-field>
+          </div>
+
+          <mat-table #table [dataSource]="dataSource">
+
+            <!-- ID Column -->
+            <ng-container matColumnDef="id">
+              <mat-header-cell *matHeaderCellDef> Series No. </mat-header-cell>
+              <mat-cell *matCellDef="let element"> {{element.id}} </mat-cell>
+            </ng-container>
+
+            <!-- Model Column -->
+            <ng-container matColumnDef="Model">
+              <mat-header-cell *matHeaderCellDef> Model </mat-header-cell>
+              <mat-cell *matCellDef="let element"> {{element.model}} </mat-cell>
+            </ng-container>
+
+            <!-- Manufacturer Column -->
+            <ng-container matColumnDef="Manufacturer">
+              <mat-header-cell *matHeaderCellDef> Manufacturer </mat-header-cell>
+              <mat-cell *matCellDef="let element"> {{element.manufacturer}} </mat-cell>
+            </ng-container>
+
+            <!-- Cargo Capacity Column -->
+            <ng-container matColumnDef="CargoCapacity">
+              <mat-header-cell *matHeaderCellDef> Cargo Capacity/ton </mat-header-cell>
+              <mat-cell *matCellDef="let element"> {{element.capacity}} </mat-cell>
+            </ng-container>
+
+            <ng-container matColumnDef="Option">
+              <mat-header-cell *matHeaderCellDef> Option</mat-header-cell>
+              <mat-cell *matCellDef="let row">
+                <i data-toggle="modal" data-target="#formModal" class="fas fa-edit"></i>
+                <i data-toggle="modal" data-target="#deleteModal" class="fas fa-trash"></i>
+              </mat-cell>
+            </ng-container>
+
+
+
+            <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
+            <mat-row *matRowDef="let row; columns: displayedColumns;"></mat-row>
+          </mat-table>
+          <mat-paginator #paginator
+                         [pageSize]="10"
+                         [pageSizeOptions]="[5, 10, 20]"
+                         [showFirstLastButtons]="true">
+          </mat-paginator>
+        </div>
+      </div>
+    </div>
+  </div>
+  <!-- BEGIN FORM MODAL MARKUP -->
+  <div class="modal fade" id="formModal" tabindex="-1" role="dialog" aria-labelledby="formModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+          <h4 class="modal-title" id="formModalLabel">Add Aircraft</h4>
+        </div>
+        <form class="form-horizontal" role="form">
+          <div class="modal-body">
+            <div class="form-group">
+              <div class="col-sm-3">
+                <label for="seriesId" class="control-label">Series ID</label>
+              </div>
+              <div class="col-sm-9">
+                <input type="text" name="seriesId" id="seriesId" class="form-control" placeholder="Series ID">
+              </div>
+            </div>
+            <div class="form-group">
+              <div class="col-sm-3">
+                <label for="model" class="control-label">Model</label>
+              </div>
+              <div class="col-sm-9">
+                <input type="text" name="model" id="model" class="form-control" placeholder="Model">
+              </div>
+            </div>
+            <div class="form-group">
+              <div class="col-sm-3">
+                <label for="mfter" class="control-label">Manufacturer</label>
+              </div>
+              <div class="col-sm-9">
+                <select id="mfter" name="mfter" class="form-control">
+                  <option value="officer">Airbus</option>
+                  <option value="crew">Boeing</option>
+                </select>
+              </div>
+            </div>
+            <div class="form-group">
+              <div class="col-sm-3">
+                <label for="cargo" class="control-label">Cargo Capacity</label>
+              </div>
+              <div class="col-sm-9">
+                <input type="number" name="cargo" id="cargo" class="form-control" placeholder="Cargo Capacity/ton">
+              </div>
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+            <button type="button" class="btn btn-primary">Done</button>
+          </div>
+        </form>
+      </div><!-- /.modal-content -->
+    </div><!-- /.modal-dialog -->
+  </div><!-- /.modal -->
+  <!-- END FORM MODAL MARKUP -->
+
+  <!-- BEGIN SIMPLE MODAL MARKUP -->
+  <div class="modal fade" id="deleteModal" tabindex="-1" role="dialog" aria-labelledby="simpleModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+          <h4 class="modal-title" id="simpleModalLabel">Removing Aircraft</h4>
+        </div>
+        <div class="modal-body">
+          <p>Do you want to remove this aircraft information?</p>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+          <button type="button" class="btn btn-primary">Yes</button>
+        </div>
+      </div><!-- /.modal-content -->
+    </div><!-- /.modal-dialog -->
+  </div><!-- /.modal -->
+  <!-- END SIMPLE MODAL MARKUP -->
+
+</section>
