@@ -65,6 +65,7 @@ asset Cargo identified by id {
     o CARGO_STATUS status
     --> CargoCompany company
     --> Flight flight optional
+    --> CargoRequest request optional
 }
 
 enum SERVICE_TYPE {

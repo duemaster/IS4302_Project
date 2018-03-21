@@ -1,9 +1,5 @@
-/**
- * Sample access control list.
- */
-
  /**
-  * Transaction ACL
+  * Create Transaction ACL
   */
 
 rule AllowAirlineHandleFlightServiceRequest {
@@ -70,7 +66,81 @@ rule AllowCargoAcceptCargoRequest {
 }
 
 
+ /**
+  * Transaction ACL
+  */
 
+rule AllowAirlineOfficerUpdateService {
+  description:  "Allow Airline Officer Update Service Status when handling service request"
+  participant (p): "org.airline.airChain.AirlineEmployee"
+  operation: UPDATE
+  resource (r): "org.airline.airChain.Service"
+  transaction (txn): "org.airline.airChain.HandleFlightServiceRequest"
+  condition: (r.status === SERVICE_STATUS.PENDING && p.company.flights.filter(function(flight) {return flight.getIdentifier() === r.flight.getIdentifier()}).length === 1)
+  action: ALLOW
+}
+
+rule AllowAirlineCabinCrewUpdateServiceDelivery {
+   description:  "Allow Airline Cabin Crew Update Service Delivery Status"
+   participant (p): "org.airline.airChain.AirlineEmployee"
+   operation: UPDATE
+   resource (r): "org.airline.airChain.Service"
+   transaction (txn): "org.airline.airChain.ProcessFlightServiceDelivery"
+   condition: (r.status === SERVICE_STATUS.APPROVED && p.company.flights.filter(function(flight) {return flight.getIdentifier() === r.flight.getIdentifier()}).length === 1)
+   action: ALLOW
+ }
+
+ rule AllowGHAOfficerUpdateFlight {
+   description:  "Allow GHA Officer issue flight service request when issuing service request"
+   participant (p): "org.airline.airChain.GHAEmployee"
+   operation: UPDATE
+   resource (r): "org.airline.airChain.Flight"
+   transaction (txn): "org.airline.airChain.ProcessFlightServiceDelivery"
+   condition: (txn.service.status === SERVICE_STATUS.PENDING && p.company.services.filter(function(service) {return service.getIdentifier() === txn.service.getIdentifier()}).length === 1)
+   action: ALLOW
+ }
+
+  rule AllowGHAStaffUpdateCargo {
+    description:  "Allow GHA Staff update Cargo when collecting cargo from warehouse"
+    participant (p): "org.airline.airChain.GHAEmployee"
+    operation: UPDATE
+    resource (r): "org.airline.airChain.Cargo"
+    transaction (txn): "org.airline.airChain.CollectCargoFromWarehouse"
+    condition: (r.status === CARGO_STATUS.APPROVED && r.flight.collectCompany.getIdentifier() === p.company.getIdentifier())
+    action: ALLOW
+  }
+
+  rule AllowCargoCompanyStaffToUpdateCargo {
+   description:  "Allow Cargo Staff update cargo request's Cargo when collecting cargo into warehouse"
+   participant (p): "org.airline.airChain.CargoEmployee"
+   operation: UPDATE
+   resource (r): "org.airline.airChain.Cargo"
+   transaction (txn): "org.airline.airChain.ConfirmCargoToWarehouse"
+   condition: (r.status === CARGO_STATUS.COLLECTED && r.request.acceptedCompany.getIdentifier() === p.company.getIdentifier())
+   action: ALLOW
+ }
+
+
+  rule AllowCargoCompanyOfficerUpdateFlight {
+    description:  "Allow Cargo Officer update cargo when assigning to flight"
+    participant (p): "org.airline.airChain.CargoEmployee"
+    operation: UPDATE
+    resource (r): "org.airline.airChain.Flight"
+    transaction (txn): "org.airline.airChain.AssignCargoToFlight"
+    condition: (r.company.authorisedCargoCompany.getIdentifier() === p.company.getIdentifier() && txn.cargo.status === CARGO_STATUS.COLLECTED && (txn.cargo.company.getIdentifier() === p.company.getIdentifier() || txn.cargo.request.acceptedCompany.getIdentifier() === p.company.getIdentifier()))
+    action: ALLOW
+  }
+
+
+  rule AllowCargoCompanyOfficerUpdateCargoRequest {
+    description:  "Allow Cargo Officer update Cargo Request when accepting"
+    participant (p): "org.airline.airChain.CargoEmployee"
+    operation: UPDATE
+    resource (r): "org.airline.airChain.CargoRequest"
+    transaction (txn): "org.airline.airChain.AcceptCargoRequest"
+    condition: (!r.acceptedCompany && txn.flight.company.authorisedCargoCompany.getIdentifier() === p.company.getIdentifier())
+    action: ALLOW
+  }
 
 /*
 * Aircraft Management
@@ -129,11 +199,11 @@ rule AllowAirlineManageFlight {
 */
 
 rule AllowAirlineOfficerViewCargo {
-  description:  "Allow Airline Company Officers to view Cargo only if carog is attached to the flight"
+  description:  "Allow Airline Company Officers to view Cargo only if cargo is attached to the flight"
   participant (p): "org.airline.airChain.AirlineEmployee"
   operation: READ
   resource (r): "org.airline.airChain.Cargo"
-  condition: (p.role === ROLE.OFFICER && p.company.flights.filter(function(flight) {return flight.getIndentifier() === r.flight.getIdentifier()}).length === 1)
+  condition: (p.role === ROLE.OFFICER && p.company.flights.filter(function(flight) {return flight.getIdentifier() === r.flight.getIdentifier()}).length === 1)
   action: ALLOW
 }
 
@@ -143,6 +213,15 @@ rule AllowGHAStaffViewCargo {
   operation: READ
   resource (r): "org.airline.airChain.Cargo"
   condition: (p.role === ROLE.STAFF && (r.flight.collectCompany.getIdentifier() === p.company.getIdentifier() || r.flight.deliverCompany.getIndentifier() === p.company.getIndentifier()))
+  action: ALLOW
+}
+
+rule AllowCargoCompanyOfficerToViewCargoUnderRequest {
+  description:  "Allow Cargo Company Officer to view cargo listed under requests"
+  participant (p): "org.airline.airChain.CargoEmployee"
+  operation: READ
+  resource (r): "org.airline.airChain.Cargo"
+  condition: (r.request && p.role === ROLE.OFFICER)
   action: ALLOW
 }
 
@@ -182,7 +261,7 @@ rule AllowGHACompanyToManageService {
 rule AllowCargoCompanyViewCargoRequest {
   description:  "Allow all cargo company to view Cargo Request"
   participant (p): "org.airline.airChain.CargoEmployee"
-  operation: READ, UPDATE
+  operation: READ
   resource (r): "org.airline.airChain.CargoRequest"
   condition: (p.role === ROLE.OFFICER)
   action: ALLOW
@@ -192,14 +271,6 @@ rule AllowCargoCompanyViewCargoRequest {
 /*
 * System Admin Access
 */
-
-rule SystemACL {
-  description:  "System ACL to permit all access"
-  participant: "org.hyperledger.composer.system.Participant"
-  operation: ALL
-  resource: "org.hyperledger.composer.system.**"
-  action: ALLOW
-}
 
 rule NetworkAdminUser {
     description: "Grant business network administrators full access to user resources"
