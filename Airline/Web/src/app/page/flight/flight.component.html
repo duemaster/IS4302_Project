@@ -150,7 +150,32 @@
               </div>
               <div id="accordion1-1" class="collapse">
                 <div class="card-body">
-                  <p>Item: Food  Owner: SIA Cargo  Weight: 78ton</p>
+                  <div class="row">
+                    <div class="col-md-12">
+                      <div class="card">
+                        <div class="card-body">
+                          <table class="table no-margin">
+                            <thead>
+                            <tr>
+                              <th>Item</th>
+                              <th>Weight/ton</th>
+                              <th>Owner</th>
+                              <th>Status</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <tr *ngFor="let item of cargoInfo">
+                              <td>{{item.item}}</td>
+                              <td>{{item.weight}}</td>
+                              <td>{{item.owner}}</td>
+                              <td>{{item.status}}</td>
+                            </tr>
+                            </tbody>
+                          </table>
+                        </div><!--end .card-body -->
+                      </div><!--end .card -->
+                    </div><!--end .col -->
+                  </div><!--end .row -->
                 </div>
               </div>
             </div><!--end .panel -->
@@ -163,13 +188,36 @@
               </div>
               <div id="accordion1-2" class="collapse">
                 <div class="card-body">
-                  <p>Item: Business Meal 30 sets</p>
-                  <p>Item: Economy Meal 200 sets</p>
-                  <p>Item: Pillow 250 sets</p>
-                  <div>
-                    <button type="button" class="btn btn-default" data-dismiss="modal">Reject</button>
-                    <button type="button" class="btn btn-primary">Accept</button></div>
-                </div>
+                  <div class="row">
+                    <div class="col-md-12">
+                      <div class="card">
+                        <div class="card-body">
+                          <table class="table no-margin">
+                            <thead>
+                            <tr>
+                              <th>Item</th>
+                              <th>GHA</th>
+                              <th>Status</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <tr *ngFor="let item of serviceInfo">
+                              <td>{{item.item}}</td>
+                              <td>{{item.agent}}</td>
+                              <td>{{item.status}}</td>
+                            </tr>
+                            </tbody>
+                          </table>
+                        </div><!--end .card-body -->
+                      </div><!--end .card -->
+                      <div style="display: block; float: right">
+                        <button type="button" class="btn btn-default" data-dismiss="modal">Reject</button>
+                        <button type="button" class="btn btn-primary">Accept</button></div>
+                    </div>
+                    </div><!--end .col -->
+
+                  </div><!--end .row -->
+
               </div>
             </div><!--end .panel -->
           </div>

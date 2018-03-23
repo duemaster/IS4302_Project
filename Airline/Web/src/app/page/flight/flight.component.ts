@@ -13,6 +13,14 @@ export class FlightComponent implements OnInit {
 
   ngOnInit() {
   }
+    cargoInfo = [{item:'furniture', weight:40, owner: 'SIA Cargo', status:'Ready'},
+        {item:'toys', weight:70, owner: 'Cathay Cargo', status:'Ready'},];
+
+    serviceInfo = [{item:'Business Class Meal X30', agent:'SATS', status:'Approved'},
+        {item:'Economic Class Meal X150', agent:'SATS', status:'Approved'},
+        {item:'Blanket + Pillow X200', agent:'SATS', status:'Approved'},
+        {item:'NewsPaper X100', agent:'DNATA', status:'Approved'},];
+
     displayedColumns = ['FlightNo', 'Date', 'Departure', 'Landing','Status', 'Option'];
     dataSource = new MatTableDataSource(ELEMENT_DATA);
 
