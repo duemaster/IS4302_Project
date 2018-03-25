@@ -14,6 +14,13 @@ export class AircraftComponent implements OnInit {
   }
     displayedColumns = ['id', 'Model', 'Manufacturer', 'CargoCapacity', 'Option'];
     dataSource = new MatTableDataSource(ELEMENT_DATA);
+    aircraft: any = {
+        model: '',
+        id: '',
+        manufacturer: '',
+        capacity: 0,
+    };
+    isCreate = false;
 
     applyFilter(filterValue: string) {
         filterValue = filterValue.trim(); // Remove whitespace
@@ -25,6 +32,21 @@ export class AircraftComponent implements OnInit {
 
     ngAfterViewInit() {
         this.dataSource.paginator = this.paginator;
+    }
+
+    create() {
+        this.isCreate = true;
+        this.aircraft = {
+            model: '',
+            id: '',
+            manufacturer: '',
+            capacity: 0,
+        };
+    }
+
+    update(element) {
+        this.isCreate = false;
+        this.aircraft = element;
     }
 
 }

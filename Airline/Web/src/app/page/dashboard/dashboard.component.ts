@@ -16,6 +16,12 @@ export class DashboardComponent implements OnInit {
 
     displayedColumns = ['Staff Id', 'Role', 'Name', "Option"];
     dataSource = new MatTableDataSource(ELEMENT_DATA);
+    staff: any = {
+        id: '',
+        name: '',
+        role: ''
+    };
+    isCreate =false;
 
     applyFilter(filterValue: string) {
         filterValue = filterValue.trim(); // Remove whitespace
@@ -30,11 +36,23 @@ export class DashboardComponent implements OnInit {
     }
 
 
-    addStaff() {
+    create() {
+        this.isCreate = true;
+        this.staff = {
+            name: '',
+            id: '',
+            role: '',
+        };
+    }
 
+    update(element) {
+        this.isCreate = false;
+        this.staff = element;
     }
 
 }
+
+
 
 export interface Staff {
     name: string;
@@ -43,9 +61,9 @@ export interface Staff {
 }
 
 const ELEMENT_DATA: Staff[] = [
-    {id: '001', name: 'Hydrogen', role: 'Officer'},
-    {id: '002', name: 'Helium', role: 'Cabin Crew'},
-    {id: '003', name: 'Lithium', role: 'Cabin Crew'},
-    {id: '004', name: 'Beryllium', role: 'Cabin Crew'},
+    {id: '001', name: 'Hydrogen', role: 'officer'},
+    {id: '002', name: 'Helium', role: 'crew'},
+    {id: '003', name: 'Lithium', role: 'crew'},
+    {id: '004', name: 'Beryllium', role: 'crew'},
 
 ];

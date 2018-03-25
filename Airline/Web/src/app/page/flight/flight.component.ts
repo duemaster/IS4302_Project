@@ -13,6 +13,7 @@ export class FlightComponent implements OnInit {
 
   ngOnInit() {
   }
+
     cargoInfo = [{item:'furniture', weight:40, owner: 'SIA Cargo', status:'Ready'},
         {item:'toys', weight:70, owner: 'Cathay Cargo', status:'Ready'},];
 
@@ -23,6 +24,19 @@ export class FlightComponent implements OnInit {
 
     displayedColumns = ['FlightNo', 'Date', 'Departure', 'Landing','Status', 'Option'];
     dataSource = new MatTableDataSource(ELEMENT_DATA);
+
+    flight = {
+        date: '',
+        flightNo: '',
+        departure: '',
+        landing: '',
+        status: '',
+        crew:'',
+    };
+
+    isCreate = false;
+
+    crew = [{id: '001', name: 'Lily'}, {id: '002', name: 'Susan'}, {id: '003', name: 'Helen'}, {id: '004', name: 'Mary'}];
 
     applyFilter(filterValue: string) {
         filterValue = filterValue.trim(); // Remove whitespace
@@ -36,19 +50,38 @@ export class FlightComponent implements OnInit {
         this.dataSource.paginator = this.paginator;
     }
 
+    update(element){
+        this.isCreate = false;
+        this.flight = element;
+    }
+
+    create() {
+        this.isCreate = true;
+        this.flight = {
+            date: '',
+            flightNo: '',
+            departure: '',
+            landing: '',
+            status: '',
+            crew:'',
+        };
+    }
+
+
 }
 export interface Flight {
     date: string;
-    id: string;
+    flightNo: string;
     departure: string;
     landing: string;
+    crew: string;
     status: string
 }
 
 const ELEMENT_DATA: Flight[] = [
-    {id: 'SQ851', date: '01-03-2018 08:20', departure: 'SIN', landing: 'CAN', status: 'Scheduled'},
-    {id: 'SQ852', date: '01-03-2018 13:10', departure: 'CAN', landing: 'SIN', status: 'Scheduled'},
-    {id: 'SQ800', date: '02-03-2018 02:20', departure: 'SIN', landing: 'PEK', status: 'Scheduled'},
-    {id: 'SQ801', date: '02-03-2018 10:30', departure: 'PEK', landing: 'SIN', status: 'Scheduled'},
+    {flightNo: 'SQ851', date: '01-03-2018 08:20', departure: 'SIN', landing: 'CAN', status: 'Scheduled', crew: '001'},
+    {flightNo: 'SQ852', date: '01-03-2018 13:10', departure: 'CAN', landing: 'SIN', status: 'Scheduled', crew: '002'},
+    {flightNo: 'SQ800', date: '02-03-2018 02:20', departure: 'SIN', landing: 'PEK', status: 'Scheduled', crew: '003'},
+    {flightNo: 'SQ801', date: '02-03-2018 10:30', departure: 'PEK', landing: 'SIN', status: 'Scheduled', crew: '004'},
 
 ];
