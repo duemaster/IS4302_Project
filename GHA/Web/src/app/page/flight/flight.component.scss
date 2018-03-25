@@ -1,0 +1,49 @@
+.headerBar{
+  display: block;
+  float: right;
+  margin-right: 10px;
+  min-height: 35px;
+}
+
+.card-body{
+  padding: 5px;
+}
+
+.gui-icon{
+  font-size: 2rem;
+
+}
+
+.table-container {
+  display: flex;
+  flex-direction: column;
+  min-width: 300px;
+}
+
+.table-header {
+  min-height: 64px;
+  padding: 8px 24px 0;
+}
+
+.table-header{
+  background-color: white;
+}
+
+.generateBtn {
+  overflow: hidden;
+  padding: 1rem 0;
+  button {
+    float: right;
+    margin-left: 1rem;
+  }
+}
+
+.mat-form-field {
+  font-size: 14px;
+  width: 100%;
+}
+
+.mat-table {
+  overflow: auto;
+  max-height: 500px;
+}
