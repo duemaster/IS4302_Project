@@ -1,7 +1,8 @@
+$color: #005CAF;
 page-home {
   .content{
     //color: #8254a0 !important;
-    color: #005CAF !important;
+    color: $color !important;
 
     background-image: url('../assets/imgs/home.png');
     background-position: bottom right !important;
@@ -22,7 +23,8 @@ page-home {
     }
     .toolbar-title{
       font-weight: 400 !important;
-      color: #005CAF !important;
+      letter-spacing: 1px;
+      //color: #005CAF !important;
     }
 
     .newTask{
@@ -50,10 +52,12 @@ page-home {
       p{
         margin: auto;
         text-align: center;
+        color: black;
         ion-icon{
           font-size: 8vw;
         }
         span{
+          color: $color;
           font-size: 8vw;
           font-weight: 500;
         }
@@ -66,7 +70,7 @@ page-home {
 
   .flightDetail{
     padding: 10vw;
-    
+
 
     .title{
       font-weight: 500;

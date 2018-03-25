@@ -1,3 +1,19 @@
 page-about {
+  ion-navbar{
+    height: 14vw;
+
+    .toolbar-background{
+      border: none !important;
+    }
+    .toolbar-title{
+      font-weight: 400 !important;
+      letter-spacing: 1px;
+      //color: #005CAF !important;
+    }
+
+    .newTask{
+      margin-right: 2vw;
+    }
+  }
 
 }
