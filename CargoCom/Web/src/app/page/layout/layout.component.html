@@ -8,8 +8,8 @@
         <ul class="header-nav header-nav-options">
           <li class="header-nav-brand">
             <div class="brand-holder">
-              <a href="../../html/dashboards/dashboard.html">
-                <span class="text-lg text-bold text-primary">Airchain Admin</span>
+              <a routerLink="/main/dashboard">
+                <span class="text-lg text-bold text-primary">Cargo Admin</span>
               </a>
             </div>
           </li>
@@ -25,12 +25,7 @@
         <ul class="header-nav header-nav-options">
           <li>
             <!-- Search form -->
-            <form class="navbar-search" role="search" onsubmit="return false;">
-              <div class="form-group">
-                <input type="text" [(ngModel)]="text" name="search" class="form-control" name="text" placeholder="Enter your keyword">
-              </div>
-              <button type="button" class="btn btn-icon-toggle ink-reaction" (click)="search()"><i class="fa fa-search"></i></button>
-            </form>
+
           </li>
         </ul><!--end .header-nav-options -->
         <ul class="header-nav header-nav-profile" *ngIf="authService.admin">
@@ -40,7 +35,7 @@
               <img *ngIf="authService.admin" src="../../assets/img/profile.jpg" alt=""/>
               <span class="profile-info">
 									{{authService.admin}}
-									<small>Airchain Admin</small>
+									<small>Cargo Admin</small>
 								</span>
             </a>
             <ul class="dropdown-menu animation-dock">
@@ -97,7 +92,7 @@
         </div>
         <div class="expanded">
           <a href="../../html/dashboards/dashboard.html">
-            <span class="text-lg text-bold text-primary ">Airchain Admin</span>
+            <span class="text-lg text-bold text-primary ">Cargo Admin</span>
           </a>
         </div>
       </div>
@@ -116,21 +111,26 @@
           <!-- END DASHBOARD -->
 
 
-          <li [ngClass]="{'active':router.url=='/main/operation'}">
-            <a routerLink="/main/operation" routerLinkActive="active">
-              <div class="gui-icon"><i class="md md-store"></i></div>
-              <span class="title">Operations</span>
+          <li [ngClass]="{'active':router.url=='/main/cargo'}">
+            <a routerLink="/main/cargo" routerLinkActive="active">
+              <div class="gui-icon"><i class="md md-local-shipping"></i></div>
+              <span class="title">Cargo</span>
             </a>
           </li>
 
-          <li [ngClass]="{'active':router.url=='/main/merchantReport'}">
-            <a routerLink="/main/merchantReport" routerLinkActive="active">
-              <div class="gui-icon"><i class="md  md-insert-chart"></i></div>
-              <span class="title">Business Analytics</span>
+          <li [ngClass]="{'active':router.url=='/main/flight'}">
+            <a routerLink="/main/flight" routerLinkActive="active">
+              <div class="gui-icon"><i class="md md-language"></i></div>
+              <span class="title">Flight</span>
             </a>
           </li>
 
-
+          <li [ngClass]="{'active':router.url=='/main/cargorequest'}">
+            <a routerLink="/main/cargorequest" routerLinkActive="active">
+              <div class="gui-icon"><i class="md md-send"></i></div>
+              <span class="title">Cargo Request</span>
+            </a>
+          </li>
 
 
         </ul><!--end .main-menu -->
@@ -138,7 +138,7 @@
 
         <div class="menubar-foot-panel">
           <small class="no-linebreak hidden-folded">
-            <span class="opacity-75">Copyright &copy; 2018</span> <strong>DGymOn </strong>
+            <span class="opacity-75">Copyright &copy; 2018</span> <strong>Airchain </strong>
           </small>
         </div>
       </div><!--end .menubar-scroll-panel-->
