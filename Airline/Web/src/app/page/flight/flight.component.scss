@@ -25,6 +25,19 @@
   padding: 8px 24px 0;
 }
 
+.table-header{
+  background-color: white;
+}
+
+.generateBtn {
+  overflow: hidden;
+  padding: 1rem 0;
+  button {
+    float: right;
+    margin-left: 1rem;
+  }
+}
+
 .mat-form-field {
   font-size: 14px;
   width: 100%;

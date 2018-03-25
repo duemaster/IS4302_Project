@@ -11,7 +11,7 @@ import static org.junit.Assert.*;
  */
 public class ApplicationTest {
 
-    @Test
+    //@Test
     public void simpleCheck() {
         int a = 1 + 1;
         System.out.println("in simpleCheck");
