@@ -11,7 +11,7 @@ abstract asset Company identified by id {
 asset AirlineCompany extends Company {
     --> Flight[] flights
     --> Aircraft[] aircrafts
-    --> CargoCompany authorisedCargoCompany
+    --> CargoCompany authorisedCargoCompany optional
     --> AirlineEmployee[] employees
 }
 
@@ -33,12 +33,19 @@ asset Aircraft identified by id {
     --> AirlineCompany company
 }
 
+enum FLIGHT_STATUS {
+  o SCHEDULED
+  o DEPARTED
+  o CANCELLED
+}
+
 asset Flight identified by id {
     o String id
     o String origin
     o String destination
     o DateTime departureTime
     o Integer paxCount
+    o FLIGHT_STATUS status
 
     --> Aircraft aircraft
     --> Cargo[] cargos
