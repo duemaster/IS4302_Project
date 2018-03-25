@@ -20,7 +20,7 @@ export class HomePage {
   }
 
   viewDetail(){
-    this.navCtrl.setRoot(AboutPage);
+    this.navCtrl.push(AboutPage);
   }
 
 }
