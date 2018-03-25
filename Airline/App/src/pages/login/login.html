@@ -1,34 +1,37 @@
 
-<ion-content>
-<ion-card class="card-background-page">
-  <img src="../../assets/imgs/login.jpg"/>
-  <div class="card-title">Welcome</div>
-  <div class="card-subtitle">Please Login</div>
+<ion-content padding>
 
-</ion-card>
+  <div class="image">
+    <div class="cover">
 
-  <ion-grid class="login">
-    <ion-row>
-      <ion-col col-2> </ion-col>
-      <ion-col col-8>
-        <ion-list>
+      <p class="title">AIR CHAIN</p>
+      <p class="name">A Great Way to Fly</p>
 
-          <ion-item>
-            <ion-input type="text" placeholder="Username"></ion-input>
-          </ion-item>
+    </div>
+  </div>
 
-          <ion-item>
-            <ion-input type="password" placeholder="Password"></ion-input>
-          </ion-item>
+  <form class="form">
 
-          <ion-item>
-            <button ion-button color="dark" round>Login</button>
-          </ion-item>
+    <ion-item>
+      <ion-label><i class="fa fa-envelope"></i> EMAIL </ion-label>
+      <ion-input type="text" name="email" [(ngModel)]="email"  placeholder="Your Working Email" required="true"></ion-input>
+    </ion-item>
+    <ion-item>
+      <ion-label><i class="fa fa-lock"></i> PASSWORD</ion-label>
+      <ion-input type="password"  name="password" [(ngModel)]="password" placeholder="Your Password" required="true"></ion-input>
+    </ion-item>
+    <div  class="errorDiv" paddding>
+      {{errorMessage}}
+    </div>
 
-        </ion-list>
-      </ion-col>
-      <ion-col col-2> </ion-col>
-    </ion-row>
-  </ion-grid>
-
+    <br>
+    <br>
+    <div class="submitDiv" padding>
+      <button block class="submit" type="submit" (click)="submit()">SIGN IN</button>
+      <div tappable (click)="registration()">
+        Not have an account?
+      </div>
+    </div>
+  </form>
 </ion-content>
+
