@@ -1,46 +1,70 @@
 <ion-header>
-  <ion-navbar>
-    <ion-title>Flight Service</ion-title>
+  <ion-navbar color="white">
+    <ion-title id="pageTitle">Flight Service</ion-title>
+    <ion-buttons end class="newTask">
+      <button ion-button icon-only (click)="newTask()">
+        <ion-icon name="ios-exit-outline"></ion-icon>
+      </button>
+    </ion-buttons>
   </ion-navbar>
+
 </ion-header>
 
-<ion-content padding>
-  <ion-grid>
-    <ion-row>
-      <ion-col col-1></ion-col>
-      <ion-col col-5>
-        <ion-card class="departure">
-          <ion-card-content>
-            <p class="label">Departure</p>
-            <p class="place">SIN</p>
-            <p class="time">8:20a.m.</p>
-          </ion-card-content>
-        </ion-card>
-      </ion-col>
-      <ion-col col-5>
-        <ion-card class="landing">
-          <ion-card-content>
-            <p class="label">Landing</p>
-            <p class="place">CAN</p>
-            <p class="time">12:20p.m.</p>
-          </ion-card-content>
-        </ion-card>
-      </ion-col>
-      <ion-col col-1></ion-col>
-    </ion-row>
-  </ion-grid>
-  <ion-list>
-    <ion-list-header>
-      Ground Handling Agent: SATS
-    </ion-list-header>
-    <ion-item>Business Meal 20 sets</ion-item>
-    <ion-item>Economic Meal 270 sets</ion-item>
-    <ion-item>Pillow/Blanket 300 sets</ion-item>
-    <ion-item>Ear Piece 300 sets</ion-item>
-    <ion-item>Newspaper 100 sets</ion-item>
-    <ion-item>
-      <button ion-button color="primary" round>Confirm Service</button>
-    </ion-item>
-  </ion-list>
+<ion-content>
+
+  <div class="flightInfo">
+    <div>
+      <p>
+        <span>SIN</span><br>
+        Singapore
+      </p>
+    </div>
+    <div class="connection">
+      <p>
+        <ion-icon name="ios-plane-outline"></ion-icon>
+      </p>
+    </div>
+    <div>
+      <p>
+        <span>CKG</span><br>
+        Chongqing
+      </p>
+    </div>
+  </div>
+
+  <div class="flightDetail">
+    <p class="title">DEPARTURE</p>
+    <p class="text">13-08-2017, 2:30 PM</p>
+
+    <div class="flightDetail2">
+      <div>
+        <p>
+          <span class="title">FLIGHT</span><br>
+          <span class="text">MTY 270</span>
+        </p>
+      </div>
+      <div>
+        <p>
+          <span class="title">No. Pax</span><br>
+          <span class="text">180</span>
+        </p>
+      </div>
+      <div></div>
+    </div>
+  </div>
+
+  <!--<h3 class="services">Services</h3>-->
+  <div class="flightDetail">
+    <div class="service" tappable>
+      <p class="title">SATS (GHA)</p>
+      <p class="text">Food Service  <ion-icon class="DONE" name="ios-checkmark-circle"></ion-icon></p>
+    </div>
+
+    <div class="service" tappable>
+      <p class="title">SATS (GHA)</p>
+      <p class="text">Clean Service <ion-icon class="APPROVED" name="ios-information-circle"></ion-icon></p>
+    </div>
+
+  </div>
 
 </ion-content>

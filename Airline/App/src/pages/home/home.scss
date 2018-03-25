@@ -1,38 +1,126 @@
 page-home {
-  .departure{
-    border-bottom: #bfcace 4px solid;
+  .content{
+    //color: #8254a0 !important;
+    color: #005CAF !important;
+
+    background-image: url('../assets/imgs/home.png');
+    background-position: bottom right !important;
+    background-size: 50vw auto !important;
+    background-repeat: no-repeat !important;
+
   }
 
-  .landing{
-    border-bottom: #c8d9e0 4px solid;
+  ion-navbar{
+    height: 14vw;
+
+    .toolbar-background{
+      border: none !important;
+      background-image: linear-gradient(to right, black 50%, rgba(255,255,255,0) 0%) !important;
+      background-position: bottom !important;
+      background-size: 10px 1px !important;
+      background-repeat: repeat-x !important;
+    }
+    .toolbar-title{
+      font-weight: 400 !important;
+      color: #005CAF !important;
+    }
+
+    .newTask{
+      margin-right: 2vw;
+    }
   }
 
-  .label{
-    color: grey;
+  .flightInfo{
+    width: 100vw;
+    height: 40vw;
+
+    background-image: linear-gradient(to right, black 50%, rgba(255,255,255,0) 0%) !important;
+    background-position: bottom !important;
+    background-size: 10px 1px !important;
+    background-repeat: repeat-x !important;
+
+    display: inline-flex;
+    div{
+      display: flex;
+      flex: 1;
+      position: relative;
+      top: 50%;
+      transform: translateY(-50%);
+
+      p{
+        margin: auto;
+        text-align: center;
+        ion-icon{
+          font-size: 8vw;
+        }
+        span{
+          font-size: 8vw;
+          font-weight: 500;
+        }
+      }
+    }
+    div.connection{
+      flex: 0.5;
+    }
   }
 
-  .list{
-    margin-top: 10%;
+  .flightDetail{
+    padding: 10vw;
+    
+
+    .title{
+      font-weight: 500;
+    }
+    .text{
+      margin-top: 1vw;
+      color: black;
+      font-size: 4vw;
+    }
+
+    .flightDetail2{
+      margin-top: 4vw;
+      display: inline-flex;
+      width: 100%;
+
+      div {
+        display: flex;
+        flex: 1;
+
+        p{
+          margin: auto 0;
+          text-align: left;
+
+        }
+      }
+
+      div:last-child{
+        flex: 0.5;
+      }
+
+    }
   }
 
-  .button{
-    height: 1.2vh;
-    color:white;
-    width: 100%;
-  }
+  .service{
+    margin-top: 4vw;
 
-  .input-wrapper{
-    text-align: center;
-  }
+    .APPROVED{
+      color: grey;
+    }
+    .DONE{
+      color: green;
+    }
+    .NOT_DONE{
+      color: red;
+    }
 
-  .time{
-    color: grey;
-    text-align: center;
-  }
 
-  .place{
-    text-align: center;
-    font-size: 2.2em;
+    ion-icon{
+      font-size: 4vw;
+      margin-left: 2vw;
+    }
+  }
+  .service:first-child{
+    margin-top: 0vw;
   }
 
 }
