@@ -3,8 +3,6 @@ import java.io.*;
 public class Test {
 
     public static void main(String[] args) {
-        String s = null;
-
         try {
             //Process p = Runtime.getRuntime().exec("vagrant ssh 08a9331 -- \"sudo docker exec -d cli composer-rest-server -c admin1@air-chain -p 3000;\"");
             Process p = Runtime.getRuntime().exec(
@@ -12,6 +10,8 @@ public class Test {
                             "-- \"sudo docker exec cli composer identity issue -c admin1@air-chain -u testMember2 -a org.airline.airChain.AirlineEmployee#airlineStaff1;\" " +
                             "\"sudo docker exec cli composer card import -f testMember2@air-chain.card;\" " +
                             "\"sudo docker exec cli composer-rest-server -c testMember2@air-chain -p 3000;\"");
+
+            String s = null;
             BufferedReader stdInput = new BufferedReader(new InputStreamReader(p.getInputStream()));
             BufferedReader stdError = new BufferedReader(new InputStreamReader(p.getErrorStream()));
 

@@ -104,14 +104,14 @@ public class User extends Model {
 
         try {
             //Add User into composer
-//            HttpResponse<JsonNode> memberReply =
-//                    Unirest.post("http://localhost:3000/api/org.airline.airChain.AirlineEmployee")
-//                            .header("accept", "application/json")
-//                            .header("Content-Type", "application/json")
-//                            .body(new JsonNode(userNode.toString()))
-//                            .asJson();
-//
-//            System.out.println(memberReply.getBody().toString());
+            HttpResponse<JsonNode> memberReply =
+                    Unirest.post("http://localhost:3000/api/org.airline.airChain.AirlineEmployee")
+                            .header("accept", "application/json")
+                            .header("Content-Type", "application/json")
+                            .body(new JsonNode(userNode.toString()))
+                            .asJson();
+
+            System.out.println(memberReply.getBody().toString());
 
             HttpResponse<JsonNode> airLineReply =
                     Unirest.get("http://localhost:3000/api/org.airline.airChain.AirlineCompany/" + this.COMPANY_ID)
@@ -146,29 +146,23 @@ public class User extends Model {
 
         // Create User Card and import in Fabric Composer
         try {
-            Process p = Runtime.getRuntime().exec(
-                    "vagrant ssh " + VagrantUtil.boxId +
-                            "-- \"sudo docker exec -d cli composer identity issue -c admin1@air-chain -u " + this.id + " -a org.airline.airChain.AirlineEmployee#" + this.id + ";\" " +
-                            "\"sudo docker exec -d cli composer card import -f " + this.getUserCardName() + ".card;\"");
-
-            String s = null;
-
-            BufferedReader stdInput = new BufferedReader(new InputStreamReader(p.getInputStream()));
-            BufferedReader stdError = new BufferedReader(new InputStreamReader(p.getErrorStream()));
-
-            // read the output from the command
-            System.out.println("Here is the standard output of the command:\n");
-            while ((s = stdInput.readLine()) != null) {
-                System.out.println(s);
-            }
-
-            // read any errors from the attempted command
-            System.out.println("Here is the standard error of the command (if any):\n");
-            while ((s = stdError.readLine()) != null) {
-                System.out.println(s);
-            }
+            Runtime.getRuntime().exec(
+                    "vagrant ssh 08a9331 " +
+                            "-- \"sudo docker exec cli composer identity issue -c admin1@air-chain -u " + this.id + " -a org.airline.airChain.AirlineEmployee#" + this.id + ";\" " +
+                            "\"sudo docker exec cli composer card import -f " + this.getUserCardName() + ".card;\" ");
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+
+    public void startFabricServer() {
+        try {
+            Runtime.getRuntime().exec(
+                    "vagrant ssh 08a9331 " +
+                            "-- \"sudo docker exec -d cli composer-rest-server -c " + this.getUserCardName() + " -p " + this.getPortNumber() + "\");");
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
     }
 }
