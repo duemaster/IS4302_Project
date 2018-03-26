@@ -27,6 +27,17 @@ function HandleFlightServiceRequest(tx) {
     var service = tx.service;
     var isApproved = tx.isApproved;
 
+    //Get access to calling participant
+    var caller = getParticipant();
+
+    //Only Allow if Service is attached to flight the participant is incharge of
+    var isAuthorised = caller.company.flights.filter(function (flight) {
+        return flight.getIdentifier() === service.flight.getIdentifier();
+    }).length === 1;
+
+    if (!isAuthorised)
+        throw new Error("Not authorised to approve flight services");
+
     //Process Services
     service.status = isApproved ? SERVICE_STATUS.APPROVED : SERVICE_STATUS.REJECTED;
     saveService(service);
@@ -40,6 +51,11 @@ function HandleFlightServiceRequest(tx) {
  */
 function ProcessFlightServiceDelivery(tx) {
     var service = tx.service;
+    var isApproved = tx.isApproved;
+
+    var caller = getParticipant();
+    var isAuthorised = 
+    
 
     //Process Services
     service.status = isApproved ? SERVICE_STATUS.DONE : SERVICE_STATUS.NOT_DONE;
@@ -114,9 +130,9 @@ function AssignCargoToFlight(tx) {
 
     //Ensure Cargo does not exceed weight limit
     var limit = flight.aircraft.cargoCapacity;
-    var loadedWight = flight.cargos.reduce(function (a,b) { a+b.weight },0);
+    var loadedWight = flight.cargos.reduce(function (a, b) { a + b.weight }, 0);
 
-    if(loadedWight+cargo.weight > limit)
+    if (loadedWight + cargo.weight > limit)
         throw new Error('Total weight has exceeded limit');
 
 
@@ -144,20 +160,20 @@ function AcceptCargoRequest(tx) {
     var flight = tx.flight;
 
     //Ensure CargoRequest Requirement is meet
-    if(cargoRequest.origin != flight.origin)
+    if (cargoRequest.origin != flight.origin)
         throw new Error('CargoRequest origin mismatch with flight origin!');
 
-    if(cargoRequest.destination != flight.destination)
+    if (cargoRequest.destination != flight.destination)
         throw new Error('CargoRequest destination mismatch with flight destination!');
 
-    if(cargoRequest.lateDepartureTime <= flight.departureTime || cargoRequest.earlyDepartureTime >= flight.departureTime)
+    if (cargoRequest.lateDepartureTime <= flight.departureTime || cargoRequest.earlyDepartureTime >= flight.departureTime)
         throw new Error('CargoRequest departureTime mismatch with flight departureTime!');
 
     //Ensure Cargo does not exceed weight limit
     var limit = flight.aircraft.cargoCapacity;
-    var loadedWight = flight.cargos.reduce(function (a,b) { a+b.weight },0);
+    var loadedWight = flight.cargos.reduce(function (a, b) { a + b.weight }, 0);
 
-    if(loadedWight+cargoRequest.cargo.weight > limit)
+    if (loadedWight + cargoRequest.cargo.weight > limit)
         throw new Error('Total weight has exceeded limit');
 
     //Attach Cargos to flight
