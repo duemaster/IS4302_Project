@@ -1,0 +1,37 @@
+
+<ion-content padding>
+
+  <div class="image">
+    <div class="cover">
+
+      <p class="title">Air Chain</p>
+      <p class="name">A Great Way to Ship</p>
+
+    </div>
+  </div>
+
+  <form class="form">
+
+    <ion-item>
+      <ion-label><i class="fa fa-envelope"></i> EMAIL </ion-label>
+      <ion-input type="text" name="email" [(ngModel)]="email"  placeholder="Your Working Email" required="true"></ion-input>
+    </ion-item>
+    <ion-item>
+      <ion-label><i class="fa fa-lock"></i> PASSWORD</ion-label>
+      <ion-input type="password"  name="password" [(ngModel)]="password" placeholder="Your Password" required="true"></ion-input>
+    </ion-item>
+    <div  class="errorDiv" paddding>
+      {{errorMessage}}
+    </div>
+
+    <br>
+    <br>
+    <div class="submitDiv" padding>
+      <button block class="submit" type="submit" (click)="login()">SIGN IN</button>
+      <div tappable (click)="login()">
+        Not have an account?
+      </div>
+    </div>
+  </form>
+</ion-content>
+

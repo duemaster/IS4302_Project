@@ -1,5 +1,4 @@
-// http://ionicframework.com/docs/theming/
-
+// http://ionicframework.com/docs/v2/theming/
 
 // App Global Sass
 // --------------------------------------------------
@@ -14,3 +13,217 @@
 // To declare rules for a specific mode, create a child rule
 // for the .md, .ios, or .wp mode classes. The mode class is
 // automatically applied to the <body> element in the app.
+body, div, ol, ul, li, dl, dt, dd, h1, h2, h3, h4, h5, h6, p, form, fieldset, legend, input, button {
+  margin: 0;
+  padding: 0;
+}
+
+ion-avatar img{
+  object-fit: cover;
+}
+body {
+  width: 100%;
+  margin: 0;
+  -webkit-user-select: none;
+  position: relative;
+  font-size: 12px;
+}
+
+input, button, select {
+  -webkit-appearance: none;
+  outline: medium;
+  box-shadow: none !important;
+}
+
+fieldset {
+  border: none
+}
+
+;
+ul, li {
+  list-style: none
+}
+
+ion-navbar {
+  button[icon-only] {
+    font-size: 1em;
+  }
+}
+
+.toolbar-title {
+  font-size: 1.2em;
+}
+
+.tapItem.item {
+  padding: 0.2em 1em !important;
+
+  .item-inner {
+    padding-right: 0 !important;
+    border-bottom: none !important;
+    ion-label {
+      margin: 0 !important;
+    }
+  }
+}
+
+ion-icon {
+  line-height: 100%;
+}
+
+.center {
+  height: 100%;
+  background: #fff;
+}
+
+.link {
+  position: fixed;
+  bottom: -1px;
+  height: 1rem;
+  width: 100%;
+  background: #fff;
+  border-top: 1px solid #eee;
+}
+
+.link ul {
+  height: 4.8rem;
+}
+
+.link img {
+  width: 2.4rem;
+}
+
+.link li {
+  float: left;
+  color: #666;
+  font-size: 1em;
+  text-align: center;
+  display: block;
+  width: 33%;
+  padding: 1.2rem 0;
+}
+
+.paddingTop {
+  padding-top: 6rem !important;
+}
+
+.paddingTop7 {
+  padding-top: 7rem !important;
+}
+
+.marginAuto {
+  width: 95%;
+  margin: 0 auto;
+}
+
+.marginSmallAuto {
+  width: 90%;
+  margin: 0 auto;
+}
+
+/* Button Style */
+.submitBtn {
+  width: 100%;
+  height: 4.2rem;
+  text-align: center;
+  border-radius: 2vw;
+  line-height: 2.4rem;
+  padding: 10px 20px;
+  color: #fff;
+  text-decoration: none;
+  background: #21BCA0;
+  cursor: pointer;
+  border: none;
+  display: block;
+}
+
+.submitBtn:active, .submitBtn:hover {
+  color: #fff;
+  background: #06BA9B;
+}
+
+.numberBox {
+  background: #F67350;
+  color: #fff;
+  font-size: 0.6em;
+  position: absolute;
+  bottom: 0;
+  right: 0;
+  padding: 0.1rem 0.8rem;
+}
+
+.marginBottom {
+  margin-bottom: 9rem;
+}
+
+.scroll-content {
+  padding: 0 !important;
+}
+
+.errorMsg {
+  position: fixed;
+  width: 80%;
+  top: 40%;
+  left: 10%;
+  text-align: center;
+  color: #999;
+}
+
+.tag {
+  margin-right: 5px;
+}
+
+.sticky-header {
+  background-color: #fff;
+  position: fixed;
+  left: 0;
+  z-index: 10;
+  box-shadow: 0 4px 6px -6px #999;
+}
+
+.myModal {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  ion-backdrop {
+    visibility: visible !important;
+  }
+  .modal-wrapper {
+    position: relative;
+    contain: initial !important;
+    width: 85vw !important;
+    height: auto !important;
+  }
+}
+
+
+
+.badgeBg {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  ion-backdrop {
+    visibility: visible !important;
+  }
+  .modal-wrapper {
+    position: relative;
+    contain: initial !important;
+    width: 60vw !important;
+    height: auto !important;
+  }
+}
+
+.selectable {
+  user-select: text;
+}
+
+.searchbar-ios-cancel {
+  display: block !important;
+  padding-left: 8px !important;
+}
+
+.gallery-modal{
+  .button{
+    color: white;
+    border: none;
+  }
+}
