@@ -267,6 +267,25 @@ rule AllowCargoCompanyViewCargoRequest {
   action: ALLOW
 }
 
+/*
+* System Configuration
+*/
+
+rule AllowRESTServerAccess {
+  description:  "Allow All Participants to start Rest Server"
+  participant: "org.hyperledger.composer.system.Participant"
+  operation: READ
+  resource: "org.hyperledger.composer.system.*"
+  action: ALLOW
+}
+
+rule AllowEmployeeSeeOwnCompany {
+  description:  "Allow All Participants see their own companies"
+  participant: "org.airline.airChain.Employee"
+  operation: READ
+  resource: "org.airline.airChain.Company"
+  action: ALLOW
+}
 
 /*
 * System Admin Access
