@@ -11,3 +11,10 @@ GET        /assets/*file        controllers.Assets.versioned(path="/public", fil
 #*********************************************************************
 ### Terminal Management Module
 GET        /                    controllers.Application.indexPage
+
+
+#*********************************************************************
+# 功能: User System
+# 说明：无
+#*********************************************************************
+GET        /user                controllers.UserController.createNewUser()

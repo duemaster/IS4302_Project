@@ -9,12 +9,14 @@ import com.mashape.unirest.http.exceptions.UnirestException;
 import io.ebean.Finder;
 import io.ebean.Model;
 import play.libs.Json;
+import util.VagrantUtil;
 
 import javax.persistence.Id;
 import javax.persistence.Entity;
 import javax.persistence.Version;
+import java.io.BufferedReader;
 import java.io.IOException;
-import java.sql.Array;
+import java.io.InputStreamReader;
 import java.util.Date;
 
 @Entity
@@ -25,7 +27,7 @@ public class User extends Model {
     public final static String ROLE_OFFICER = "OFFICER";
     public final static String ROLE_STAFF = "STAFF";
 
-    public final static String COMPANY_ID = "AirlineCompany1";
+    public String COMPANY_ID = "Airline1";
 
     @Id
     private long id;
@@ -86,25 +88,30 @@ public class User extends Model {
         //return this.id + PORTOFFSET;
     }
 
+    public String getUserCardName() {
+        return this.id + "@air-chain";
+    }
+
     public void createUserInFabric() {
 
         //Create User in Composer Network
         ObjectNode userNode = Json.newObject();
         userNode.put("$class", "org.airline.airChain.AirlineEmployee");
         userNode.put("id", String.valueOf(id));
+        userNode.put("name", this.userName);
         userNode.put("role", this.role);
-        userNode.put("company", "Airline1");
+        userNode.put("company", this.COMPANY_ID);
 
         try {
             //Add User into composer
-            HttpResponse<JsonNode> memberReply =
-                    Unirest.post("http://localhost:3000/api/org.airline.airChain.AirlineEmployee")
-                            .header("accept", "application/json")
-                            .header("Content-Type", "application/json")
-                            .body(userNode)
-                            .asJson();
-
-            System.out.println(memberReply.getBody().toString());
+//            HttpResponse<JsonNode> memberReply =
+//                    Unirest.post("http://localhost:3000/api/org.airline.airChain.AirlineEmployee")
+//                            .header("accept", "application/json")
+//                            .header("Content-Type", "application/json")
+//                            .body(new JsonNode(userNode.toString()))
+//                            .asJson();
+//
+//            System.out.println(memberReply.getBody().toString());
 
             HttpResponse<JsonNode> airLineReply =
                     Unirest.get("http://localhost:3000/api/org.airline.airChain.AirlineCompany/" + this.COMPANY_ID)
@@ -112,20 +119,23 @@ public class User extends Model {
                             .header("Content-Type", "application/json")
                             .asJson();
 
-            System.out.println(airLineReply.getBody().toString());
+            //System.out.println(airLineReply.getBody().toString());
 
             JsonNode airlineJsonNode = airLineReply.getBody();
             ObjectNode airline = (ObjectNode) Json.parse(airlineJsonNode.toString());
+            //System.out.println(airline.toString());
+
             ArrayNode employeeNode = (ArrayNode) airline.get("employees");
-            employeeNode.add(userNode);
+            employeeNode.add(this.id + "");
             airline.set("employees", employeeNode);
+            System.out.println(airline.toString());
 
             //Save Airline Company
             HttpResponse<JsonNode> airlineCompanyReply =
-                    Unirest.post("http://localhost:3000/api/org.airline.airChain.AirlineCompany/" + this.COMPANY_ID)
+                    Unirest.put("http://localhost:3000/api/org.airline.airChain.AirlineCompany/" + this.COMPANY_ID)
                             .header("accept", "application/json")
                             .header("Content-Type", "application/json")
-                            .body(airline)
+                            .body(new JsonNode(airline.toString()))
                             .asJson();
 
             System.out.println(airlineCompanyReply.getBody().toString());
@@ -134,12 +144,29 @@ public class User extends Model {
             e.printStackTrace();
         }
 
-        // Create User Card in Fabric Composer
+        // Create User Card and import in Fabric Composer
         try {
             Process p = Runtime.getRuntime().exec(
-                    "vagrant ssh 08a9331 " +
-                            "-- \"sudo docker exec cli composer identity issue -c admin1@air-chain -u testMember2 -a org.airline.airChain.AirlineEmployee#airlineStaff1;\" " +
-                            "\"sudo docker exec cli composer card import -f testMember2@air-chain.card;\"");
+                    "vagrant ssh " + VagrantUtil.boxId +
+                            "-- \"sudo docker exec -d cli composer identity issue -c admin1@air-chain -u " + this.id + " -a org.airline.airChain.AirlineEmployee#" + this.id + ";\" " +
+                            "\"sudo docker exec -d cli composer card import -f " + this.getUserCardName() + ".card;\"");
+
+            String s = null;
+
+            BufferedReader stdInput = new BufferedReader(new InputStreamReader(p.getInputStream()));
+            BufferedReader stdError = new BufferedReader(new InputStreamReader(p.getErrorStream()));
+
+            // read the output from the command
+            System.out.println("Here is the standard output of the command:\n");
+            while ((s = stdInput.readLine()) != null) {
+                System.out.println(s);
+            }
+
+            // read any errors from the attempted command
+            System.out.println("Here is the standard error of the command (if any):\n");
+            while ((s = stdError.readLine()) != null) {
+                System.out.println(s);
+            }
         } catch (IOException e) {
             e.printStackTrace();
         }

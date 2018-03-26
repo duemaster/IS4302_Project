@@ -11,11 +11,16 @@ public class UserController extends Controller {
     public Result createNewUser() {
         JsonNode node = request().body().asJson();
 
-        User user = Json.fromJson(node, User.class);
-        user.save();
+        //User user = Json.fromJson(node, User.class);
+
+        User newUser = new User();
+        newUser.setRole(User.ROLE_STAFF);
+        newUser.setUserName("userName");
+        newUser.setPassword("password");
+        newUser.save();
 
         //Create User in Hyperledger Fabric
-        user.createUserInFabric();
+        newUser.createUserInFabric();
 
         return ok();
     }
