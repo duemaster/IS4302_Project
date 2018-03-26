@@ -9,20 +9,20 @@ abstract asset Company identified by id {
 }
 
 asset AirlineCompany extends Company {
-    --> Flight[] flights
-    --> Aircraft[] aircrafts
+    --> Flight[] flights optional
+    --> Aircraft[] aircrafts optional
     --> CargoCompany authorisedCargoCompany optional
-    --> AirlineEmployee[] employees
+    --> AirlineEmployee[] employees optional
 }
 
 asset GHACompany extends Company {
-    --> Service[] services
-    --> GHAEmployee[] employees
+    --> Service[] services optional
+    --> GHAEmployee[] employees optional
 }
 
 asset CargoCompany extends Company {
-    --> Cargo[] cargos
-    --> CargoEmployee[] employees
+    --> Cargo[] cargos optional
+    --> CargoEmployee[] employees optional
 }
 
 asset Aircraft identified by id {
@@ -48,10 +48,10 @@ asset Flight identified by id {
     o FLIGHT_STATUS status
 
     --> Aircraft aircraft
-    --> Cargo[] cargos
-    --> Service[] services
+    --> Cargo[] cargos optional
+    --> Service[] services optional
     --> AirlineCompany company
-    --> AirlineEmployee[] cabinCrews
+    --> AirlineEmployee[] cabinCrews optional
 
     --> GHACompany collectCompany
     --> GHACompany deliverCompany

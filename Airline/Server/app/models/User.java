@@ -11,6 +11,7 @@ import io.ebean.Model;
 import play.libs.Json;
 import util.VagrantUtil;
 
+import javax.persistence.Column;
 import javax.persistence.Id;
 import javax.persistence.Entity;
 import javax.persistence.Version;
@@ -27,7 +28,7 @@ public class User extends Model {
     public final static String ROLE_OFFICER = "OFFICER";
     public final static String ROLE_STAFF = "STAFF";
 
-    public String COMPANY_ID = "Airline1";
+    public static String COMPANY_ID = "Airline1";
 
     @Id
     private long id;
@@ -35,6 +36,7 @@ public class User extends Model {
     @Version
     private Date timeStamp;
 
+    @Column(unique = true)
     private String userName;
 
     private String password;
@@ -83,6 +85,7 @@ public class User extends Model {
         this.role = role;
     }
 
+
     public long getPortNumber() {
         return 3001;
         //return this.id + PORTOFFSET;
@@ -111,7 +114,7 @@ public class User extends Model {
                             .body(new JsonNode(userNode.toString()))
                             .asJson();
 
-            System.out.println(memberReply.getBody().toString());
+            //System.out.println(memberReply.getBody().toString());
 
             HttpResponse<JsonNode> airLineReply =
                     Unirest.get("http://localhost:3000/api/org.airline.airChain.AirlineCompany/" + this.COMPANY_ID)
@@ -126,9 +129,15 @@ public class User extends Model {
             //System.out.println(airline.toString());
 
             ArrayNode employeeNode = (ArrayNode) airline.get("employees");
-            employeeNode.add(this.id + "");
+
+            //If Employee Array is empty on blockchain
+            if(employeeNode == null) {
+                employeeNode = Json.newArray();
+            }
+
+            employeeNode.add(String.valueOf(id));
             airline.set("employees", employeeNode);
-            System.out.println(airline.toString());
+            //System.out.println(airline.toString());
 
             //Save Airline Company
             HttpResponse<JsonNode> airlineCompanyReply =
@@ -138,31 +147,13 @@ public class User extends Model {
                             .body(new JsonNode(airline.toString()))
                             .asJson();
 
-            System.out.println(airlineCompanyReply.getBody().toString());
+            //System.out.println(airlineCompanyReply.getBody().toString());
 
         } catch (UnirestException e) {
             e.printStackTrace();
         }
 
         // Create User Card and import in Fabric Composer
-        try {
-            Runtime.getRuntime().exec(
-                    "vagrant ssh 08a9331 " +
-                            "-- \"sudo docker exec cli composer identity issue -c admin1@air-chain -u " + this.id + " -a org.airline.airChain.AirlineEmployee#" + this.id + ";\" " +
-                            "\"sudo docker exec cli composer card import -f " + this.getUserCardName() + ".card;\" ");
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
-
-    public void startFabricServer() {
-        try {
-            Runtime.getRuntime().exec(
-                    "vagrant ssh 08a9331 " +
-                            "-- \"sudo docker exec -d cli composer-rest-server -c " + this.getUserCardName() + " -p " + this.getPortNumber() + "\");");
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
+        VagrantUtil.createUser(this);
     }
 }

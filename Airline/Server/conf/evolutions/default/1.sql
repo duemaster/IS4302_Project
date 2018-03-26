@@ -20,11 +20,11 @@ create table settings (
 
 create table user (
   id                            bigint auto_increment not null,
-  company_id                    varchar(255),
   user_name                     varchar(255),
   password                      varchar(255),
   role                          varchar(255),
   time_stamp                    datetime(6) not null,
+  constraint uq_user_user_name unique (user_name),
   constraint pk_user primary key (id)
 );
 

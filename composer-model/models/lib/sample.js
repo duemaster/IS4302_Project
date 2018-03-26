@@ -15,8 +15,8 @@
 var namespace = "org.airline.airChain";
 
 /*
-** Airline Company Action
-*/
+ ** Airline Company Action
+ */
 
 /**
  * Sample transaction processor function.
@@ -31,7 +31,7 @@ function HandleFlightServiceRequest(tx) {
     var caller = getParticipant();
 
     //Only Allow if Service is attached to flight the participant is incharge of
-    var isAuthorised = caller.company.flights.filter(function (flight) {
+    var isAuthorised = caller.company.flights.filter(function(flight) {
         return flight.getIdentifier() === service.flight.getIdentifier();
     }).length === 1;
 
@@ -54,18 +54,18 @@ function ProcessFlightServiceDelivery(tx) {
     var isApproved = tx.isApproved;
 
     var caller = getParticipant();
-    var isAuthorised = 
-    
+    var isAuthorised =
 
-    //Process Services
-    service.status = isApproved ? SERVICE_STATUS.DONE : SERVICE_STATUS.NOT_DONE;
+
+        //Process Services
+        service.status = isApproved ? SERVICE_STATUS.DONE : SERVICE_STATUS.NOT_DONE;
     saveService(service);
 }
 
 
 /*
-** GHA Company Action
-*/
+ ** GHA Company Action
+ */
 
 /**
  * Sample transaction processor function.
@@ -100,8 +100,8 @@ function CollectCargoFromWarehouse(tx) {
 
 
 /*
-** Cargo Company Action
-*/
+ ** Cargo Company Action
+ */
 
 /**
  * Sample transaction processor function.
@@ -130,7 +130,7 @@ function AssignCargoToFlight(tx) {
 
     //Ensure Cargo does not exceed weight limit
     var limit = flight.aircraft.cargoCapacity;
-    var loadedWight = flight.cargos.reduce(function (a, b) { a + b.weight }, 0);
+    var loadedWight = flight.cargos.reduce(function(a, b) { a + b.weight }, 0);
 
     if (loadedWight + cargo.weight > limit)
         throw new Error('Total weight has exceeded limit');
@@ -171,7 +171,7 @@ function AcceptCargoRequest(tx) {
 
     //Ensure Cargo does not exceed weight limit
     var limit = flight.aircraft.cargoCapacity;
-    var loadedWight = flight.cargos.reduce(function (a, b) { a + b.weight }, 0);
+    var loadedWight = flight.cargos.reduce(function(a, b) { a + b.weight }, 0);
 
     if (loadedWight + cargoRequest.cargo.weight > limit)
         throw new Error('Total weight has exceeded limit');
@@ -204,35 +204,35 @@ function AcceptCargoRequest(tx) {
 
 function saveCargo(cargo) {
     return getAssetRegistry(namespace + ".Cargo")
-        .then(function (cargoRegistry) {
+        .then(function(cargoRegistry) {
             return cargoRegistry.update(cargo);
         })
 }
 
 function saveService(service) {
     return getAssetRegistry(namespace + ".Service")
-        .then(function (serviceRegistry) {
+        .then(function(serviceRegistry) {
             return serviceRegistry.update(service);
         })
 }
 
 function saveAircraft(aircraft) {
     return getAssetRegistry(namespace + ".Aircraft")
-        .then(function (aircraftRegistry) {
+        .then(function(aircraftRegistry) {
             return aircraftRegistry.update(aircraft);
         })
 }
 
 function saveFlight(flight) {
     return getAssetRegistry(namespace + ".Flight")
-        .then(function (flightRegistry) {
+        .then(function(flightRegistry) {
             return flightRegistry.update(flight);
         })
 }
 
 function saveCargoRequest(cargoRequest) {
     return getAssetRegistry(namespace + ".CargoRequest")
-        .then(function (cargoRegistry) {
+        .then(function(cargoRegistry) {
             return cargoRegistry.update(cargoRequest);
         })
 }
