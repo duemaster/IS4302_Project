@@ -34,7 +34,7 @@ public class User extends Model {
     private Date timeStamp;
 
     @Column(unique = true)
-    private String userName;
+    private String name;
 
     private String password;
 
@@ -58,12 +58,12 @@ public class User extends Model {
         this.timeStamp = timeStamp;
     }
 
-    public String getUserName() {
-        return userName;
+    public String getName() {
+        return name;
     }
 
-    public void setUserName(String userName) {
-        this.userName = userName;
+    public void setName(String name) {
+        this.name = name;
     }
 
     public String getPassword() {
@@ -98,7 +98,7 @@ public class User extends Model {
         ObjectNode userNode = Json.newObject();
         userNode.put("$class", "org.airline.airChain.AirlineEmployee");
         userNode.put("id", String.valueOf(id));
-        userNode.put("name", this.userName);
+        userNode.put("name", this.name);
         userNode.put("role", this.role);
         userNode.put("company", this.COMPANY_ID);
 
@@ -128,7 +128,7 @@ public class User extends Model {
             ArrayNode employeeNode = (ArrayNode) airline.get("employees");
 
             //If Employee Array is empty on blockchain
-            if(employeeNode == null) {
+            if (employeeNode == null) {
                 employeeNode = Json.newArray();
             }
 

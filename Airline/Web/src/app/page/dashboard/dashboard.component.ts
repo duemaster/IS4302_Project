@@ -1,7 +1,7 @@
 import {Component, OnInit, ViewChild} from '@angular/core';
 import {MatTableDataSource, MatPaginator} from '@angular/material';
 import {HttpClient} from '@angular/common/http';
-import {SettingService} from "../../service/setting/setting.service";
+import {SettingService} from '../../service/setting/setting.service';
 
 @Component({
     selector: 'app-dashboard',
@@ -16,7 +16,7 @@ export class DashboardComponent implements OnInit {
     ngOnInit() {
     }
 
-    displayedColumns = ['Staff Id', 'Role', 'Name', "Option"];
+    displayedColumns = ['Staff Id', 'Role', 'Name', 'Option'];
     dataSource = new MatTableDataSource(ELEMENT_DATA);
     staff: any = {
         password: '',
@@ -41,14 +41,13 @@ export class DashboardComponent implements OnInit {
     create() {
         this.isCreate = true;
         this.staff = {
-            userName: '',
+            name: '',
             password: '',
             role: '',
         };
     }
 
     addStaff() {
-        console.log(this.staff);
         this.http.post(this.service.Endpoint + '/user', this.staff, {withCredentials: true}).subscribe();
     }
 

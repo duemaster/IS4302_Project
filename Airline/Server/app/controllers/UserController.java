@@ -32,7 +32,7 @@ public class UserController extends Controller {
         //TODO: Hash Password
         User user = User.find.query()
                 .where()
-                .eq("userName", in.get("userName"))
+                .eq("name", in.get("name"))
                 .eq("password", in.get("password"))
                 .findUnique();
 
