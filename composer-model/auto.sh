@@ -1,26 +1,22 @@
- #!/bin/bash 
+#!/bin/bash 
 # cd to composer-playground folder
- "y" | ./playground.sh down # clear playground
+# echo "y" | ./playground.sh down # clear playground
 
-#edit yaml of docker-compose-cli.yaml
-"n" | ./playground.sh 
+# echo "y" | ./playground.sh 
 
 # Create CA
 docker exec -it ca.org1.example.com fabric-ca-client enroll -M registrar -u http://admin:adminpw@localhost:7054;
 
 # Register user
-docker exec -it ca.org1.example.com fabric-ca-client register -M registrar -u http://localhost:7054 --id.name admin1 --id.affiliation org1 --id.attrs '"hf.Registrar.Roles=client"' --id.type user;
-# PASSWORD="Password: vltlThfGkrKy";
+PASSWORD=$(docker exec -it ca.org1.example.com fabric-ca-client register -M registrar -u http://localhost:7054 --id.name admin1 --id.affiliation org1 --id.attrs '"hf.Registrar.Roles=client"' --id.type user;)
 
-# echo $PASSWORD;
-# PASSWORD=${PASSWORD##*"Password: "};
-# echo $PASSWORD;
-# VQekeUScvLWi
+echo ${PASSWORD##*"Password: "} > myPassword.txt; 
+PASSWORD=$(cat myPassword.txt);
+PASSWORD=${PASSWORD//$'\n'/};
+echo $PASSWORD;
 
-docker exec cli composer network deploy --archiveFile /mnt/air-chain.bna -A admin1 -c PeerAdmin@hlfv1 -S zOTISFRtUSwc;
+docker exec cli composer network deploy --archiveFile /mnt/air-chain.bna -A admin1 -c PeerAdmin@hlfv1 -S $PASSWORD;
 
 docker exec cli composer card import -f admin1@air-chain.card;
 
-docker exec cli composer-rest-server -c admin1@air-chain -p 3000;
-
-# Create Airline Company with id="Airline1"
+docker exec cli composer-rest-server -c admin1@air-chain -p 4000;
