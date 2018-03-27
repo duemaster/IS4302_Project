@@ -40,7 +40,6 @@ public class VagrantUtil {
         } catch (IOException e) {
             System.out.println("exception happened - here's what I know: ");
             e.printStackTrace();
-            System.exit(-1);
         }
     }
 }

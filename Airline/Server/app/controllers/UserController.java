@@ -37,11 +37,11 @@ public class UserController extends Controller {
         VagrantUtil.startServer(user);
 
         //Wait for 2 sec for server to start up
-        try {
-            Thread.sleep(5000);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
+//        try {
+//            Thread.sleep(5000);
+//        } catch (InterruptedException e) {
+//            e.printStackTrace();
+//        }
 
         return ok(Json.toJson(user));
     }

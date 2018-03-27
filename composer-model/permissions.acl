@@ -7,7 +7,7 @@ rule AllowAirlineHandleFlightServiceRequest {
   participant (p): "org.airline.airChain.AirlineEmployee"
   operation: CREATE
   resource (r): "org.airline.airChain.HandleFlightServiceRequest"
-  condition: (p.role == ROLE.OFFICER)
+  condition: (p.role == "OFFICER")
   action: ALLOW
 }
 
@@ -16,7 +16,7 @@ rule AllowAirlineProcessFlightServiceDelivery {
   participant (p): "org.airline.airChain.AirlineEmployee"
   operation: CREATE
   resource (r): "org.airline.airChain.ProcessFlightServiceDelivery"
-  condition: (p.role == ROLE.STAFF)
+  condition: (p.role == "STAFF")
   action: ALLOW
 }
 
@@ -25,7 +25,7 @@ rule AllowGHAIssueFlightServiceRequest {
   participant (p): "org.airline.airChain.GHAEmployee"
   operation: CREATE
   resource (r): "org.airline.airChain.IssueFlightServiceRequest"
-  condition: (p.role == ROLE.OFFICER)
+  condition: (p.role == "OFFICER")
   action: ALLOW
 }
 
@@ -34,7 +34,7 @@ rule AllowGHACollectCargoFromWarehouse {
   participant (p): "org.airline.airChain.GHAEmployee"
   operation: CREATE
   resource (r): "org.airline.airChain.CollectCargoFromWarehouse"
-  condition: (p.role == ROLE.STAFF)
+  condition: (p.role == "STAFF")
   action: ALLOW
 }
 
@@ -43,7 +43,7 @@ rule AllowCargoConfirmCargoToWarehouse {
   participant (p): "org.airline.airChain.CargoEmployee"
   operation: CREATE
   resource (r): "org.airline.airChain.ConfirmCargoToWarehouse"
-  condition: (p.role == ROLE.STAFF)
+  condition: (p.role == "STAFF")
   action: ALLOW
 }
 
@@ -52,7 +52,7 @@ rule AllowCargoAssignCargoToFlight {
   participant (p): "org.airline.airChain.CargoEmployee"
   operation: CREATE
   resource (r): "org.airline.airChain.AssignCargoToFlight"
-  condition: (p.role == ROLE.OFFICER)
+  condition: (p.role == "OFFICER")
   action: ALLOW
 }
 
@@ -61,7 +61,7 @@ rule AllowCargoAcceptCargoRequest {
   participant (p): "org.airline.airChain.CargoEmployee"
   operation: CREATE
   resource (r): "org.airline.airChain.AcceptCargoRequest"
-  condition: (p.role == ROLE.OFFICER)
+  condition: (p.role == "OFFICER")
   action: ALLOW
 }
 
@@ -76,7 +76,7 @@ rule AllowAirlineOfficerUpdateService {
   operation: UPDATE
   resource (r): "org.airline.airChain.Service"
   transaction (txn): "org.airline.airChain.HandleFlightServiceRequest"
-  condition: (r.status == SERVICE_STATUS.PENDING)
+  condition: (r.status == "PENDING")
   action: ALLOW
 }
 
@@ -86,7 +86,7 @@ rule AllowAirlineCabinCrewUpdateServiceDelivery {
    operation: UPDATE
    resource (r): "org.airline.airChain.Service"
    transaction (txn): "org.airline.airChain.ProcessFlightServiceDelivery"
-   condition: (r.status == SERVICE_STATUS.APPROVED)
+   condition: (r.status == "APPROVED")
    action: ALLOW
  }
 
@@ -96,7 +96,7 @@ rule AllowAirlineCabinCrewUpdateServiceDelivery {
    operation: UPDATE
    resource (r): "org.airline.airChain.Flight"
    transaction (txn): "org.airline.airChain.ProcessFlightServiceDelivery"
-   condition: (txn.service.status == SERVICE_STATUS.PENDING)
+   condition: (txn.service.status == "PENDING")
    action: ALLOW
  }
 
@@ -106,7 +106,7 @@ rule AllowAirlineCabinCrewUpdateServiceDelivery {
     operation: UPDATE
     resource (r): "org.airline.airChain.Cargo"
     transaction (txn): "org.airline.airChain.CollectCargoFromWarehouse"
-    condition: (r.status == CARGO_STATUS.APPROVED)
+    condition: (r.status == "APPROVED")
     action: ALLOW
   }
 
@@ -116,7 +116,7 @@ rule AllowAirlineCabinCrewUpdateServiceDelivery {
    operation: UPDATE
    resource (r): "org.airline.airChain.Cargo"
    transaction (txn): "org.airline.airChain.ConfirmCargoToWarehouse"
-   condition: (r.status == CARGO_STATUS.COLLECTED)
+   condition: (r.status == "COLLECTED")
    action: ALLOW
  }
 
@@ -127,7 +127,7 @@ rule AllowAirlineCabinCrewUpdateServiceDelivery {
     operation: UPDATE
     resource (r): "org.airline.airChain.Flight"
     transaction (txn): "org.airline.airChain.AssignCargoToFlight"
-    condition: (r.company.authorisedCargoCompany.getIdentifier() == p.company.getIdentifier() && txn.cargo.status == CARGO_STATUS.COLLECTED && (txn.cargo.company.getIdentifier() == p.company.getIdentifier() || txn.cargo.request.acceptedCompany.getIdentifier() == p.company.getIdentifier()))
+    condition: (r.company.authorisedCargoCompany.getIdentifier() == p.company.getIdentifier() && txn.cargo.status == "COLLECTED" && (txn.cargo.company.getIdentifier() == p.company.getIdentifier() || txn.cargo.request.acceptedCompany.getIdentifier() == p.company.getIdentifier()))
     action: ALLOW
   }
 
@@ -159,7 +159,7 @@ rule AllowAirlineManageAircraft {
   participant (p): "org.airline.airChain.AirlineEmployee"
   operation: ALL
   resource (r): "org.airline.airChain.Aircraft"
-  condition: (p.role == ROLE.OFFICER)
+  condition: (p.role == "OFFICER")
   action: ALLOW
 }
 
@@ -203,7 +203,7 @@ rule AllowAirlineOfficerViewCargo {
   participant (p): "org.airline.airChain.AirlineEmployee"
   operation: READ
   resource (r): "org.airline.airChain.Cargo"
-  condition: (p.role == ROLE.OFFICER)
+  condition: (p.role == "OFFICER")
   action: ALLOW
 }
 
@@ -212,7 +212,7 @@ rule AllowGHAStaffViewCargo {
   participant (p): "org.airline.airChain.GHAEmployee"
   operation: READ
   resource (r): "org.airline.airChain.Cargo"
-  condition: (p.role == ROLE.STAFF)
+  condition: (p.role == "STAFF")
   action: ALLOW
 }
 
@@ -221,7 +221,7 @@ rule AllowCargoCompanyOfficerToViewCargoUnderRequest {
   participant (p): "org.airline.airChain.CargoEmployee"
   operation: READ
   resource (r): "org.airline.airChain.Cargo"
-  condition: (r.request && p.role == ROLE.OFFICER)
+  condition: (r.request && p.role == "OFFICER")
   action: ALLOW
 }
 
@@ -263,7 +263,7 @@ rule AllowCargoCompanyViewCargoRequest {
   participant (p): "org.airline.airChain.CargoEmployee"
   operation: READ
   resource (r): "org.airline.airChain.CargoRequest"
-  condition: (p.role == ROLE.OFFICER)
+  condition: (p.role == "OFFICER")
   action: ALLOW
 }
 
