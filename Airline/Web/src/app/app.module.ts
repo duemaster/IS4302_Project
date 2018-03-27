@@ -26,7 +26,6 @@ import {MatDatepickerModule} from '@angular/material/datepicker';
     declarations: [
         AppComponent,
         LoginComponent,
-
         LayoutComponent,
         AircraftComponent,
         FlightComponent,

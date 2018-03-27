@@ -18,8 +18,12 @@ export class LoginComponent implements OnInit {
 
     windowObj: any = window;
 
-    constructor(public authService: AuthService, public router: Router, public http: HttpClient,
-                public toast: ToastsManager, vcr: ViewContainerRef, private util: Util) {
+    constructor(public authService: AuthService,
+                public router: Router,
+                public http: HttpClient,
+                public toast: ToastsManager,
+                vcr: ViewContainerRef,
+                private util: Util) {
         this.toast.setRootViewContainerRef(vcr);
     }
 
@@ -28,21 +32,12 @@ export class LoginComponent implements OnInit {
 
 
     async login() {
-        let query = this.util.paras({
-            username: this.username,
-            password: this.password
-        });
 
-        this.http.post(environment.SERVER + "/login" + query, {},{ responseType: 'text',withCredentials: true })
-            .subscribe(() => {
-                    this.authService.admin = this.username;
-                    this.router.navigate(['/main/home']);
-                },
-                err => {
-                    console.log(err);
-                    this.windowObj.toastr.error('Incorrect user name or password.', 'Fail');
-                });
-
-
+        let loginSuccess = await this.authService.login(this.username, this.password);
+        if (loginSuccess) {
+            await this.router.navigate(['']);
+        } else {
+            this.windowObj.toastr.error('Incorrect user name or password.', 'Fail');
+        }
     }
 }

@@ -105,7 +105,7 @@ public class User extends Model {
         try {
             //Add User into composer
             HttpResponse<JsonNode> memberReply =
-                    Unirest.post("http://localhost:3000/api/org.airline.airChain.AirlineEmployee")
+                    Unirest.post("http://localhost:" + this.getPortNumber() + "/api/org.airline.airChain.AirlineEmployee")
                             .header("accept", "application/json")
                             .header("Content-Type", "application/json")
                             .body(new JsonNode(userNode.toString()))
@@ -114,7 +114,7 @@ public class User extends Model {
             //System.out.println(memberReply.getBody().toString());
 
             HttpResponse<JsonNode> airLineReply =
-                    Unirest.get("http://localhost:3000/api/org.airline.airChain.AirlineCompany/" + this.COMPANY_ID)
+                    Unirest.get("http://localhost:" + this.getPortNumber() + "/api/org.airline.airChain.AirlineCompany/" + this.COMPANY_ID)
                             .header("accept", "application/json")
                             .header("Content-Type", "application/json")
                             .asJson();
@@ -138,7 +138,7 @@ public class User extends Model {
 
             //Save Airline Company
             HttpResponse<JsonNode> airlineCompanyReply =
-                    Unirest.put("http://localhost:3000/api/org.airline.airChain.AirlineCompany/" + this.COMPANY_ID)
+                    Unirest.put("http://localhost:" + this.getPortNumber() + "/api/org.airline.airChain.AirlineCompany/" + this.COMPANY_ID)
                             .header("accept", "application/json")
                             .header("Content-Type", "application/json")
                             .body(new JsonNode(airline.toString()))

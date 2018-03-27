@@ -34,8 +34,4 @@ public class Test {
             System.exit(-1);
         }
     }
-
-    private static void sendCommand() {
-
-    }
 }

@@ -1,6 +1,7 @@
 package controllers;
 
 import models.User;
+import org.mindrot.jbcrypt.BCrypt;
 import play.data.DynamicForm;
 import play.data.FormFactory;
 import play.libs.Json;
@@ -16,28 +17,30 @@ public class UserController extends Controller {
     FormFactory formFactory;
 
     public Result createNewUser() {
-
-        //TODO: Hash Password
         User newUser = Json.fromJson(request().body().asJson(), User.class);
+        newUser.setPassword(BCrypt.hashpw(newUser.getPassword(), BCrypt.gensalt()));
         newUser.save();
 
-        //Create User in Hyperledger Fabric
+        //Create User in Composer
         newUser.createUserInFabric();
-        return ok();
+        return ok(Json.toJson(newUser));
     }
 
     public Result login() {
         DynamicForm in = formFactory.form().bindFromRequest();
 
-        //TODO: Hash Password
         User user = User.find.query()
                 .where()
                 .eq("name", in.get("name"))
-                .eq("password", in.get("password"))
                 .findUnique();
 
+        //Authentication Check
         if (user == null) {
-            return badRequest("User not found!");
+            return badRequest("Username or Password is incorrect!");
+        }
+        boolean isPasswordCorrect = BCrypt.checkpw(in.get("password"), user.getPassword());
+        if (!isPasswordCorrect) {
+            return badRequest("Username or Password is incorrect!");
         }
 
         VagrantUtil.startServer(user);
@@ -49,6 +52,6 @@ public class UserController extends Controller {
             e.printStackTrace();
         }
 
-        return ok();
+        return ok(Json.toJson(user));
     }
 }

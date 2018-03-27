@@ -5,12 +5,15 @@ import {LayoutComponent} from './page/layout/layout.component';
 import {AircraftComponent} from "./page/aircraft/aircraft.component";
 import {FlightComponent} from "./page/flight/flight.component";
 import {DashboardComponent} from "./page/dashboard/dashboard.component";
+import {AuthService} from "./service/auth.service";
+import {AuthGuard} from "./service/auth.guard";
 
 const APP_ROUTES: Routes = [
     {
         path: 'main',
         component: LayoutComponent,
-        children:[
+        canActivate: [AuthGuard],
+        children: [
             {
                 path: 'dashboard',
                 component: DashboardComponent
@@ -32,7 +35,7 @@ const APP_ROUTES: Routes = [
     {
         path: '',
         redirectTo: '/main/dashboard',
-        pathMatch:'full'
+        pathMatch: 'full'
     },
     {
         path: '**',

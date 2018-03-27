@@ -1,10 +1,9 @@
  #!/bin/bash 
 # cd to composer-playground folder
-./playground.sh down # clear playground
+ "y" | ./playground.sh down # clear playground
 
 #edit yaml of docker-compose-cli.yaml
-
-./playground 
+"n" | ./playground.sh 
 
 # Create CA
 docker exec -it ca.org1.example.com fabric-ca-client enroll -M registrar -u http://admin:adminpw@localhost:7054;
@@ -14,13 +13,11 @@ docker exec -it ca.org1.example.com fabric-ca-client register -M registrar -u ht
 # PASSWORD="Password: vltlThfGkrKy";
 
 # echo $PASSWORD;
-PASSWORD=${PASSWORD##*"Password: "};
-
-echo $PASSWORD;
-
+# PASSWORD=${PASSWORD##*"Password: "};
+# echo $PASSWORD;
 # VQekeUScvLWi
 
-docker exec cli composer network deploy --archiveFile /mnt/air-chain.bna -A admin1 -c PeerAdmin@hlfv1 -S mEajQnmqKEBK;
+docker exec cli composer network deploy --archiveFile /mnt/air-chain.bna -A admin1 -c PeerAdmin@hlfv1 -S zOTISFRtUSwc;
 
 docker exec cli composer card import -f admin1@air-chain.card;
 
