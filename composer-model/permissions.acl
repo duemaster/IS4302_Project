@@ -273,7 +273,7 @@ rule AllowCargoCompanyViewCargoRequest {
 rule AllowOfficerManageEmployees {
   description:  "Allow Officer to manage their own employees"
   participant (p): "org.airline.airChain.Employee"
-  operation: CREATE, READ, UPDATE
+  operation: ALL
   resource (r): "org.airline.airChain.Employee"
   condition: (p.role == "OFFICER" && p.company.getIdentifier() == r.company.getIdentifier())
   action: ALLOW
@@ -304,6 +304,15 @@ rule AllowEmployeeSeeOwnCompany {
   participant: "org.airline.airChain.Employee"
   operation: READ
   resource: "org.airline.airChain.Company"
+  action: ALLOW
+}
+
+rule AllowOfficerUpdateOwnCompany {
+  description:  "Allow All Officer Update Own Company"
+  participant (p): "org.airline.airChain.Employee"
+  operation: UPDATE
+  resource (r): "org.airline.airChain.Company"
+  condition: (p.role == "OFFICER" && p.company.getIdentifier() == r.getIdentifier())
   action: ALLOW
 }
 
