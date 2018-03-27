@@ -20,11 +20,6 @@ public class UserController extends Controller {
         //TODO: Hash Password
         User newUser = Json.fromJson(request().body().asJson(), User.class);
         newUser.save();
-//        User newUser = new User();
-//        newUser.setRole(User.ROLE_STAFF);
-//        newUser.setUserName("userName");
-//        newUser.setPassword("password");
-//        newUser.save();
 
         //Create User in Hyperledger Fabric
         newUser.createUserInFabric();
