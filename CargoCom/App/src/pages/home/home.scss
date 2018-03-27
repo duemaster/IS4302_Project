@@ -1,3 +1,39 @@
+$color: #005CAF;
 page-home {
 
+  ion-navbar{
+    height: 14vw;
+
+    .toolbar-title{
+      font-weight: 400 !important;
+      letter-spacing: 1px;
+      //color: #005CAF !important;
+    }
+
+    .newTask{
+      margin-right: 2vw;
+      button{
+        color: black !important;
+      }
+    }
+  }
+
+
+  .scan{
+    position: relative;
+    top: 40%;
+    transform: translateY(-50%);
+    text-align: center;
+
+    ion-icon{
+      font-size: 30vw;
+      color: #ddd;
+    }
+  }
+
+  .scanBtn{
+    background-color: transparent !important;
+    color: black;
+    border: 1px black solid;
+  }
 }

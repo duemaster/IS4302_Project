@@ -18,10 +18,22 @@ create table settings (
   constraint pk_settings primary key (id)
 );
 
+create table user (
+  id                            bigint auto_increment not null,
+  user_name                     varchar(255),
+  password                      varchar(255),
+  role                          varchar(255),
+  time_stamp                    datetime(6) not null,
+  constraint uq_user_user_name unique (user_name),
+  constraint pk_user primary key (id)
+);
+
 
 # --- !Downs
 
 drop table if exists log;
 
 drop table if exists settings;
+
+drop table if exists user;
 

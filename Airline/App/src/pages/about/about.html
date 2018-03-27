@@ -1,11 +1,34 @@
 <ion-header>
-  <ion-navbar>
-    <ion-title>
-      About
-    </ion-title>
+  <ion-navbar color="white">
+    <ion-title id="pageTitle">DETAILS</ion-title>
   </ion-navbar>
 </ion-header>
 
 <ion-content padding>
+  <img src="./assets/imgs/cake.jpg">
+
+  <div class="ionContentDiv">
+    <h3 class="title">Food Service</h3>
+    <span class="GHA">SATS (GHA)</span>
+    <br>
+    <br>
+    <hr>
+
+    <p class="description">
+      SATS Will provide delicious food for each of the customer taking the flight from Singapore to Chong Qing.
+    </p>
+    <br>
+
+    <p>* 186 Meals</p>
+    <p>* 10 Package of Drinks</p>
+  </div>
+
+  <!--Requester Actions-->
+  <div class="submitDiv" padding >
+    <button block class="submit" (click)="cancel()">CONFIRM</button>
+    <div tappable (click)="login()">
+      Reject this service
+    </div>
+  </div>
 
 </ion-content>

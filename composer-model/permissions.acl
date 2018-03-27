@@ -76,7 +76,7 @@ rule AllowAirlineOfficerUpdateService {
   operation: UPDATE
   resource (r): "org.airline.airChain.Service"
   transaction (txn): "org.airline.airChain.HandleFlightServiceRequest"
-  condition: (r.status === SERVICE_STATUS.PENDING && p.company.flights.filter(function(flight) {return flight.getIdentifier() === r.flight.getIdentifier()}).length === 1)
+  condition: (r.status === SERVICE_STATUS.PENDING)
   action: ALLOW
 }
 
@@ -86,7 +86,7 @@ rule AllowAirlineCabinCrewUpdateServiceDelivery {
    operation: UPDATE
    resource (r): "org.airline.airChain.Service"
    transaction (txn): "org.airline.airChain.ProcessFlightServiceDelivery"
-   condition: (r.status === SERVICE_STATUS.APPROVED && p.company.flights.filter(function(flight) {return flight.getIdentifier() === r.flight.getIdentifier()}).length === 1)
+   condition: (r.status === SERVICE_STATUS.APPROVED)
    action: ALLOW
  }
 
@@ -96,7 +96,7 @@ rule AllowAirlineCabinCrewUpdateServiceDelivery {
    operation: UPDATE
    resource (r): "org.airline.airChain.Flight"
    transaction (txn): "org.airline.airChain.ProcessFlightServiceDelivery"
-   condition: (txn.service.status === SERVICE_STATUS.PENDING && p.company.services.filter(function(service) {return service.getIdentifier() === txn.service.getIdentifier()}).length === 1)
+   condition: (txn.service.status === SERVICE_STATUS.PENDING)
    action: ALLOW
  }
 
@@ -106,7 +106,7 @@ rule AllowAirlineCabinCrewUpdateServiceDelivery {
     operation: UPDATE
     resource (r): "org.airline.airChain.Cargo"
     transaction (txn): "org.airline.airChain.CollectCargoFromWarehouse"
-    condition: (r.status === CARGO_STATUS.APPROVED && r.flight.collectCompany.getIdentifier() === p.company.getIdentifier())
+    condition: (r.status === CARGO_STATUS.APPROVED)
     action: ALLOW
   }
 
@@ -116,7 +116,7 @@ rule AllowAirlineCabinCrewUpdateServiceDelivery {
    operation: UPDATE
    resource (r): "org.airline.airChain.Cargo"
    transaction (txn): "org.airline.airChain.ConfirmCargoToWarehouse"
-   condition: (r.status === CARGO_STATUS.COLLECTED && r.request.acceptedCompany.getIdentifier() === p.company.getIdentifier())
+   condition: (r.status === CARGO_STATUS.COLLECTED)
    action: ALLOW
  }
 
@@ -159,7 +159,7 @@ rule AllowAirlineManageAircraft {
   participant (p): "org.airline.airChain.AirlineEmployee"
   operation: ALL
   resource (r): "org.airline.airChain.Aircraft"
-  condition: (p.role === ROLE.OFFICER && p.company.aircrafts.filter(function(aircraft) {return aircraft.getIdentifier() === r.getIdentifier()}).length === 1)
+  condition: (p.role === ROLE.OFFICER)
   action: ALLOW
 }
 
@@ -189,7 +189,7 @@ rule AllowAirlineManageFlight {
   participant (p): "org.airline.airChain.AirlineEmployee"
   operation: ALL
   resource (r): "org.airline.airChain.Flight"
-  condition: (p.company.flights.filter(function(flight) {return flight.getIdentifier() === r.getIdentifier()}).length === 1)
+  condition: (true)
   action: ALLOW
 }
 
@@ -203,7 +203,7 @@ rule AllowAirlineOfficerViewCargo {
   participant (p): "org.airline.airChain.AirlineEmployee"
   operation: READ
   resource (r): "org.airline.airChain.Cargo"
-  condition: (p.role === ROLE.OFFICER && p.company.flights.filter(function(flight) {return flight.getIdentifier() === r.flight.getIdentifier()}).length === 1)
+  condition: (p.role === ROLE.OFFICER)
   action: ALLOW
 }
 
@@ -212,7 +212,7 @@ rule AllowGHAStaffViewCargo {
   participant (p): "org.airline.airChain.GHAEmployee"
   operation: READ
   resource (r): "org.airline.airChain.Cargo"
-  condition: (p.role === ROLE.STAFF && (r.flight.collectCompany.getIdentifier() === p.company.getIdentifier() || r.flight.deliverCompany.getIndentifier() === p.company.getIndentifier()))
+  condition: (p.role === ROLE.STAFF)
   action: ALLOW
 }
 
@@ -230,7 +230,7 @@ rule AllowCargoCompanyToManageCargo {
   participant (p): "org.airline.airChain.CargoEmployee"
   operation: ALL
   resource (r): "org.airline.airChain.Cargo"
-  condition: (p.company.cargos.filter(function(cargo) {return cargo.getIdentifier() === r.getIdentifier()}).length === 1)
+  condition: (true)
   action: ALLOW
 }
 
@@ -242,7 +242,7 @@ rule AllowAirlineCompanyViewService {
   participant (p): "org.airline.airChain.AirlineEmployee"
   operation: READ
   resource (r): "org.airline.airChain.Service"
-  condition: (p.company.flights.filter(function(flight) {return flight.services.filter(function(service) {service.getIdentifier() === r.getIdentifier()}).length === 1}).length === 1)
+  condition: (true)
   action: ALLOW
 }
 
@@ -251,7 +251,7 @@ rule AllowGHACompanyToManageService {
   participant (p): "org.airline.airChain.CargoEmployee"
   operation: ALL
   resource (r): "org.airline.airChain.Service"
-  condition: (p.company.services.filter(function(service) {return service.getIdentifier() === r.getIdentifier()}).length === 1)
+  condition: (true)
   action: ALLOW
 }
 
@@ -267,6 +267,25 @@ rule AllowCargoCompanyViewCargoRequest {
   action: ALLOW
 }
 
+/*
+* System Configuration
+*/
+
+rule AllowRESTServerAccess {
+  description:  "Allow All Participants to start Rest Server"
+  participant: "org.hyperledger.composer.system.Participant"
+  operation: READ
+  resource: "org.hyperledger.composer.system.*"
+  action: ALLOW
+}
+
+rule AllowEmployeeSeeOwnCompany {
+  description:  "Allow All Participants see their own companies"
+  participant: "org.airline.airChain.Employee"
+  operation: READ
+  resource: "org.airline.airChain.Company"
+  action: ALLOW
+}
 
 /*
 * System Admin Access
