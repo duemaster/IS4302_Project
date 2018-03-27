@@ -2,6 +2,8 @@
 # cd to composer-playground folder
 ./playground.sh down # clear playground
 
+#edit yaml of docker-compose-cli.yaml
+
 ./playground 
 
 # Create CA
