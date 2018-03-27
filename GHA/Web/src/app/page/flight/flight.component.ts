@@ -50,7 +50,7 @@ export class FlightComponent implements OnInit {
         this.dataSource.paginator = this.paginator;
     }
 
-    update(element){
+    viewFlight(element){
         this.isCreate = false;
         this.flight = element;
     }

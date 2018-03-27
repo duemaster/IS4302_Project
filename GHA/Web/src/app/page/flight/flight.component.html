@@ -58,18 +58,18 @@
             <ng-container matColumnDef="Option">
               <mat-header-cell *matHeaderCellDef> Option</mat-header-cell>
               <mat-cell *matCellDef="let element">
-                <button class="btn btn-sm btn-default" data-toggle="modal" data-target="#formModal" (click)="update(element)">
-                  <span class="glyphicon glyphicon-edit"></span>
+                <button class="btn btn-sm btn-default" data-toggle="modal" data-target="#formModal" (click)="viewFlight(element)">
+                  <span class="glyphicon glyphicon-eye-open"></span>
                 </button>
-                <button class="btn btn-sm btn-default" data-toggle="modal" data-target="#cargoModal">
-                  <span class="glyphicon glyphicon-shopping-cart"></span>
-                </button>
-                <button class="btn btn-sm btn-default" data-toggle="modal" data-target="#serviceModal">
-                  <span class="glyphicon glyphicon-cutlery"></span>
-                </button>
-                <button class="btn btn-sm btn-default" data-toggle="modal" data-target="#deleteModal">
-                  <span class="glyphicon glyphicon-trash"></span>
-                </button>
+                <!--<button class="btn btn-sm btn-default" data-toggle="modal" data-target="#cargoModal">-->
+                  <!--<span class="glyphicon glyphicon-shopping-cart"></span>-->
+                <!--</button>-->
+                <!--<button class="btn btn-sm btn-default" data-toggle="modal" data-target="#serviceModal">-->
+                  <!--<span class="glyphicon glyphicon-cutlery"></span>-->
+                <!--</button>-->
+                <!--<button class="btn btn-sm btn-default" data-toggle="modal" data-target="#deleteModal">-->
+                  <!--<span class="glyphicon glyphicon-trash"></span>-->
+                <!--</button>-->
               </mat-cell>
             </ng-container>
 
@@ -101,7 +101,7 @@
         <div class="modal-header">
           <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
           <h4 class="modal-title" id="formModalLabel" *ngIf="isCreate">Add Flight</h4>
-          <h4 class="modal-title" id="formModalLabel1" *ngIf="!isCreate">Edit Flight</h4>
+          <h4 class="modal-title" id="formModalLabel1" *ngIf="!isCreate">View Flight Details</h4>
         </div>
         <form class="form-horizontal" role="form">
           <div class="modal-body">
@@ -110,13 +110,13 @@
                 <label for="flightNo" class="control-label">Flight No.</label>
               </div>
               <div class="col-sm-4">
-                <input type="text" name="flightNo" id="flightNo" class="form-control" [(ngModel)]='flight.flightNo' placeholder="Flight No.">
+                <input type="text" name="flightNo" id="flightNo" class="form-control" [(ngModel)]='flight.flightNo' placeholder="Flight No." [disabled]="true">
               </div>
               <div class="col-sm-2">
                 <label for="departDate" class="control-label">Depart Date</label>
               </div>
               <div class="col-sm-4">
-                <input type="text" class="form-control" name="departDate" id="departDate" [(ngModel)]='flight.date' placeholder="Departure Date" data-inputmask="'alias': 'date'">
+                <input type="text" class="form-control" name="departDate" id="departDate" [(ngModel)]='flight.date' placeholder="Departure Date" data-inputmask="'alias': 'date'" [disabled]="true">
               </div>
             </div>
             <div class="form-group">
@@ -124,32 +124,35 @@
                 <label for="depart" class="control-label">Departure</label>
               </div>
               <div class="col-sm-4">
-                <input type="text" name="depart" id="depart" class="form-control" [(ngModel)]='flight.departure' placeholder="Departure">
+                <input type="text" name="depart" id="depart" class="form-control" [(ngModel)]='flight.departure' placeholder="Departure" [disabled]="true">
               </div>
               <div class="col-sm-2">
                 <label for="landing" class="control-label">Landing</label>
               </div>
               <div class="col-sm-4">
-                <input type="text" name="landing" id="landing" class="form-control" [(ngModel)]='flight.landing' placeholder="Landing">
+                <input type="text" name="landing" id="landing" class="form-control" [(ngModel)]='flight.landing' placeholder="Landing" [disabled]="true">
               </div>
             </div>
             <div class="form-group">
               <div class="col-sm-3">
                 <label for="ccs" class="control-label">Cabin Crew Supervisor</label>
               </div>
-              <div class="col-sm-9">
-                <select id="ccs" name="ccs" [(ngModel)]='flight.crew' class="form-control">
-                  <option value="{{cc.id}}" *ngFor="let cc of crew">{{cc.name}}</option>
-
-                </select>
+              <div class="col-sm-4">
+                <input type="text" name="ccs" id="ccs" class="form-control" [(ngModel)]='flight.crew' placeholder="Crew" [disabled]="true">
               </div>
+              <!--<div class="col-sm-9">-->
+                <!--<select id="ccs" name="ccs" [(ngModel)]='flight.crew' class="form-control">-->
+                  <!--<option value="{{cc.id}}" *ngFor="let cc of crew">{{cc.name}}</option>-->
+
+                <!--</select>-->
+              <!--</div>-->
             </div>
             <div class="form-group">
               <div class="col-sm-3">
                 <label for="paxload" class="control-label">Passenger Loading</label>
               </div>
               <div class="col-sm-9">
-                <input type="number" name="paxload" id="paxload" class="form-control" placeholder="Number of Passengers">
+                <input type="number" name="paxload" id="paxload" class="form-control" placeholder="Number of Passengers" [disabled]="true">
               </div>
             </div>
           </div>

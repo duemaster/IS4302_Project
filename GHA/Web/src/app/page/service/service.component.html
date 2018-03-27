@@ -30,22 +30,32 @@
               <mat-cell *matCellDef="let element"> {{element.id}} </mat-cell>
             </ng-container>
 
-            <!-- Model Column -->
+            <!-- Service Type Column -->
             <ng-container matColumnDef="Type">
               <mat-header-cell *matHeaderCellDef> Type </mat-header-cell>
               <mat-cell *matCellDef="let element"> {{element.type}} </mat-cell>
             </ng-container>
 
-            <!-- Manufacturer Column -->
+            <!-- Description Column -->
             <ng-container matColumnDef="Description">
               <mat-header-cell *matHeaderCellDef> Description </mat-header-cell>
               <mat-cell *matCellDef="let element"> {{element.description}} </mat-cell>
             </ng-container>
 
-            <!-- Cargo Capacity Column -->
+            <!-- Service Status Column -->
             <ng-container matColumnDef="Status">
               <mat-header-cell *matHeaderCellDef> Status </mat-header-cell>
               <mat-cell *matCellDef="let element"> {{element.status}} </mat-cell>
+            </ng-container>
+
+            <!-- Flight No Column -->
+            <ng-container matColumnDef="Flight">
+              <mat-header-cell *matHeaderCellDef> Flight No </mat-header-cell>
+                <mat-cell *matCellDef="let element">
+                  <a data-toggle="modal" data-target="#flightModal" (click)="viewFlight(element.flight)">
+                    <span>{{element.flight.flightNo}}</span>
+                  </a>
+                </mat-cell>
             </ng-container>
 
             <ng-container matColumnDef="Option">
@@ -145,11 +155,11 @@
             </div>
             <div class="form-group">
               <div class="col-sm-3">
-                <label for="flight" class="control-label">Staff</label>
+                <label for="flight" class="control-label">Flight</label>
               </div>
               <div class="col-sm-9">
-                <select id="flight" name="flight" [(ngModel)]='service.flight' class="form-control">
-                  <option value="{{f.id}}" *ngFor="let f of flight">{{f.id}}</option>
+                <select id="flight" name="flight" [(ngModel)]='service.flightList' class="form-control">
+                  <option value="{{f.id}}" *ngFor="let f of flightList">{{f.id}}</option>
                 </select>
               </div>
             </div>
@@ -163,6 +173,85 @@
     </div><!-- /.modal-dialog -->
   </div><!-- /.modal -->
   <!-- END FORM MODAL MARKUP -->
+
+  <!-- BEGIN FLIGHT MODAL MARKUP -->
+  <div class="modal fade" id="flightModal" tabindex="-1" role="dialog" aria-labelledby="formModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <!--<div class="modal-header">-->
+          <!--<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>-->
+          <!--<h4 class="modal-title" id="formModalLabel" *ngIf="isCreate">Add Flight</h4>-->
+          <!--<h4 class="modal-title" id="formModalLabel1" *ngIf="!isCreate">Edit Flight</h4>-->
+        <!--</div>-->
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+          <h4 class="modal-title" id="serviceModalLabel">Flight Details</h4>
+        </div>
+        <form class="form-horizontal" role="form">
+          <div class="modal-body">
+            <div class="form-group">
+              <div class="col-sm-2">
+                <label for="flightNo" class="control-label">Flight No.</label>
+              </div>
+              <div class="col-sm-4">
+                <input type="text" name="flightNo" id="flightNo" class="form-control" [(ngModel)]='flight.flightNo' placeholder="Flight No." [disabled]="true">
+              </div>
+              <div class="col-sm-2">
+                <label for="departDate" class="control-label">Depart Date</label>
+              </div>
+              <div class="col-sm-4">
+                <input type="text" class="form-control" name="departDate" id="departDate" [(ngModel)]='flight.date' placeholder="Departure Date" data-inputmask="'alias': 'date'" [disabled]="true">
+              </div>
+            </div>
+            <div class="form-group">
+              <div class="col-sm-2">
+                <label for="depart" class="control-label">Departure</label>
+              </div>
+              <div class="col-sm-4">
+                <input type="text" name="depart" id="depart" class="form-control" [(ngModel)]='flight.departure' placeholder="Departure" [disabled]="true">
+              </div>
+              <div class="col-sm-2">
+                <label for="landing" class="control-label">Landing</label>
+              </div>
+              <div class="col-sm-4">
+                <input type="text" name="landing" id="landing" class="form-control" [(ngModel)]='flight.landing' placeholder="Landing" [disabled]="true">
+              </div>
+            </div>
+            <!--<div class="form-group">-->
+              <!--<div class="col-sm-3">-->
+                <!--<label for="ccs" class="control-label">Cabin Crew Supervisor</label>-->
+              <!--</div>-->
+              <!--<div class="col-sm-9">-->
+                <!--<select id="ccs" name="ccs" [(ngModel)]='flight.crew' class="form-control">-->
+                  <!--<option value="{{cc.id}}" *ngFor="let cc of crew">{{cc.name}}</option>-->
+
+                <!--</select>-->
+              <!--</div>-->
+            <!--</div>-->
+            <div class="form-group">
+              <div class="col-sm-2">
+                <label for="depart" class="control-label">Cabin Crew</label>
+              </div>
+              <div class="col-sm-4">
+                <input type="text" name="crew" id="crew" class="form-control" [(ngModel)]='flight.crew' placeholder="Crew" [disabled]="true">
+              </div>
+              <div class="col-sm-3">
+                <label for="paxload" class="control-label">Passenger Loading</label>
+              </div>
+              <div class="col-sm-9">
+                <input type="number" name="paxload" id="paxload" class="form-control" placeholder="Number of Passengers" [disabled]="true">
+              </div>
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+            <button type="button" class="btn btn-primary">Done</button>
+          </div>
+        </form>
+      </div><!-- /.modal-content -->
+    </div><!-- /.modal-dialog -->
+  </div><!-- /.modal -->
+  <!-- END FLIGHT MODAL MARKUP -->
 
   <!-- BEGIN SIMPLE MODAL MARKUP -->
   <div class="modal fade" id="deleteModal" tabindex="-1" role="dialog" aria-labelledby="simpleModalLabel" aria-hidden="true">
