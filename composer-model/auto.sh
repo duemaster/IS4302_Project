@@ -1,4 +1,9 @@
  #!/bin/bash 
+# cd to composer-playground folder
+./playground.sh down # clear playground
+
+./playground 
+
 # Create CA
 docker exec -it ca.org1.example.com fabric-ca-client enroll -M registrar -u http://admin:adminpw@localhost:7054;
 

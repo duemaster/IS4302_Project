@@ -3,6 +3,7 @@ package controllers;
 import models.User;
 import play.data.DynamicForm;
 import play.data.FormFactory;
+import play.libs.Json;
 import play.mvc.Controller;
 import play.mvc.Result;
 import util.VagrantUtil;
@@ -15,11 +16,15 @@ public class UserController extends Controller {
     FormFactory formFactory;
 
     public Result createNewUser() {
-        User newUser = new User();
-        newUser.setRole(User.ROLE_STAFF);
-        newUser.setUserName("userName");
-        newUser.setPassword("password");
+
+        //TODO: Hash Password
+        User newUser = Json.fromJson(request().body().asJson(), User.class);
         newUser.save();
+//        User newUser = new User();
+//        newUser.setRole(User.ROLE_STAFF);
+//        newUser.setUserName("userName");
+//        newUser.setPassword("password");
+//        newUser.save();
 
         //Create User in Hyperledger Fabric
         newUser.createUserInFabric();
@@ -29,6 +34,7 @@ public class UserController extends Controller {
     public Result login() {
         DynamicForm in = formFactory.form().bindFromRequest();
 
+        //TODO: Hash Password
         User user = User.find.query()
                 .where()
                 .eq("userName", in.get("userName"))
