@@ -3,27 +3,31 @@
 # ~~~~
 
 # Map static resources from the /public folder to the /assets URL path
-GET         /assets/*file                    controllers.Assets.versioned(path="/public", file: Asset)
+GET           /assets/*file                    controllers.Assets.versioned(path="/public", file: Asset)
 
 #*********************************************************************
 # 功能: Device System
 # 说明：无
 #*********************************************************************
 ### Terminal Management Module
-GET         /                                controllers.Application.indexPage
-GET         /setup/createOfficer             controllers.SetUpController.createDefaultOfficer()
+GET           /                                controllers.Application.indexPage
+GET           /setup/createOfficer             controllers.SetUpController.createDefaultOfficer()
 
 #*********************************************************************
 # 功能: User System
 # 说明：无
 #*********************************************************************
-POST        /user                            controllers.UserController.createNewUser()
-POST        /user/login                      controllers.UserController.login()
+POST          /user/login                      controllers.UserController.login()
+POST          /user/:id/create                 controllers.UserController.createNewUser(id: Long)
+POST          /user/:id/update                 controllers.UserController.updateUser(id: Long)
+POST          /user/:id/delete                 controllers.UserController.deleteUser(id: Long)
 
 
 #*********************************************************************
 # 功能: Blockchain System
-# 说明：无
+# 说明：Redirect to the correct COMPOSER-REST-SERVER
 #*********************************************************************
-GET         /blockchain/user/:id/*url        controllers.BlockChainController.redirectGET(id: Long, url)
-POST        /blockchain/user/:id/*url        controllers.BlockChainController.redirectPOST(id: Long, url)
+GET           /blockchain/user/:id/*url        controllers.BlockChainController.redirectGET(id: Long, url)
+POST          /blockchain/user/:id/*url        controllers.BlockChainController.redirectPOST(id: Long, url)
+PUT           /blockchain/user/:id/*url        controllers.BlockChainController.redirectPUT(id: Long, url)
+DELETE        /blockchain/user/:id/*url        controllers.BlockChainController.redirectDELETE(id: Long, url)

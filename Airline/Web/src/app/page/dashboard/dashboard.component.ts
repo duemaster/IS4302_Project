@@ -36,7 +36,7 @@ export class DashboardComponent implements AfterViewInit {
 
     ngAfterViewInit() {
         this.dataSource.paginator = this.paginator;
-        this.getStaffList();
+        this.fetchStaffList();
     }
 
     create() {
@@ -48,16 +48,47 @@ export class DashboardComponent implements AfterViewInit {
         };
     }
 
+    processStaff() {
+        if (this.isCreate)
+            this.addStaff();
+        else
+            this.editStaff();
+    }
+
     async addStaff() {
-        //Add Staff
         await this.http.post(
-            this.service.ENDPOINT + '/user',
+            `${this.service.ENDPOINT}/user/${this.authService.admin.id}/create`,
             this.staff,
             {withCredentials: true})
             .toPromise();
 
         //Refresh Data Table
-        this.getStaffList();
+        this.fetchStaffList();
+    }
+
+    async editStaff() {
+
+        console.log(this.staff);
+
+        await this.http.post(
+            `${this.service.ENDPOINT}/user/${this.authService.admin.id}/update`,
+            this.staff,
+            {withCredentials: true})
+            .toPromise();
+
+        //Refresh Data Table
+        this.fetchStaffList();
+    }
+
+    async deleteStaff() {
+        await this.http.post(
+            `${this.service.ENDPOINT}/user/${this.authService.admin.id}/delete`,
+            this.staff,
+            {withCredentials: true})
+            .toPromise();
+
+        //Refresh Data Table
+        this.fetchStaffList();
     }
 
     update(element) {
@@ -65,7 +96,7 @@ export class DashboardComponent implements AfterViewInit {
         this.staff = element;
     }
 
-    async getStaffList() {
+    async fetchStaffList() {
         let staffList = await this.http.get(
             `${this.service.ENDPOINT}/blockchain/user/${this.authService.admin.id}/api/org.airline.airChain.AirlineEmployee`,
             {withCredentials: true}
@@ -79,18 +110,3 @@ export class DashboardComponent implements AfterViewInit {
         this.dataSource.paginator = this.paginator;
     }
 }
-
-
-// export interface Staff {
-//     name: string;
-//     id: string;
-//     role: string;
-// }
-//
-// const ELEMENT_DATA: Staff[] = [
-//     {id: '001', name: 'Hydrogen', role: 'officer'},
-//     {id: '002', name: 'Helium', role: 'crew'},
-//     {id: '003', name: 'Lithium', role: 'crew'},
-//     {id: '004', name: 'Beryllium', role: 'crew'},
-//
-// ];
