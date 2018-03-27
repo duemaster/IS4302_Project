@@ -1,5 +1,7 @@
 import {Component, OnInit, ViewChild} from '@angular/core';
 import {MatTableDataSource, MatPaginator} from '@angular/material';
+import {HttpClient} from '@angular/common/http';
+import {SettingService} from "../../service/setting/setting.service";
 
 @Component({
     selector: 'app-dashboard',
@@ -8,7 +10,7 @@ import {MatTableDataSource, MatPaginator} from '@angular/material';
 })
 export class DashboardComponent implements OnInit {
 
-    constructor() {
+    constructor(private http: HttpClient, private service: SettingService) {
     }
 
     ngOnInit() {
@@ -17,11 +19,11 @@ export class DashboardComponent implements OnInit {
     displayedColumns = ['Staff Id', 'Role', 'Name', "Option"];
     dataSource = new MatTableDataSource(ELEMENT_DATA);
     staff: any = {
-        id: '',
+        password: '',
         name: '',
         role: ''
     };
-    isCreate =false;
+    isCreate = false;
 
     applyFilter(filterValue: string) {
         filterValue = filterValue.trim(); // Remove whitespace
@@ -39,10 +41,15 @@ export class DashboardComponent implements OnInit {
     create() {
         this.isCreate = true;
         this.staff = {
-            name: '',
-            id: '',
+            userName: '',
+            password: '',
             role: '',
         };
+    }
+
+    addStaff() {
+        console.log(this.staff);
+        this.http.post(this.service.Endpoint + '/user', this.staff, {withCredentials: true}).subscribe();
     }
 
     update(element) {
@@ -51,7 +58,6 @@ export class DashboardComponent implements OnInit {
     }
 
 }
-
 
 
 export interface Staff {

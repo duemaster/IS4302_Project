@@ -7,7 +7,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 
 public class VagrantUtil {
-    public static final String boxId = "fd8245a";
+    public static final String boxId = "9ba44a9";
 
     public static void createUser(User user) {
         // Create User Card and import in Fabric Composer

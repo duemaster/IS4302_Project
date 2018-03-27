@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
 import { NavController } from 'ionic-angular';
-import {AboutPage} from "../about/about";
+import {AboutPage} from "../serviceDetail/serviceDetail";
 import {LoginPage} from "../login/login";
 import {BarcodeScanner} from "@ionic-native/barcode-scanner";
 

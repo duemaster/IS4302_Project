@@ -16,7 +16,7 @@ GET         /                                controllers.Application.indexPage
 # 功能: User System
 # 说明：无
 #*********************************************************************
-GET         /user                            controllers.UserController.createNewUser()
+POST        /user                            controllers.UserController.createNewUser()
 POST        /user/login                      controllers.UserController.login()
 
 
