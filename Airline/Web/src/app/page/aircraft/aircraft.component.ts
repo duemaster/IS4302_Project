@@ -1,5 +1,8 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
 import {MatTableDataSource, MatPaginator} from '@angular/material';
+import {HttpClient} from "@angular/common/http";
+import {SettingService} from "../../service/setting/setting.service";
+import {AuthService} from "../../service/auth.service";
 
 @Component({
   selector: 'app-aircraft',
@@ -8,17 +11,19 @@ import {MatTableDataSource, MatPaginator} from '@angular/material';
 })
 export class AircraftComponent implements OnInit {
 
-  constructor() { }
+  constructor(private http: HttpClient,
+              private service: SettingService,
+              public authService: AuthService) { }
 
   ngOnInit() {
   }
-    displayedColumns = ['id', 'Model', 'Manufacturer', 'CargoCapacity', 'Option'];
-    dataSource = new MatTableDataSource(ELEMENT_DATA);
+    displayedColumns = ['id', 'Model', 'PaxCapacity', 'CargoCapacity', 'Option'];
+    dataSource = new MatTableDataSource([]);
     aircraft: any = {
         model: '',
         id: '',
-        manufacturer: '',
-        capacity: 0,
+        passengerCapacity: 0,
+        cargoCapacity: 0,
     };
     isCreate = false;
 
@@ -28,10 +33,14 @@ export class AircraftComponent implements OnInit {
         this.dataSource.filter = filterValue;
     }
 
+
+
+
     @ViewChild(MatPaginator) paginator: MatPaginator;
 
     ngAfterViewInit() {
         this.dataSource.paginator = this.paginator;
+        this.fetchAircraftList();
     }
 
     create() {
@@ -39,9 +48,50 @@ export class AircraftComponent implements OnInit {
         this.aircraft = {
             model: '',
             id: '',
-            manufacturer: '',
-            capacity: 0,
+            passengerCapacity: 0,
+            cargoCapacity: 0,
         };
+    }
+
+    processAircraft() {
+        if (this.isCreate)
+            this.addAircraft();
+        else
+            this.editAircraft();
+    }
+
+    async addAircraft() {
+        await this.http.post(
+            `${this.service.ENDPOINT}/blockchain/user/${this.authService.admin.id}/api/org.airline.airChain.Aircraft`,
+            this.aircraft,
+            {withCredentials: true})
+            .toPromise();
+
+        //Refresh Data Table
+        this.fetchAircraftList();
+    }
+
+    async editAircraft() {
+
+
+        await this.http.put(
+            `${this.service.ENDPOINT}/user/${this.authService.admin.id}/api/org.airline.airChain.Aircraft/${this.aircraft.id}`,
+            this.aircraft,
+            {withCredentials: true})
+            .toPromise();
+
+        //Refresh Data Table
+        this.fetchAircraftList();
+    }
+
+    async deleteAircraft() {
+        await this.http.delete(
+            `${this.service.ENDPOINT}/user/${this.authService.admin.id}/api/org.airline.airChain.Aircraft/${this.aircraft.id}`,
+            {withCredentials: true})
+            .toPromise();
+
+        //Refresh Data Table
+        this.fetchAircraftList();
     }
 
     update(element) {
@@ -49,19 +99,20 @@ export class AircraftComponent implements OnInit {
         this.aircraft = element;
     }
 
+    async fetchAircraftList() {
+        let aircraftList = await this.http.get(
+            `${this.service.ENDPOINT}/blockchain/user/${this.authService.admin.id}/api/org.airline.airChain.Aircraft`,
+            {withCredentials: true}
+        ).toPromise();
+
+        this.loadDataInTable(aircraftList);
+    }
+
+    loadDataInTable(aircraftList) {
+        this.dataSource = new MatTableDataSource<any>(aircraftList);
+        this.dataSource.paginator = this.paginator;
+    }
+
 }
 
-export interface Aircraft {
-    model: string;
-    id: string;
-    manufacturer: string;
-    capacity: number
-}
 
-const ELEMENT_DATA: Aircraft[] = [
-    {id: '9VSTC', model: '777-300', manufacturer: 'Boeing', capacity:120},
-    {id: '9VPTV', model: '333-300', manufacturer: 'Airbus', capacity:100},
-    {id: '9VSSG', model: '380-800', manufacturer: 'Airbus', capacity:200},
-    {id: '9VOTS', model: '787-900', manufacturer: 'Boeing', capacity:160},
-
-];

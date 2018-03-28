@@ -37,15 +37,15 @@
             </ng-container>
 
             <!-- Manufacturer Column -->
-            <ng-container matColumnDef="Manufacturer">
+            <ng-container matColumnDef="PaxCapacity">
               <mat-header-cell *matHeaderCellDef> Manufacturer </mat-header-cell>
-              <mat-cell *matCellDef="let element"> {{element.manufacturer}} </mat-cell>
+              <mat-cell *matCellDef="let element"> {{element.passengerCapacity}} </mat-cell>
             </ng-container>
 
             <!-- Cargo Capacity Column -->
             <ng-container matColumnDef="CargoCapacity">
               <mat-header-cell *matHeaderCellDef> Cargo Capacity/ton </mat-header-cell>
-              <mat-cell *matCellDef="let element"> {{element.capacity}} </mat-cell>
+              <mat-cell *matCellDef="let element"> {{element.cargoCapacity}} </mat-cell>
             </ng-container>
 
             <ng-container matColumnDef="Option">
@@ -54,7 +54,7 @@
                 <button class="btn btn-sm btn-default" data-toggle="modal" data-target="#formModal" (click)="update(element)">
                   <span class="glyphicon glyphicon-edit"></span>
                 </button>
-                <button class="btn btn-sm btn-default" data-toggle="modal" data-target="#deleteModal">
+                <button class="btn btn-sm btn-default" data-toggle="modal" data-target="#deleteModal" (click)="update(element)">
                   <span class="glyphicon glyphicon-trash"></span>
                 </button>
               </mat-cell>
@@ -110,13 +110,10 @@
             </div>
             <div class="form-group">
               <div class="col-sm-3">
-                <label for="mfter" class="control-label">Manufacturer</label>
+                <label for="paxCap" class="control-label">Passenger Capacity</label>
               </div>
               <div class="col-sm-9">
-                <select id="mfter" name="mfter" [(ngModel)]="aircraft.manufacturer" class="form-control">
-                  <option value="Airbus">Airbus</option>
-                  <option value="Boeing">Boeing</option>
-                </select>
+                <input type="number" name="paxCap" id="paxCap" class="form-control" [(ngModel)]="aircraft.passengerCapacity" placeholder="Pax Capacity">
               </div>
             </div>
             <div class="form-group">
@@ -124,13 +121,13 @@
                 <label for="cargo" class="control-label">Cargo Capacity</label>
               </div>
               <div class="col-sm-9">
-                <input type="number" name="cargo" id="cargo" class="form-control" [(ngModel)]="aircraft.capacity" placeholder="Cargo Capacity/ton">
+                <input type="number" name="cargo" id="cargo" class="form-control" [(ngModel)]="aircraft.cargoCapacity" placeholder="Cargo Capacity/ton">
               </div>
             </div>
           </div>
           <div class="modal-footer">
             <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
-            <button type="button" class="btn btn-primary">Done</button>
+            <button type="button" class="btn btn-primary" data-dismiss="modal" (click)="processAircraft()">Done</button>
           </div>
         </form>
       </div><!-- /.modal-content -->
@@ -151,7 +148,7 @@
         </div>
         <div class="modal-footer">
           <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
-          <button type="button" class="btn btn-primary">Yes</button>
+          <button type="button" class="btn btn-primary" data-dismiss="modal" (click)="deleteAircraft()">Yes</button>
         </div>
       </div><!-- /.modal-content -->
     </div><!-- /.modal-dialog -->
