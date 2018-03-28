@@ -59,9 +59,9 @@ rule AllowCargoAssignCargoToFlight {
 rule AllowCargoAcceptCargoRequest {
   description:  "Allow Cargo Employee to accept incoming cargo request"
   participant (p): "org.airline.airChain.CargoEmployee"
-  operation: CREATE
+  operation: UPDATE
   resource (r): "org.airline.airChain.AcceptCargoRequest"
-  condition: (p.role == "OFFICER")
+  condition: (p.role == "OFFICER" && !r.acceptedCompany)
   action: ALLOW
 }
 
@@ -106,7 +106,7 @@ rule AllowAirlineCabinCrewUpdateServiceDelivery {
     operation: UPDATE
     resource (r): "org.airline.airChain.Cargo"
     transaction (txn): "org.airline.airChain.CollectCargoFromWarehouse"
-    condition: (r.status == "APPROVED")
+    condition: (r.status == "APPROVED" && p.company.getIdentifier() == r.flight.collectCompany.getIdentifier())
     action: ALLOW
   }
 
@@ -116,7 +116,7 @@ rule AllowAirlineCabinCrewUpdateServiceDelivery {
    operation: UPDATE
    resource (r): "org.airline.airChain.Cargo"
    transaction (txn): "org.airline.airChain.ConfirmCargoToWarehouse"
-   condition: (r.status == "COLLECTED")
+   condition: (r.status == "COLLECTED" && p.company.getIdentifier() == r.flight.deliverCompany.getIdentifier())
    action: ALLOW
  }
 
@@ -230,7 +230,7 @@ rule AllowCargoCompanyToManageCargo {
   participant (p): "org.airline.airChain.CargoEmployee"
   operation: ALL
   resource (r): "org.airline.airChain.Cargo"
-  condition: (true)
+  condition: (r.company.getIdentifier() == p.company.getIdentifier())
   action: ALLOW
 }
 
@@ -242,28 +242,28 @@ rule AllowAirlineCompanyViewService {
   participant (p): "org.airline.airChain.AirlineEmployee"
   operation: READ
   resource (r): "org.airline.airChain.Service"
-  condition: (true)
+  condition: (r.flight.company.getIdentifier() == p.company.getIdentifier())
   action: ALLOW
 }
 
 rule AllowGHACompanyToManageService {
-  description:  "Allow Cargo Company to manage their own cargo"
-  participant (p): "org.airline.airChain.CargoEmployee"
+  description:  "Allow GHA to manager their own services"
+  participant (p): "org.airline.airChain.GHAEmployee"
   operation: ALL
   resource (r): "org.airline.airChain.Service"
-  condition: (true)
+  condition: (r.company.getIdentifier() == p.company.getIdentifier())
   action: ALLOW
 }
 
 /*
 * Cargo Request Management
 */
-rule AllowCargoCompanyViewCargoRequest {
+rule AllowCargoCompanyViewAndCreateCargoRequest {
   description:  "Allow all cargo company to view Cargo Request"
   participant (p): "org.airline.airChain.CargoEmployee"
-  operation: READ
+  operation: READ, CREATE
   resource (r): "org.airline.airChain.CargoRequest"
-  condition: (p.role == "OFFICER")
+  condition: (p.role == "OFFICER" && r.cargo.company.getIdentifier() == p.company.getIdentifier())
   action: ALLOW
 }
 

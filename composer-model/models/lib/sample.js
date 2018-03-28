@@ -30,16 +30,20 @@ function HandleFlightServiceRequest(tx) {
     //Get access to calling participant
     var caller = getParticipant();
 
-    //Only Allow if Service is attached to flight the participant is incharge of
-    var isAuthorised = caller.company.flights.filter(function(flight) {
-        return flight.getIdentifier() === service.flight.getIdentifier();
+    //Only allow if Service is attached to flight the participant is incharge of
+    var isAuthorised = caller.company.flights.filter(function (flight) {
+        return flight.getIdentifier() == service.flight.getIdentifier();
     }).length === 1;
 
     if (!isAuthorised)
         throw new Error("Not authorised to approve flight services");
 
+    //Only allow if flight status is "SCHEDULED"
+    if (service.flight.status != "SCHEDULED")
+        throw new Error("Flight is not in scheduled status!");
+
     //Process Services
-    service.status = isApproved ? SERVICE_STATUS.APPROVED : SERVICE_STATUS.REJECTED;
+    service.status = isApproved ? "APPROVED" : "REJECTED";
     saveService(service);
 }
 
@@ -54,11 +58,18 @@ function ProcessFlightServiceDelivery(tx) {
     var isApproved = tx.isApproved;
 
     var caller = getParticipant();
-    var isAuthorised =
+    var isAuthorised = service.flight.cabinCrews.filter(function (crew) {
+        return crew.getIdentifier() == caller.getIdentifier();
+    }).length == 1;
 
+    if (!isAuthorised)
+        throw new Error("Staff not authorised to confirm services");
 
-        //Process Services
-        service.status = isApproved ? SERVICE_STATUS.DONE : SERVICE_STATUS.NOT_DONE;
+    if (service.flight.status != "SCHEDULED")
+        throw new Error("Flight is not in scheduled status");
+
+    //Process Services
+    service.status = isApproved ? "DONE" : "NOT_DONE";
     saveService(service);
 }
 
@@ -76,11 +87,16 @@ function IssueFlightServiceRequest(tx) {
     var service = tx.service;
     var flight = tx.flight;
 
+    if (flight.status != "SCHEDULED")
+        throw new Error("Flight not in scheduled status");
+
     //Add Services to Flight
     flight.services.push(service);
+    service.flight = flight;
 
-    //Save Flight
+    //Save Flight & service
     saveFlight(flight);
+    saveService(service);
 }
 
 /**
@@ -92,7 +108,7 @@ function CollectCargoFromWarehouse(tx) {
     var cargo = tx.cargo;
 
     //Update Cargo status
-    cargo.status = CARGO_STATUS.COLLECTED;
+    cargo.status = "COLLECTED";
 
     //Save cargos
     saveCargo(cargo);
@@ -112,7 +128,7 @@ function ConfirmCargoToWarehouse(tx) {
     var cargo = tx.cargo;
 
     //Update Cargo status
-    cargo.status = CARGO_STATUS.DELIVERED;
+    cargo.status = "DELIVERED";
 
     //Save cargos
     saveCargo(cargo);
@@ -130,9 +146,9 @@ function AssignCargoToFlight(tx) {
 
     //Ensure Cargo does not exceed weight limit
     var limit = flight.aircraft.cargoCapacity;
-    var loadedWight = flight.cargos.reduce(function(a, b) { a + b.weight }, 0);
+    var loadedWeight = flight.cargos.reduce(function (a, b) { a + b.weight }, 0);
 
-    if (loadedWight + cargo.weight > limit)
+    if (loadedWeight + cargo.weight > limit)
         throw new Error('Total weight has exceeded limit');
 
 
@@ -140,7 +156,7 @@ function AssignCargoToFlight(tx) {
     flight.cargos.push(cargo);
 
     //Update Cargo status
-    cargo.status = CARGO_STATUS.APPROVED;
+    cargo.status = "APPROVED";
     cargo.flight = flight;
 
     //Save cargo
@@ -171,16 +187,16 @@ function AcceptCargoRequest(tx) {
 
     //Ensure Cargo does not exceed weight limit
     var limit = flight.aircraft.cargoCapacity;
-    var loadedWight = flight.cargos.reduce(function(a, b) { a + b.weight }, 0);
+    var loadedWeight = flight.cargos.reduce(function (a, b) { a + b.weight }, 0);
 
-    if (loadedWight + cargoRequest.cargo.weight > limit)
+    if (loadedWeight + cargoRequest.cargo.weight > limit)
         throw new Error('Total weight has exceeded limit');
 
     //Attach Cargos to flight
     flight.cargos.push(cargo);
 
     //Update Cargo status
-    cargo.status = CARGO_STATUS.APPROVED;
+    cargo.status = "APPROVED";
     cargo.flight = flight;
 
     //Update cargoRequest status
@@ -204,35 +220,35 @@ function AcceptCargoRequest(tx) {
 
 function saveCargo(cargo) {
     return getAssetRegistry(namespace + ".Cargo")
-        .then(function(cargoRegistry) {
+        .then(function (cargoRegistry) {
             return cargoRegistry.update(cargo);
         })
 }
 
 function saveService(service) {
     return getAssetRegistry(namespace + ".Service")
-        .then(function(serviceRegistry) {
+        .then(function (serviceRegistry) {
             return serviceRegistry.update(service);
         })
 }
 
 function saveAircraft(aircraft) {
     return getAssetRegistry(namespace + ".Aircraft")
-        .then(function(aircraftRegistry) {
+        .then(function (aircraftRegistry) {
             return aircraftRegistry.update(aircraft);
         })
 }
 
 function saveFlight(flight) {
     return getAssetRegistry(namespace + ".Flight")
-        .then(function(flightRegistry) {
+        .then(function (flightRegistry) {
             return flightRegistry.update(flight);
         })
 }
 
 function saveCargoRequest(cargoRequest) {
     return getAssetRegistry(namespace + ".CargoRequest")
-        .then(function(cargoRegistry) {
+        .then(function (cargoRegistry) {
             return cargoRegistry.update(cargoRequest);
         })
 }
