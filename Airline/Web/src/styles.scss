@@ -4,6 +4,7 @@ body {  width:100%;margin: 0; -webkit-user-select: none; position: relative;font
 input,button,select{ -webkit-appearance:none;outline:medium;}
 ul,li{list-style:none}
 @import "~@angular/material/prebuilt-themes/indigo-pink.css";
+@import "../node_modules/ngx-datetime-picker/ngx-datetime-picker.css";
 $navTop: 3rem;
 
 html{
