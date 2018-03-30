@@ -22,6 +22,7 @@ export class AircraftComponent implements OnInit {
     aircraft: any = {
         model: '',
         id: '',
+        company:'Airline1',
         passengerCapacity: 0,
         cargoCapacity: 0,
     };
@@ -48,6 +49,7 @@ export class AircraftComponent implements OnInit {
         this.aircraft = {
             model: '',
             id: '',
+            company: 'Airline1',
             passengerCapacity: 0,
             cargoCapacity: 0,
         };
@@ -75,7 +77,7 @@ export class AircraftComponent implements OnInit {
 
 
         await this.http.put(
-            `${this.service.ENDPOINT}/user/${this.authService.admin.id}/api/org.airline.airChain.Aircraft/${this.aircraft.id}`,
+            `${this.service.ENDPOINT}/blockchain/user/${this.authService.admin.id}/api/org.airline.airChain.Aircraft/${this.aircraft.id}`,
             this.aircraft,
             {withCredentials: true})
             .toPromise();
@@ -86,7 +88,7 @@ export class AircraftComponent implements OnInit {
 
     async deleteAircraft() {
         await this.http.delete(
-            `${this.service.ENDPOINT}/user/${this.authService.admin.id}/api/org.airline.airChain.Aircraft/${this.aircraft.id}`,
+            `${this.service.ENDPOINT}/blockchain/user/${this.authService.admin.id}/api/org.airline.airChain.Aircraft/${this.aircraft.id}`,
             {withCredentials: true})
             .toPromise();
 

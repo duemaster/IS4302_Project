@@ -83,7 +83,7 @@ public class BlockChainController extends Controller {
                     Unirest.delete("http://localhost:" + user.getPortNumber() + "/" + url)
                             .asJson();
 
-            return ok(Json.parse(serverReply.getBody().toString()));
+            return ok(serverReply.getStatusText());
         } catch (UnirestException e) {
             e.printStackTrace();
             return internalServerError();

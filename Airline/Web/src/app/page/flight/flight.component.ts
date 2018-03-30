@@ -30,6 +30,7 @@ export class FlightComponent implements OnInit {
         origin: '',
         destination: '',
         paxCount: 0,
+        company:'Airline1',
         status: 'SCHEDULED',
         crew:[{}],
         cargo:[{}],
@@ -103,6 +104,7 @@ export class FlightComponent implements OnInit {
             paxCount: 0,
             origin: '',
             destination: '',
+            company:'Airline1',
             status: 'SCHEDULED',
             crew:[{}],
             cargo:[{}],
@@ -134,7 +136,7 @@ export class FlightComponent implements OnInit {
     async editFlight() {
 
         await this.http.put(
-            `${this.service.ENDPOINT}/user/${this.authService.admin.id}/api/org.airline.airChain.Flight/${this.flight.id}`,
+            `${this.service.ENDPOINT}/blockchain/user/${this.authService.admin.id}/api/org.airline.airChain.Flight/${this.flight.id}`,
             this.flight,
             {withCredentials: true})
             .toPromise();

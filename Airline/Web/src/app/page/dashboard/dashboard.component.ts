@@ -97,10 +97,12 @@ export class DashboardComponent implements AfterViewInit {
     }
 
     async fetchStaffList() {
-        let staffList = await this.http.get(
+        let staffList: any = await this.http.get(
             `${this.service.ENDPOINT}/blockchain/user/${this.authService.admin.id}/api/org.airline.airChain.AirlineEmployee`,
             {withCredentials: true}
         ).toPromise();
+
+        staffList = staffList.filter((staff) => {return staff.id != this.authService.admin.id});
 
         this.loadDataInTable(staffList);
     }
