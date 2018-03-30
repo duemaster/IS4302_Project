@@ -1,6 +1,5 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
 import {MatTableDataSource, MatPaginator} from '@angular/material';
-import { NgxDateTimePickerModule } from  'ngx-date-time-picker';
 import {HttpClient} from "@angular/common/http";
 import {SettingService} from "../../service/setting/setting.service";
 import {AuthService} from "../../service/auth.service";
