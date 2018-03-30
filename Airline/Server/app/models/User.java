@@ -2,6 +2,7 @@ package models;
 
 import io.ebean.Finder;
 import io.ebean.Model;
+import io.ebean.annotation.JsonIgnore;
 
 import javax.persistence.*;
 import java.util.Date;
@@ -30,6 +31,9 @@ public class User extends Model {
     private String password;
 
     private String role;
+
+    @JsonIgnore
+    private String processId;
 
     public static Finder<Long, User> find = new Finder<>(User.class);
 
@@ -71,6 +75,14 @@ public class User extends Model {
 
     public void setRole(String role) {
         this.role = role;
+    }
+
+    public String getProcessId() {
+        return processId;
+    }
+
+    public void setProcessId(String processId) {
+        this.processId = processId;
     }
 
     public long getPortNumber() {

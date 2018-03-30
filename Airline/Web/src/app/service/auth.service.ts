@@ -29,7 +29,13 @@ export class AuthService {
         }
     }
 
-    logout() {
+    async logout() {
+        await this.http.post(
+            `${this.setting.ENDPOINT}/user/logout`,
+            this.admin,
+            {withCredentials: true}
+        ).toPromise();
+
         localStorage.removeItem("admin");
         this.admin = null;
     }

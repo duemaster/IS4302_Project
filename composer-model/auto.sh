@@ -1,8 +1,12 @@
 #!/bin/bash 
 # cd to composer-playground folder
-# echo "y" | ./playground.sh down # clear playground
 
-# echo "y" | ./playground.sh 
+# clear playground
+# echo "y" | ./playground.sh down; 
+
+# timeout 60s echo "y" | ./playground.sh; 
+
+# echo "y" | ./playground.sh
 
 # Create CA
 docker exec -it ca.org1.example.com fabric-ca-client enroll -M registrar -u http://admin:adminpw@localhost:7054;

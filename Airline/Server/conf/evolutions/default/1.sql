@@ -23,6 +23,7 @@ create table user (
   name                          varchar(255),
   password                      varchar(255),
   role                          varchar(255),
+  process_id                    varchar(255),
   time_stamp                    datetime(6) not null,
   constraint uq_user_name unique (name),
   constraint pk_user primary key (id)

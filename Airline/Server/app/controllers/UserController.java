@@ -34,16 +34,25 @@ public class UserController extends Controller {
             return badRequest("Username or Password is incorrect!");
         }
 
-        VagrantUtil.startServer(user);
-
-        //Wait for 2 sec for server to start up
-//        try {
-//            Thread.sleep(5000);
-//        } catch (InterruptedException e) {
-//            e.printStackTrace();
-//        }
+        String processId = VagrantUtil.startServer(user);
+        user.setProcessId(processId);
+        user.save();
 
         return ok(Json.toJson(user));
+    }
+
+    public Result logout() {
+        User requestUser = Json.fromJson(request().body().asJson(), User.class);
+        User user = User.find.byId(requestUser.getId());
+
+        if (user == null)
+            return badRequest();
+
+        VagrantUtil.stopServer(user);
+        user.setProcessId("");
+        user.save();
+
+        return ok();
     }
 
     public Result createNewUser(long id) {

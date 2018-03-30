@@ -18,6 +18,7 @@ GET           /setup/createOfficer             controllers.SetUpController.creat
 # 说明：无
 #*********************************************************************
 POST          /user/login                      controllers.UserController.login()
+POST          /user/logout                     controllers.UserController.logout()
 POST          /user/:id/create                 controllers.UserController.createNewUser(id: Long)
 POST          /user/:id/update                 controllers.UserController.updateUser(id: Long)
 POST          /user/:id/delete                 controllers.UserController.deleteUser(id: Long)
