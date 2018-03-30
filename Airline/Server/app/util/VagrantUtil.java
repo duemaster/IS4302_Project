@@ -9,7 +9,46 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class VagrantUtil {
-    public static final String boxId = "fd8245a";
+    public static String boxId = "";
+
+    public static String fetchVagrantBoxId() {
+        String boxId = "";
+
+        Pattern boxIdRegex = Pattern.compile(".?\\w+");
+
+        try {
+            Process p = Runtime.getRuntime().exec(
+                    "vagrant global-status"
+            );
+
+            String s = null;
+            BufferedReader stdInput = new BufferedReader(new InputStreamReader(p.getInputStream()));
+            BufferedReader stdError = new BufferedReader(new InputStreamReader(p.getErrorStream()));
+
+            // read the output from the command
+            System.out.println("Here is the standard output of the command:\n");
+            while ((s = stdInput.readLine()) != null) {
+                if (s.contains("virtualbox")) {
+                    System.out.println(s);
+                    Matcher match = boxIdRegex.matcher(s);
+                    if (match.find()) {
+                        boxId = match.group(0);
+                        break;
+                    }
+                }
+            }
+
+            // read any errors from the attempted command
+            System.out.println("Here is the standard error of the command (if any):\n");
+            while ((s = stdError.readLine()) != null) {
+                System.out.println(s);
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        return boxId;
+    }
 
     public static void importUserCard(User user) {
         // Create User Card and import in Fabric Composer
