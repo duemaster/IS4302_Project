@@ -19,7 +19,7 @@ create table settings (
 );
 
 create table user (
-  id                            bigint auto_increment not null,
+  id                            bigint not null,
   name                          varchar(255),
   password                      varchar(255),
   role                          varchar(255),

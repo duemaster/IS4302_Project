@@ -9,10 +9,9 @@ import java.util.Date;
 
 @Entity
 public class User extends Model {
-    //Initial Id set to 9000
-    @TableGenerator(name = "User", initialValue = 9000)
-
     public final static long PORT_OFFSET = 9000;
+
+    public final static long STARTING_ID = 20000;
 
     public final static String ROLE_OFFICER = "OFFICER";
     public final static String ROLE_STAFF = "STAFF";
@@ -20,6 +19,7 @@ public class User extends Model {
     public static String COMPANY_ID = "Airline1";
 
     @Id
+    @GeneratedValue(generator = "userIdGenerator")
     private long id;
 
     @Version
@@ -86,8 +86,7 @@ public class User extends Model {
     }
 
     public long getPortNumber() {
-        return 3001;
-        //return this.id + PORTOFFSET;
+        return this.id;
     }
 
     public String getUserCardName() {
