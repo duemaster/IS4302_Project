@@ -34,7 +34,7 @@
                         <!-- Model Column -->
                         <ng-container matColumnDef="Date">
                             <mat-header-cell *matHeaderCellDef> Date</mat-header-cell>
-                            <mat-cell *matCellDef="let element"> {{element.departureTime}}</mat-cell>
+                            <mat-cell *matCellDef="let element"> {{element.departureTime | date}}</mat-cell>
                         </ng-container>
 
                         <!-- Manufacturer Column -->
@@ -121,7 +121,7 @@
                                 <label for="departDate" class="control-label">Depart Date</label>
                             </div>
                             <div class="col-sm-4">
-                                <ngx-datetime-picker [(selectedDateTime)]="dateTimeExample"></ngx-datetime-picker>
+                                <ngx-datetime-picker id="departDate" [(selectedDateTime)]="dateTimeExample"></ngx-datetime-picker>
                                 <!--<ngx-datetime-picker id="departDate"-->
                                                      <!--[(selectedDateTime)]="flight.departureTime">-->
                                     <!---->
@@ -146,40 +146,42 @@
                         </div>
                         <div class="form-group">
                             <div class="col-sm-2">
-                                <label for="ccs" class="control-label">Cabin Crew Supervisor</label>
+                                <label for="ccs" class="control-label">Cabin Crew</label>
                             </div>
                             <div class="col-sm-4">
-                                <select id="ccs" name="ccs" [(ngModel)]='flight.crew[0]' class="form-control">
-                                    <option *ngFor="let cc of crew" value="{{cc.id}}">{{cc.name}}</option>
+                                <select id="ccs" name="ccs" [(ngModel)]='flight.cabinCrews[0]' class="form-control">
+                                    <option *ngFor="let cc of crew" [ngValue]="cc.id">{{cc.name}}</option>
                                 </select>
                             </div>
-                            <div class="col-sm-3">
+                            <div class="col-sm-2">
                                 <label for="aircraft" class="control-label">Aircraft</label>
                             </div>
-                            <div class="col-sm-9">
+                            <div class="col-sm-4">
                                 <select id="aircraft" name="aircraft" [(ngModel)]='flight.aircraft'
                                         class="form-control">
-                                    <option *ngFor="let ac of aircraft" value="{{ac.id}}">{{ac.id}}</option>
+                                    <option *ngFor="let ac of aircraft" [ngValue]="ac.id">{{ac.id}}</option>
                                 </select>
                             </div>
                         </div>
                         <div class="form-group">
-                            <div class="col-sm-2">
+                            <div class="col-sm-4">
                                 <label for="delAgent" class="control-label">Cargo Deliver Agent</label>
                             </div>
-                            <div class="col-sm-4">
+                            <div class="col-sm-8">
                                 <select id="delAgent" name="delAgent" [(ngModel)]='flight.deliverCompany'
                                         class="form-control">
-                                    <option *ngFor="let agent of agentList" value="{{agent.id}}">{{agent.name}}</option>
+                                    <option *ngFor="let agent of agentList" [ngValue]="agent.id">{{agent.name}}</option>
                                 </select>
                             </div>
-                            <div class="col-sm-3">
+                        </div>
+                        <div class="form-group">
+                            <div class="col-sm-4">
                                 <label for="colAgent" class="control-label">Cargo Collection Agent</label>
                             </div>
-                            <div class="col-sm-9">
+                            <div class="col-sm-8">
                                 <select id="colAgent" name="colAgent" [(ngModel)]='flight.collectCompany'
                                         class="form-control">
-                                    <option *ngFor="let agent of agentList" value="{{agent.id}}">{{agent.name}}</option>
+                                    <option *ngFor="let agent of agentList" [ngValue]="agent.id">{{agent.name}}</option>
                                 </select>
                             </div>
                         </div>
@@ -195,7 +197,7 @@
                         </div>
                     </div>
                     <div class="modal-footer">
-                        <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+                        <button type="button" class="btn btn-default" data-dismiss="modal" (click)="cancel()">Cancel</button>
                         <button type="button" class="btn btn-primary" data-dismiss="modal" (click)="processFlight()">
                             Done
                         </button>
