@@ -23,7 +23,7 @@ CREATE USER 'GHA'@'localhost' IDENTIFIED BY 'GHA';
 GRANT SELECT, INSERT, UPDATE, DELETE, CREATE, DROP, INDEX, ALTER, CREATE TEMPORARY TABLES, LOCK TABLES, REFERENCES ON GHA.* TO 'GHA'@'localhost';
 ```
 
-## Install Node Dependencies (Inside Ionic Project Directory)
+## Install Node Dependencies (Inside Ionic Project Directory Or Angular Project Directory)
 ```bash
 npm install
 ```
@@ -37,4 +37,12 @@ ionic serve
 ## Start Angular App 
 ```bash
 ng serve -o
+```
+
+## Set up Vagrant Environment
+```bash
+vagrant up
+cd composer-playground
+./playground.sh
+./setup.sh
 ```
