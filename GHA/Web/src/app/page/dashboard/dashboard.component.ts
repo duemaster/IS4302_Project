@@ -1,5 +1,8 @@
 import {Component, OnInit, ViewChild} from '@angular/core';
 import {MatTableDataSource, MatPaginator} from '@angular/material';
+import {AuthService} from "../../service/auth.service";
+import {SettingService} from "../../service/setting/setting.service";
+import {HttpClient} from "@angular/common/http";
 
 @Component({
     selector: 'app-dashboard',
@@ -8,14 +11,16 @@ import {MatTableDataSource, MatPaginator} from '@angular/material';
 })
 export class DashboardComponent implements OnInit {
 
-    constructor() {
+    constructor(private http: HttpClient,
+                private service: SettingService,
+                public authService: AuthService) {
     }
 
     ngOnInit() {
     }
 
     displayedColumns = ['Staff Id', 'Role', 'Name', "Option"];
-    dataSource = new MatTableDataSource(ELEMENT_DATA);
+    dataSource = new MatTableDataSource([]);
     staff: any = {
         id: '',
         name: '',
@@ -33,6 +38,7 @@ export class DashboardComponent implements OnInit {
 
     ngAfterViewInit() {
         this.dataSource.paginator = this.paginator;
+        this.fetchStaffList();
     }
 
 
@@ -45,25 +51,71 @@ export class DashboardComponent implements OnInit {
         };
     }
 
+    processStaff() {
+        if (this.isCreate)
+            this.addStaff();
+        else
+            this.editStaff();
+    }
+
+    async addStaff() {
+        await this.http.post(
+            `${this.service.ENDPOINT}/user/${this.authService.admin.id}/create`,
+            this.staff,
+            {withCredentials: true})
+            .toPromise();
+
+        //Refresh Data Table
+        this.fetchStaffList();
+    }
+
+    async editStaff() {
+
+        console.log(this.staff);
+
+        await this.http.post(
+            `${this.service.ENDPOINT}/user/${this.authService.admin.id}/update`,
+            this.staff,
+            {withCredentials: true})
+            .toPromise();
+
+        //Refresh Data Table
+        this.fetchStaffList();
+    }
+
+    async deleteStaff() {
+        await this.http.post(
+            `${this.service.ENDPOINT}/user/${this.authService.admin.id}/delete`,
+            this.staff,
+            {withCredentials: true})
+            .toPromise();
+
+        //Refresh Data Table
+        this.fetchStaffList();
+    }
+
     update(element) {
         this.isCreate = false;
         this.staff = element;
+    }
+
+    async fetchStaffList() {
+        let staffList: any = await this.http.get(
+            `${this.service.ENDPOINT}/blockchain/user/${this.authService.admin.id}/api/org.airline.airChain.GHAEmployee`,
+            {withCredentials: true}
+        ).toPromise();
+
+        staffList = staffList.filter((staff) => {return staff.id != this.authService.admin.id});
+
+        this.loadDataInTable(staffList);
+    }
+
+    loadDataInTable(staffList) {
+        this.dataSource = new MatTableDataSource<any>(staffList);
+        this.dataSource.paginator = this.paginator;
     }
 
 }
 
 
 
-export interface Staff {
-    name: string;
-    id: string;
-    role: string;
-}
-
-const ELEMENT_DATA: Staff[] = [
-    {id: '001', name: 'Apple', role: 'Officer'},
-    {id: '002', name: 'Ball', role: 'Staff'},
-    {id: '003', name: 'Cat', role: 'Staff'},
-    {id: '004', name: 'Dog', role: 'Staff'},
-
-];
