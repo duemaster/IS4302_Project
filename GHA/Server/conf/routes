@@ -11,3 +11,23 @@ GET        /assets/*file        controllers.Assets.versioned(path="/public", fil
 #*********************************************************************
 ### Terminal Management Module
 GET        /                    controllers.Application.indexPage
+
+#*********************************************************************
+# 功能: User System
+# 说明：无
+#*********************************************************************
+POST          /user/login                      controllers.UserController.login()
+POST          /user/logout                     controllers.UserController.logout()
+POST          /user/:id/create                 controllers.UserController.createNewUser(id: Long)
+POST          /user/:id/update                 controllers.UserController.updateUser(id: Long)
+POST          /user/:id/delete                 controllers.UserController.deleteUser(id: Long)
+
+
+#*********************************************************************
+# 功能: Blockchain System
+# 说明：Redirect to the correct COMPOSER-REST-SERVER
+#*********************************************************************
+GET           /blockchain/user/:id/*url        controllers.BlockChainController.redirectGET(id: Long, url)
+POST          /blockchain/user/:id/*url        controllers.BlockChainController.redirectPOST(id: Long, url)
+PUT           /blockchain/user/:id/*url        controllers.BlockChainController.redirectPUT(id: Long, url)
+DELETE        /blockchain/user/:id/*url        controllers.BlockChainController.redirectDELETE(id: Long, url)

@@ -9,12 +9,14 @@ import java.util.Date;
 
 @Entity
 public class User extends Model {
-    public final static long STARTING_ID = 20000;
+    public final static long STARTING_ID = 200020;
 
     public final static String ROLE_OFFICER = "OFFICER";
     public final static String ROLE_STAFF = "STAFF";
 
-    public static String COMPANY_ID = "Airline1";
+    public static String COMPANY_ID = "GHA1";
+    public static String BLOCKCHAIN_EMPLOYEE_CLASSNAME = "org.airline.airChain.GHAEmployee";
+    public static String BLOCKCHAIN_COMPANY_CLASSNAME = "org.airline.airChain.GHACompany";
 
     @Id
     @GeneratedValue(generator = "userIdGenerator")

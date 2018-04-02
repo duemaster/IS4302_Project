@@ -9,12 +9,14 @@ import java.util.Date;
 
 @Entity
 public class User extends Model {
-    public final static long STARTING_ID = 20000;
+    public final static long PORT_OFFSET = 9000;
+
+    public final static long STARTING_ID = 20009;
 
     public final static String ROLE_OFFICER = "OFFICER";
     public final static String ROLE_STAFF = "STAFF";
 
-    public static String COMPANY_ID = "Airline1";
+    public static String COMPANY_ID = "Cargo1";
 
     @Id
     @GeneratedValue(generator = "userIdGenerator")
