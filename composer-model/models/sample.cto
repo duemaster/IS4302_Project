@@ -43,6 +43,7 @@ asset Flight identified by id {
     o String id
     o String origin
     o String destination
+    o String flightNumber
     o DateTime departureTime
     o Integer paxCount
     o FLIGHT_STATUS status
