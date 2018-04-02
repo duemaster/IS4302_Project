@@ -55,7 +55,7 @@ public class VagrantUtil {
         try {
             Process p = Runtime.getRuntime().exec(
                     "vagrant ssh " + boxId + " " +
-                            "-- sudo docker exec cli composer identity issue -c admin1@air-chain -u " + user.getId() + " -a " + User.BLOCKCHAIN_EMPLOYEE_CLASSNAME + "#" + user.getId() + "; " +
+                            "-- sudo docker exec cli composer identity issue -c admin1@air-chain -u " + user.getId() + " -a org.airline.airChain.AirlineEmployee#" + user.getId() + "; " +
                             "sudo docker exec cli composer card import -f " + user.getUserCardName() + ".card; " +
                             "exit;"
             );
