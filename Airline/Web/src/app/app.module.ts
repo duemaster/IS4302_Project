@@ -23,6 +23,7 @@ import { MatPaginatorModule } from "@angular/material/paginator"
 import {MatFormFieldControl, MatInputModule, MatNativeDateModule} from "@angular/material";
 import {MatDatepickerModule} from '@angular/material/datepicker';
 import {DateTimePickerModule} from 'ngx-datetime-picker';
+import {BlockChainService} from "./service/blockchain/block-chain.service";
 @NgModule({
     declarations: [
         AppComponent,
@@ -54,7 +55,7 @@ import {DateTimePickerModule} from 'ngx-datetime-picker';
             primaryColour: '#0aa89e',
         })
     ],
-    providers: [AuthService, AuthGuard, ToastModule,Util,SettingService],
+    providers: [AuthService, AuthGuard, ToastModule,Util,SettingService, BlockChainService],
     bootstrap: [AppComponent],
 })
 export class AppModule {

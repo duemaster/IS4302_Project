@@ -1,27 +1,30 @@
-import { Component, OnInit, ViewChild } from '@angular/core';
+import {Component, OnInit, ViewChild} from '@angular/core';
 import {MatTableDataSource, MatPaginator} from '@angular/material';
 import {HttpClient} from "@angular/common/http";
 import {SettingService} from "../../service/setting/setting.service";
 import {AuthService} from "../../service/auth.service";
-import moment = require("moment");
+import {BlockChainService} from "../../service/blockchain/block-chain.service";
 
 @Component({
-  selector: 'app-flight',
-  templateUrl: './flight.component.html',
-  styleUrls: ['./flight.component.scss']
+    selector: 'app-flight',
+    templateUrl: './flight.component.html',
+    styleUrls: ['./flight.component.scss']
 })
 export class FlightComponent implements OnInit {
 
-  constructor(private http: HttpClient,
-              private service: SettingService,
-              public authService: AuthService) { }
+    constructor(private http: HttpClient,
+                private service: SettingService,
+                public authService: AuthService,
+                public blockChainService: BlockChainService) {
+    }
 
-  ngOnInit() {
-  }
+    ngOnInit() {
+    }
 
 
-    displayedColumns = ['FlightNo', 'Date', 'Departure', 'Landing','Status', 'Option'];
+    displayedColumns = ['FlightNo', 'Date', 'Departure', 'Landing', 'Status', 'Option'];
     dataSource = new MatTableDataSource([]);
+    dateTimeExample;
 
     flight = {
         departureTime: '',
@@ -29,13 +32,13 @@ export class FlightComponent implements OnInit {
         origin: '',
         destination: '',
         paxCount: 0,
-        company:'Airline1',
+        company: 'Airline1',
         status: 'SCHEDULED',
-        crew:[{}],
-        cargo:[{}],
-        service:[{}],
-        aircraft:{},
-        collectCompany:{},
+        cabinCrews: [{}],
+        cargo: [{}],
+        service: [{}],
+        aircraft: {},
+        collectCompany: {},
         deliverCompany: {}
     };
 
@@ -64,18 +67,16 @@ export class FlightComponent implements OnInit {
         this.fetchAgentList();
     }
 
-    update(element){
+    update(element) {
+        this.dateTimeExample = new Date(element.departureTime);
         this.isCreate = false;
         this.flight = element;
     }
 
-    getDateTime($event){
-        this.flight.departureTime = moment().format('DD/MM/YYYY HH:mm');
-    }
 
-    async viewCargo(element){
+    async viewCargo(element) {
         let cargoList = element.cargo;
-        for(let item of cargoList){
+        for (let item of cargoList) {
             let cargoInfo = await this.http.get(
                 `${this.service.ENDPOINT}/blockchain/user/${this.authService.admin.id}/api/org.airline.airChain.Cargo/${item.id}`,
                 {withCredentials: true}
@@ -84,9 +85,9 @@ export class FlightComponent implements OnInit {
         }
     }
 
-    async viewService(element){
+    async viewService(element) {
         let service = element.service;
-        for(let item of service){
+        for (let item of service) {
             let serviceInfo = await this.http.get(
                 `${this.service.ENDPOINT}/blockchain/user/${this.authService.admin.id}/api/org.airline.airChain.Cargo/${item.id}`,
                 {withCredentials: true}
@@ -97,19 +98,20 @@ export class FlightComponent implements OnInit {
 
     create() {
         this.isCreate = true;
+        this.dateTimeExample = new Date();
         this.flight = {
             departureTime: '',
             id: '',
             paxCount: 0,
             origin: '',
             destination: '',
-            company:'Airline1',
+            company: 'Airline1',
             status: 'SCHEDULED',
-            crew:[{}],
-            cargo:[{}],
-            service:[{}],
-            aircraft:{},
-            collectCompany:{},
+            cabinCrews: [{}],
+            cargo: [{}],
+            service: [{}],
+            aircraft: {},
+            collectCompany: {},
             deliverCompany: {}
         };
     }
@@ -122,6 +124,10 @@ export class FlightComponent implements OnInit {
     }
 
     async addFlight() {
+        this.flight.departureTime = this.dateTimeExample;
+
+        console.log(this.flight);
+
         await this.http.post(
             `${this.service.ENDPOINT}/blockchain/user/${this.authService.admin.id}/api/org.airline.airChain.Flight`,
             this.flight,
@@ -133,7 +139,7 @@ export class FlightComponent implements OnInit {
     }
 
     async editFlight() {
-
+        this.flight.departureTime = this.dateTimeExample;
         await this.http.put(
             `${this.service.ENDPOINT}/blockchain/user/${this.authService.admin.id}/api/org.airline.airChain.Flight/${this.flight.id}`,
             this.flight,
@@ -144,7 +150,7 @@ export class FlightComponent implements OnInit {
         this.fetchFlightList();
     }
 
-    async cancelFlight(){
+    async cancelFlight() {
         this.flight.status = 'CANCELLED';
         await this.http.put(
             `${this.service.ENDPOINT}/blockchain/user/${this.authService.admin.id}/api/org.airline.airChain.Flight/${this.flight.id}`,
@@ -156,43 +162,77 @@ export class FlightComponent implements OnInit {
         this.fetchFlightList();
     }
 
-    async acceptService(service){
+    async acceptService(service) {
         await this.http.post(
             `${this.service.ENDPOINT}/blockchain/user/${this.authService.admin.id}/api/org.airline.airChain.HandleFlightServiceRequest`,
             service,
             {withCredentials: true})
             .toPromise();
-        service.status ='APPROVED';
+        service.status = 'APPROVED';
     }
 
-    async fetchFlightList(){
-        let flightList = await this.http.get(
+    async fetchFlightList() {
+        let flightList: any = await this.http.get(
             `${this.service.ENDPOINT}/blockchain/user/${this.authService.admin.id}/api/org.airline.airChain.Flight`,
             {withCredentials: true}
         ).toPromise();
+
+        flightList = flightList.map((flight) => {
+            //Remove Cabin Crew NameSpace
+            if(flight.cabinCrews) {
+               flight.cabinCrews = flight.cabinCrews.map((cabinCrew) => {
+                   return cabinCrew.replace(this.blockChainService.AIRLINE_EMPLOYEE, "");
+               });
+           }
+           
+           //Remove GHA Company Namespace
+            if(flight.deliverCompany) {
+                flight.deliverCompany = flight.deliverCompany.replace(this.blockChainService.GHA_COMPANY, "");
+            }
+
+            if(flight.collectCompany) {
+                flight.collectCompany = flight.collectCompany.replace(this.blockChainService.GHA_COMPANY, "");
+            }
+
+            //Remove Aircraft NameSpace
+            if(flight.aircraft) {
+                flight.aircraft = flight.aircraft.replace(this.blockChainService.AIRCRAFT, "");
+            }
+
+           return flight;
+        });
+
+        console.log(flightList);
+
         this.loadDataInTable(flightList);
     }
 
     async fetchStaffList() {
         this.crew = await this.http.get(
-            `${this.service.ENDPOINT}/blockchain/user/${this.authService.admin.id}/api/org.airline.airChain.AirlineEmployee?filter=%7B%22role%22%3A%22STAFF%22%7D`,
+            `${this.service.ENDPOINT}/blockchain/user/${this.authService.admin.id}/api/org.airline.airChain.AirlineEmployee`,
             {withCredentials: true}
         ).toPromise();
+        this.crew = this.crew.filter((staff) => {
+            return staff.role == 'STAFF'
+        });
 
     }
 
-    async fetchAgentList(){
+    async fetchAgentList() {
         this.agentList = await this.http.get(
             `${this.service.ENDPOINT}/blockchain/user/${this.authService.admin.id}/api/org.airline.airChain.GHACompany`,
             {withCredentials: true}
         ).toPromise();
     }
 
-    async fetchAircraftList(){
-        this.aircraft = await this.http.get(
+    async fetchAircraftList() {
+        let airCraftList: any = await this.http.get(
             `${this.service.ENDPOINT}/blockchain/user/${this.authService.admin.id}/api/org.airline.airChain.Aircraft`,
             {withCredentials: true}
         ).toPromise();
+
+        this.aircraft = airCraftList;
+
     }
 
     loadDataInTable(flightList) {
