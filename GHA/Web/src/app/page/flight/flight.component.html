@@ -28,25 +28,25 @@
             <!-- ID Column -->
             <ng-container matColumnDef="FlightNo">
               <mat-header-cell *matHeaderCellDef> Flight No. </mat-header-cell>
-              <mat-cell *matCellDef="let element"> {{element.flightNo}} </mat-cell>
+              <mat-cell *matCellDef="let element"> {{element.id}} </mat-cell>
             </ng-container>
 
             <!-- Model Column -->
             <ng-container matColumnDef="Date">
               <mat-header-cell *matHeaderCellDef> Date </mat-header-cell>
-              <mat-cell *matCellDef="let element"> {{element.date}} </mat-cell>
+              <mat-cell *matCellDef="let element"> {{element.departureTime | date}} </mat-cell>
             </ng-container>
 
             <!-- Manufacturer Column -->
             <ng-container matColumnDef="Departure">
               <mat-header-cell *matHeaderCellDef> Departure </mat-header-cell>
-              <mat-cell *matCellDef="let element"> {{element.departure}} </mat-cell>
+              <mat-cell *matCellDef="let element"> {{element.origin}} </mat-cell>
             </ng-container>
 
             <!-- Cargo Capacity Column -->
             <ng-container matColumnDef="Landing">
               <mat-header-cell *matHeaderCellDef> Landing </mat-header-cell>
-              <mat-cell *matCellDef="let element"> {{element.landing}} </mat-cell>
+              <mat-cell *matCellDef="let element"> {{element.destination}} </mat-cell>
             </ng-container>
 
             <!-- Cargo Capacity Column -->
@@ -61,15 +61,12 @@
                 <button class="btn btn-sm btn-default" data-toggle="modal" data-target="#formModal" (click)="viewFlight(element)">
                   <span class="glyphicon glyphicon-eye-open"></span>
                 </button>
-                <!--<button class="btn btn-sm btn-default" data-toggle="modal" data-target="#cargoModal">-->
-                  <!--<span class="glyphicon glyphicon-shopping-cart"></span>-->
-                <!--</button>-->
-                <!--<button class="btn btn-sm btn-default" data-toggle="modal" data-target="#serviceModal">-->
-                  <!--<span class="glyphicon glyphicon-cutlery"></span>-->
-                <!--</button>-->
-                <!--<button class="btn btn-sm btn-default" data-toggle="modal" data-target="#deleteModal">-->
-                  <!--<span class="glyphicon glyphicon-trash"></span>-->
-                <!--</button>-->
+                <button class="btn btn-sm btn-default" data-toggle="modal" data-target="#cargoModal" (click)="viewCargo(element)">
+                  <span class="glyphicon glyphicon-shopping-cart"></span>
+                </button>
+                <button class="btn btn-sm btn-default" data-toggle="modal" data-target="#serviceModal" (click)="viewService(element)">
+                  <span class="glyphicon glyphicon-cutlery"></span>
+                </button>
               </mat-cell>
             </ng-container>
 
@@ -84,13 +81,7 @@
                          [showFirstLastButtons]="true">
           </mat-paginator>
         </div>
-        <div class="generateBtn">
 
-          <button type="button" class="btn ink-reaction btn-raised btn-primary" data-toggle="modal"
-                  data-target="#formModal" (click)="create()">
-            Add Flight
-          </button>
-        </div>
       </div>
     </div>
   </div>
@@ -100,8 +91,7 @@
       <div class="modal-content">
         <div class="modal-header">
           <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-          <h4 class="modal-title" id="formModalLabel" *ngIf="isCreate">Add Flight</h4>
-          <h4 class="modal-title" id="formModalLabel1" *ngIf="!isCreate">View Flight Details</h4>
+          <h4 class="modal-title" id="formModalLabel1">View Flight Details</h4>
         </div>
         <form class="form-horizontal" role="form">
           <div class="modal-body">
@@ -110,13 +100,13 @@
                 <label for="flightNo" class="control-label">Flight No.</label>
               </div>
               <div class="col-sm-4">
-                <input type="text" name="flightNo" id="flightNo" class="form-control" [(ngModel)]='flight.flightNo' placeholder="Flight No." [disabled]="true">
+                <input type="text" name="flightNo" id="flightNo" class="form-control" [(ngModel)]='flight.id' placeholder="Flight No." [disabled]="true">
               </div>
               <div class="col-sm-2">
                 <label for="departDate" class="control-label">Depart Date</label>
               </div>
               <div class="col-sm-4">
-                <input type="text" class="form-control" name="departDate" id="departDate" [(ngModel)]='flight.date' placeholder="Departure Date" data-inputmask="'alias': 'date'" [disabled]="true">
+                <span id="departDate">{{flight.departureTime | date}}</span>
               </div>
             </div>
             <div class="form-group">
@@ -124,28 +114,22 @@
                 <label for="depart" class="control-label">Departure</label>
               </div>
               <div class="col-sm-4">
-                <input type="text" name="depart" id="depart" class="form-control" [(ngModel)]='flight.departure' placeholder="Departure" [disabled]="true">
+                <input type="text" name="depart" id="depart" class="form-control" [(ngModel)]='flight.origin' placeholder="Departure" [disabled]="true">
               </div>
               <div class="col-sm-2">
                 <label for="landing" class="control-label">Landing</label>
               </div>
               <div class="col-sm-4">
-                <input type="text" name="landing" id="landing" class="form-control" [(ngModel)]='flight.landing' placeholder="Landing" [disabled]="true">
+                <input type="text" name="landing" id="landing" class="form-control" [(ngModel)]='flight.destination' placeholder="Landing" [disabled]="true">
               </div>
             </div>
             <div class="form-group">
-              <div class="col-sm-3">
+              <div class="col-sm-4">
                 <label for="ccs" class="control-label">Cabin Crew Supervisor</label>
               </div>
-              <div class="col-sm-4">
-                <input type="text" name="ccs" id="ccs" class="form-control" [(ngModel)]='flight.crew' placeholder="Crew" [disabled]="true">
+              <div class="col-sm-6">
+                <input type="text" name="ccs" id="ccs" class="form-control" [(ngModel)]='flight.cabinCrews[0]' placeholder="Crew" [disabled]="true">
               </div>
-              <!--<div class="col-sm-9">-->
-                <!--<select id="ccs" name="ccs" [(ngModel)]='flight.crew' class="form-control">-->
-                  <!--<option value="{{cc.id}}" *ngFor="let cc of crew">{{cc.name}}</option>-->
-
-                <!--</select>-->
-              <!--</div>-->
             </div>
             <div class="form-group">
               <div class="col-sm-3">
@@ -187,16 +171,17 @@
                     </tr>
                     </thead>
                     <tbody>
-                    <tr *ngFor="let item of cargoInfo">
-                      <td>{{item.item}}</td>
+                    <tr *ngFor="let item of cargoList">
+                      <td>{{item.description}}</td>
                       <td>{{item.weight}}</td>
-                      <td>{{item.owner}}</td>
+                      <td>{{item.company}}</td>
                       <td>{{item.status}}</td>
                     </tr>
                     </tbody>
                   </table>
                 </div><!--end .card-body -->
               </div><!--end .card -->
+
           <div class="modal-footer">
             <button type="button" class="btn btn-primary">Okay</button>
           </div>
@@ -216,25 +201,53 @@
         </div>
         <form class="form-horizontal" role="form">
           <div class="modal-body">
-            <table class="table no-margin">
-              <thead>
-              <tr>
-                <th>Item</th>
-                <th>GHA</th>
-                <th>Status</th>
-                <th>Action</th>
-              </tr>
-              </thead>
-              <tbody>
-              <tr *ngFor="let item of serviceInfo">
-                <td>{{item.item}}</td>
-                <td>{{item.agent}}</td>
-                <td>{{item.status}}</td>
-                <td><button type="button" class="btn btn-primary">Accept</button></td>
-              </tr>
-              </tbody>
-            </table>
-          </div><!--end .col -->
+            <h4>Add New Service</h4>
+            <div class="form-group">
+              <div class="col-sm-3">
+                <label for="serviceId" class="control-label">Service</label>
+              </div>
+              <div class="col-sm-9">
+                <input type="text" name="serviceId" id="serviceId" class="form-control" [(ngModel)]="newService.description" placeholder="Service Detail">
+              </div>
+            </div>
+            <div class="form-group">
+              <div class="col-sm-3">
+                <label for="serviceType" class="control-label">Type</label>
+              </div>
+              <div class="col-sm-9">
+                <select id="serviceType" name="serviceType" [(ngModel)]="newService.type" class="form-control">
+                  <option value="FOOD">Food</option>
+                  <option value="UTILITY">Utilities</option>
+                </select>
+              </div>
+            </div>
+            <button type="button" class="btn ink-reaction btn-raised btn-primary" (click)="addService()">
+              Add
+            </button>
+            <div class="card">
+              <div class="card-head">
+                <header>Current Services</header>
+              </div>
+              <div class="card-body">
+                <table class="table no-margin">
+                  <thead>
+                  <tr>
+                    <th>Service</th>
+                    <th>Type</th>
+                    <th>Status</th>
+                  </tr>
+                  </thead>
+                  <tbody>
+                  <tr *ngFor="let item of serviceList">
+                    <td>{{item.description}}</td>
+                    <td>{{item.type}}</td>
+                    <td>{{item.status}}</td>
+                  </tr>
+                  </tbody>
+                </table>
+              </div><!--end .card-body -->
+            </div><!--end .card -->
+          </div>
 
           <div class="modal-footer">
             <button type="button" class="btn btn-primary">Done</button>
@@ -252,10 +265,10 @@
       <div class="modal-content">
         <div class="modal-header">
           <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-          <h4 class="modal-title" id="simpleModalLabel">Cancelling Flight</h4>
+          <h4 class="modal-title" id="simpleModalLabel">Remove Service</h4>
         </div>
         <div class="modal-body">
-          <p>Do you want to cancel this flight?</p>
+          <p>Do you want to remove this service?</p>
         </div>
         <div class="modal-footer">
           <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>

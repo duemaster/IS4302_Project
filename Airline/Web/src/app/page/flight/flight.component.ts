@@ -46,8 +46,8 @@ export class FlightComponent implements OnInit {
 
     isCreate = false;
 
-    crew: any;
-    aircraft: any;
+    crewList: any;
+    aircraftList: any;
     agentList: any;
     serviceList: any;
 
@@ -208,11 +208,11 @@ export class FlightComponent implements OnInit {
     }
 
     async fetchStaffList() {
-        this.crew = await this.http.get(
+        this.crewList = await this.http.get(
             `${this.service.ENDPOINT}/blockchain/user/${this.authService.admin.id}/api/org.airline.airChain.AirlineEmployee`,
             {withCredentials: true}
         ).toPromise();
-        this.crew = this.crew.filter((staff) => {
+        this.crewList = this.crewList.filter((staff) => {
             return staff.role == 'STAFF'
         });
 
@@ -231,7 +231,7 @@ export class FlightComponent implements OnInit {
             {withCredentials: true}
         ).toPromise();
 
-        this.aircraft = airCraftList;
+        this.aircraftList = airCraftList;
 
     }
 

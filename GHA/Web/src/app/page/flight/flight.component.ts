@@ -1,6 +1,10 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
 import {MatTableDataSource, MatPaginator} from '@angular/material';
 import {MatDatepickerModule} from '@angular/material/datepicker';
+import {BlockChainService} from "../../service/blockchain/block-chain.service";
+import {AuthService} from "../../service/auth.service";
+import {SettingService} from "../../service/setting/setting.service";
+import {HttpClient} from "@angular/common/http";
 
 @Component({
   selector: 'app-flight',
@@ -9,7 +13,10 @@ import {MatDatepickerModule} from '@angular/material/datepicker';
 })
 export class FlightComponent implements OnInit {
 
-  constructor() { }
+  constructor(private http: HttpClient,
+              private service: SettingService,
+              public authService: AuthService,
+              public blockChainService: BlockChainService) { }
 
   ngOnInit() {
   }
@@ -17,26 +24,51 @@ export class FlightComponent implements OnInit {
     cargoInfo = [{item:'furniture', weight:40, owner: 'SIA Cargo', status:'Ready'},
         {item:'toys', weight:70, owner: 'Cathay Cargo', status:'Ready'},];
 
-    serviceInfo = [{item:'Business Class Meal X30', agent:'SATS', status:'Approved'},
-        {item:'Economic Class Meal X150', agent:'SATS', status:'Approved'},
-        {item:'Blanket + Pillow X200', agent:'SATS', status:'Approved'},
-        {item:'NewsPaper X100', agent:'DNATA', status:'Approved'},];
 
     displayedColumns = ['FlightNo', 'Date', 'Departure', 'Landing','Status', 'Option'];
-    dataSource = new MatTableDataSource(ELEMENT_DATA);
+    dataSource = new MatTableDataSource([]);
 
     flight = {
-        date: '',
-        flightNo: '',
-        departure: '',
-        landing: '',
+        departureTime: '',
+        id: '',
+        origin: '',
+        destination: '',
+        paxCount: 0,
+        company: '',
         status: '',
-        crew:'',
+        cabinCrews: [{}],
+        cargo: [{}],
+        service: [{}],
+        aircraft: {},
     };
 
-    isCreate = false;
+    newService = {
+        id:'',
+        description:'',
+        status:'',
+        type:'',
+        company:'GHA1',
+        flight:{},
+    };
 
-    crew = [{id: '001', name: 'Lily'}, {id: '002', name: 'Susan'}, {id: '003', name: 'Helen'}, {id: '004', name: 'Mary'}];
+    serviceList =[{
+        id:'',
+        description:'',
+        status:'',
+        type:'',
+    }];
+
+    cargoList = [{
+        id:'',
+        description:'',
+        status:'',
+        company:'',
+        weight:0,
+    }];
+
+    isCreate = false;
+    staffList:any;
+
 
     applyFilter(filterValue: string) {
         filterValue = filterValue.trim(); // Remove whitespace
@@ -48,40 +80,108 @@ export class FlightComponent implements OnInit {
 
     ngAfterViewInit() {
         this.dataSource.paginator = this.paginator;
+        this.fetchFlightList();
+        //this.fetchStaffList();
+    }
+
+    async viewService(element){
+        this.newService.flight= element.id;
+        this.serviceList = [];
+        for(let item in element.service){
+            let serviceDetail:any = await this.http.get(
+                `${this.service.ENDPOINT}/blockchain/user/${this.authService.admin.id}/api/org.airline.airChain.Service/${item}`,
+                {withCredentials: true}
+            ).toPromise();
+            this.serviceList.push(serviceDetail);
+        }
+    }
+
+    async viewCargo(element){
+        this.cargoList = [];
+        for(let item in element.cargo){
+            let cargoDetail:any = await this.http.get(
+                `${this.service.ENDPOINT}/blockchain/user/${this.authService.admin.id}/api/org.airline.airChain.Cargo/${item}`,
+                {withCredentials: true}
+            ).toPromise();
+            //Remove Cabin Crew NameSpace
+            if(cargoDetail.company) {
+                cargoDetail.company = cargoDetail.company.replace(this.blockChainService.CARGO_COMPANY, "");
+            }
+            this.cargoList.push(cargoDetail);
+        }
+
     }
 
     viewFlight(element){
-        this.isCreate = false;
         this.flight = element;
     }
 
-    create() {
-        this.isCreate = true;
-        this.flight = {
-            date: '',
-            flightNo: '',
-            departure: '',
-            landing: '',
-            status: '',
-            crew:'',
+    async addService(){
+        this.newService.id = (new Date).getTime()+"";
+        this.newService.status = 'PENDING';
+        await this.http.post(
+            `${this.service.ENDPOINT}/blockchain/user/${this.authService.admin.id}/api/org.airline.airChain.Service`,
+            this.newService,
+            {withCredentials: true})
+            .toPromise();
+        this.serviceList.push(this.newService);
+        this.newService = {
+            id:'',
+            description:'',
+            status:'',
+            type:'',
+            company:'GHA1',
+            flight:{},
         };
+
+    }
+
+    async fetchStaffList() {
+        this.staffList = await this.http.get(
+            `${this.service.ENDPOINT}/blockchain/user/${this.authService.admin.id}/api/org.airline.airChain.GHAEmployee`,
+            {withCredentials: true}
+        ).toPromise();
+        this.staffList = this.staffList.filter((staff) => {
+            return staff.role == 'STAFF'
+        });
+
+    }
+
+    async fetchFlightList() {
+        let flightList: any = await this.http.get(
+            `${this.service.ENDPOINT}/blockchain/user/${this.authService.admin.id}/api/org.airline.airChain.Flight`,
+            {withCredentials: true}
+        ).toPromise();
+
+        flightList = flightList.map((flight) => {
+            //Remove Cabin Crew NameSpace
+            if(flight.cabinCrews) {
+                flight.cabinCrews = flight.cabinCrews.map((cabinCrew) => {
+                    return cabinCrew.replace(this.blockChainService.AIRLINE_EMPLOYEE, "");
+                });
+            }
+
+
+            //Remove Aircraft NameSpace
+            if(flight.aircraft) {
+                flight.aircraft = flight.aircraft.replace(this.blockChainService.AIRCRAFT, "");
+            }
+
+            return flight;
+        });
+
+        console.log(flightList);
+
+        this.loadDataInTable(flightList);
+    }
+
+    loadDataInTable(flightList) {
+        this.dataSource = new MatTableDataSource<any>(flightList);
+        this.dataSource.paginator = this.paginator;
     }
 
 
-}
-export interface Flight {
-    date: string;
-    flightNo: string;
-    departure: string;
-    landing: string;
-    crew: string;
-    status: string
-}
 
-const ELEMENT_DATA: Flight[] = [
-    {flightNo: 'SQ851', date: '01-03-2018 08:20', departure: 'SIN', landing: 'CAN', status: 'Scheduled', crew: '001'},
-    {flightNo: 'SQ852', date: '01-03-2018 13:10', departure: 'CAN', landing: 'SIN', status: 'Scheduled', crew: '002'},
-    {flightNo: 'SQ800', date: '02-03-2018 02:20', departure: 'SIN', landing: 'PEK', status: 'Scheduled', crew: '003'},
-    {flightNo: 'SQ801', date: '02-03-2018 10:30', departure: 'PEK', landing: 'SIN', status: 'Scheduled', crew: '004'},
 
-];
+
+}

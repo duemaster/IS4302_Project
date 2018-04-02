@@ -50,7 +50,7 @@
                 <button class="btn btn-sm btn-default" data-toggle="modal" data-target="#formModal" (click)="update(element)">
                   <span class="glyphicon glyphicon-edit"></span>
                 </button>
-                <button class="btn btn-sm btn-default" data-toggle="modal" data-target="#deleteModal">
+                <button class="btn btn-sm btn-default" data-toggle="modal" data-target="#deleteModal" (click)="update(element)">
                   <span class="glyphicon glyphicon-trash"></span>
                 </button>
               </mat-cell>
@@ -118,7 +118,7 @@
           </div>
           <div class="modal-footer">
             <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
-            <button type="button" class="btn btn-primary">Done</button>
+            <button type="button" class="btn btn-primary" data-dismiss="modal" (click)="processStaff()">Done</button>
           </div>
         </form>
       </div><!-- /.modal-content -->
@@ -138,7 +138,7 @@
         </div>
         <div class="modal-footer">
           <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
-          <button type="button" class="btn btn-primary">Yes</button>
+          <button type="button" class="btn btn-primary" data-dismiss="modal" (click)="deleteStaff()">Yes</button>
         </div>
       </div><!-- /.modal-content -->
     </div><!-- /.modal-dialog -->
