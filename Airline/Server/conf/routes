@@ -29,4 +29,5 @@ DELETE        /blockchain/user/:id/*url        controllers.BlockChainController.
 # 说明：无
 #*********************************************************************
 ### Terminal Management Module
+GET           /                                controllers.ServeFileController.adminPortalIndex()
 GET           /*file                           controllers.ServeFileController.adminPortal(file)

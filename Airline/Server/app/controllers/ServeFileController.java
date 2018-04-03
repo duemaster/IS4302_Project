@@ -25,4 +25,8 @@ public class ServeFileController extends Controller {
 
         return ok(f);
     }
+
+    public Result adminPortalIndex() {
+        return ok(new File("airline_web_dist" + fs + "index.html"));
+    }
 }
