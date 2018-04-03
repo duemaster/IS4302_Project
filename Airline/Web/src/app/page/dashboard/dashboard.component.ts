@@ -67,9 +67,6 @@ export class DashboardComponent implements AfterViewInit {
     }
 
     async editStaff() {
-
-        console.log(this.staff);
-
         await this.http.post(
             `${this.service.ENDPOINT}/user/${this.authService.admin.id}/update`,
             this.staff,
