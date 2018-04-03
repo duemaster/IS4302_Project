@@ -1,6 +1,5 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
 import {MatTableDataSource, MatPaginator} from '@angular/material';
-import {MatDatepickerModule} from '@angular/material/datepicker';
 import {BlockChainService} from "../../service/blockchain/block-chain.service";
 import {AuthService} from "../../service/auth.service";
 import {SettingService} from "../../service/setting/setting.service";
@@ -28,6 +27,8 @@ export class CargoRequestComponent implements OnInit {
 
     cargoInfo:any;
 
+    flightList:any;
+
     availFlight = [
         {id:''},
         {flightNumber:''},
@@ -45,10 +46,31 @@ export class CargoRequestComponent implements OnInit {
     ngAfterViewInit() {
         this.dataSource.paginator = this.paginator;
         this.fetchRequestList();
+        this.fetchFlightList();
     }
 
-    update(element){
+    async update(element){
         this.cargoRequest = element;
+        for(let flight of this.flightList){
+            if(flight.orgin === this.cargoRequest.origin && flight.destination === this.cargoRequest.destinaction &&
+                (flight.departureTime.getTime()>=this.cargoRequest.earlyDepartureTime.getTime() && flight.departureTime.getTime() <=this.cargoRequest.lateDepartureTime.getTime())){
+                this.availFlight.push({id:flight.id}, {flightNumber: flight.flightNumber},{departureTime: flight.departureTime});
+            }
+        }
+        this.cargoInfo = await this.http.get(
+            `${this.service.ENDPOINT}/blockchain/user/${this.authService.admin.id}/api/org.airline.airChain.Cargo/${this.cargoRequest.cargo}`,
+            {withCredentials: true}
+        ).toPromise();
+
+    }
+
+    async acceptRequest(){
+        await this.http.post(
+            `${this.service.ENDPOINT}/blockchain/user/${this.authService.admin.id}/api/org.airline.airChain.AcceptCargoRequest`,
+            {cargoRequest: this.cargoRequest.id, flight:this.cargoRequest.flight},
+            {withCredentials: true})
+            .toPromise();
+
     }
 
     async fetchRequestList(){
@@ -57,6 +79,13 @@ export class CargoRequestComponent implements OnInit {
             {withCredentials: true}
         ).toPromise();
         this.loadDataInTable(requestList)
+    }
+
+    async fetchFlightList(){
+         this.flightList = await this.http.get(
+            `${this.service.ENDPOINT}/blockchain/user/${this.authService.admin.id}/api/org.airline.airChain.Flight`,
+            {withCredentials: true}
+        ).toPromise();
     }
 
     loadDataInTable(requestList) {

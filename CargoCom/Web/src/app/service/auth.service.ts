@@ -10,7 +10,7 @@ export class AuthService {
 
     constructor(private http: HttpClient,
                 public setting: SettingService) {
-        this.admin = localStorage.getItem('admin');
+        this.admin = JSON.parse(localStorage.getItem('admin'));
         console.log(this.admin);
     }
 
