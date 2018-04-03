@@ -78,7 +78,7 @@ asset Cargo identified by id {
 
 enum SERVICE_TYPE {
     o FOOD
-    o CLEAN
+    o UTILITY
 }
 
 enum SERVICE_STATUS {
