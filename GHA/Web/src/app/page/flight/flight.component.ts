@@ -5,6 +5,7 @@ import {BlockChainService} from "../../service/blockchain/block-chain.service";
 import {AuthService} from "../../service/auth.service";
 import {SettingService} from "../../service/setting/setting.service";
 import {HttpClient} from "@angular/common/http";
+import {toPromise} from "rxjs/operator/toPromise";
 
 @Component({
   selector: 'app-flight',
@@ -38,8 +39,8 @@ export class FlightComponent implements OnInit {
         company: '',
         status: '',
         cabinCrew: [{}],
-        cargo: [{}],
-        service: [{}],
+        cargos: [{}],
+        services: [{}],
         aircraft: {},
     };
 
@@ -49,7 +50,7 @@ export class FlightComponent implements OnInit {
         status:'',
         type:'',
         company:'GHA1',
-        flight:{},
+        flight:'',
     };
 
     serviceList =[{
@@ -88,7 +89,7 @@ export class FlightComponent implements OnInit {
     async viewService(element){
         this.newService.flight= element.id;
         this.serviceList = [];
-        for(let item in element.service){
+        for(let item in element.services){
             let serviceDetail:any = await this.http.get(
                 `${this.service.ENDPOINT}/blockchain/user/${this.authService.admin.id}/api/org.airline.airChain.Service/${item}`,
                 {withCredentials: true}
@@ -99,7 +100,7 @@ export class FlightComponent implements OnInit {
 
     async viewCargo(element){
         this.cargoList = [];
-        for(let item in element.cargo){
+        for(let item in element.cargos){
             let cargoDetail:any = await this.http.get(
                 `${this.service.ENDPOINT}/blockchain/user/${this.authService.admin.id}/api/org.airline.airChain.Cargo/${item}`,
                 {withCredentials: true}
@@ -120,9 +121,16 @@ export class FlightComponent implements OnInit {
     async addService(){
         this.newService.id = (new Date).getTime()+"";
         this.newService.status = 'PENDING';
+        let flightId = this.newService.flight;
+        this.newService.flight = '';
         await this.http.post(
             `${this.service.ENDPOINT}/blockchain/user/${this.authService.admin.id}/api/org.airline.airChain.Service`,
             this.newService,
+            {withCredentials: true})
+            .toPromise();
+        await this.http.post(
+            `${this.service.ENDPOINT}/blockchain/user/${this.authService.admin.id}/api/org.airline.airChain.IssueFlightServiceRequest`,
+            {flight:flightId, service:this.newService.id},
             {withCredentials: true})
             .toPromise();
         this.serviceList.push(this.newService);
@@ -132,7 +140,7 @@ export class FlightComponent implements OnInit {
             status:'',
             type:'',
             company:'GHA1',
-            flight:{},
+            flight:'',
         };
 
     }
