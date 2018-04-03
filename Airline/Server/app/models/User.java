@@ -9,7 +9,7 @@ import java.util.Date;
 
 @Entity
 public class User extends Model {
-    public final static long STARTING_ID = 20000;
+    public final static long STARTING_ID = 15000;
 
     public final static String ROLE_OFFICER = "OFFICER";
     public final static String ROLE_STAFF = "STAFF";

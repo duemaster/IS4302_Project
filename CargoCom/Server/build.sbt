@@ -1,4 +1,4 @@
-name := "Airchain-Server"
+name := "Cargo Server"
 
 version := "1.0-SNAPSHOT"
 
