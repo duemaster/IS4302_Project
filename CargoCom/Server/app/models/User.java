@@ -9,13 +9,13 @@ import java.util.Date;
 
 @Entity
 public class User extends Model {
-    public final static long PORT_OFFSET = 9000;
-
-    public final static long STARTING_ID = 20009;
+    public final static long STARTING_ID = 20019;
 
     public final static String ROLE_OFFICER = "OFFICER";
     public final static String ROLE_STAFF = "STAFF";
 
+    public static String BLOCKCHAIN_EMPLOYEE_CLASSNAME = "org.airline.airChain.CargoEmployee";
+    public static String BLOCKCHAIN_COMPANY_CLASSNAME = "org.airline.airChain.CargoCompany";
     public static String COMPANY_ID = "Cargo1";
 
     @Id

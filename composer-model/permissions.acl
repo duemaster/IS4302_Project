@@ -59,9 +59,9 @@ rule AllowCargoAssignCargoToFlight {
 rule AllowCargoAcceptCargoRequest {
   description:  "Allow Cargo Employee to accept incoming cargo request"
   participant (p): "org.airline.airChain.CargoEmployee"
-  operation: UPDATE
+  operation: CREATE
   resource (r): "org.airline.airChain.AcceptCargoRequest"
-  condition: (p.role == "OFFICER" && !r.acceptedCompany)
+  condition: (p.role == "OFFICER")
   action: ALLOW
 }
 
@@ -138,7 +138,7 @@ rule AllowAirlineCabinCrewUpdateServiceDelivery {
     operation: UPDATE
     resource (r): "org.airline.airChain.CargoRequest"
     transaction (txn): "org.airline.airChain.AcceptCargoRequest"
-    condition: (!r.acceptedCompany && txn.flight.company.authorisedCargoCompany.getIdentifier() == p.company.getIdentifier())
+    condition: (r.status == "CANCELLED" && !r.acceptedCompany && txn.flight.company.authorisedCargoCompany.getIdentifier() == p.company.getIdentifier())
     action: ALLOW
   }
 

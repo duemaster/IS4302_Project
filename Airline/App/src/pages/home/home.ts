@@ -1,26 +1,30 @@
 import { Component } from '@angular/core';
-import { NavController } from 'ionic-angular';
-import {LoginPage} from "../login/login";
-import {AboutPage} from "../about/about";
+import { IonicPage, NavController, NavParams } from 'ionic-angular';
+import {UserProvider} from "../../providers/user/user";
 
+/**
+ * Generated class for the HomePage page.
+ *
+ * See https://ionicframework.com/docs/components/#navigation for more info on
+ * Ionic pages and navigation.
+ */
+
+@IonicPage()
 @Component({
   selector: 'page-home',
-  templateUrl: 'home.html'
+  templateUrl: 'home.html',
 })
 export class HomePage {
 
+  constructor(public navCtrl: NavController, public navParams: NavParams,
+              public userProvider:UserProvider) {
+  }
 
-  constructor(public navCtrl: NavController) {
-
-
+  ionViewDidLoad() {
+    console.log('ionViewDidLoad HomePage');
   }
 
   logout(){
-    this.navCtrl.setRoot(LoginPage);
+    this.userProvider.logout(this.navCtrl);
   }
-
-  viewDetail(){
-    this.navCtrl.push(AboutPage);
-  }
-
 }

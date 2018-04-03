@@ -16,6 +16,7 @@ export class LoginComponent implements OnInit {
     username = "";
     password = "";
 
+    public loading = false;
     windowObj: any = window;
 
     constructor(public authService: AuthService,
@@ -33,7 +34,9 @@ export class LoginComponent implements OnInit {
 
     async login() {
 
+        this.loading = true;
         let loginSuccess = await this.authService.login(this.username, this.password);
+        this.loading = false;
         if (loginSuccess) {
             await this.router.navigate(['']);
         } else {
