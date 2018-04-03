@@ -1,6 +1,5 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
 import {MatTableDataSource, MatPaginator} from '@angular/material';
-import {MatDatepickerModule} from '@angular/material/datepicker';
 import {BlockChainService} from "../../service/blockchain/block-chain.service";
 import {AuthService} from "../../service/auth.service";
 import {SettingService} from "../../service/setting/setting.service";
@@ -243,8 +242,8 @@ export class CargoComponent implements OnInit {
 
     }
 
-    loadDataInTable(flightList) {
-        this.dataSource = new MatTableDataSource<any>(flightList);
+    loadDataInTable(cargoList) {
+        this.dataSource = new MatTableDataSource<any>(cargoList);
         this.dataSource.paginator = this.paginator;
     }
 }

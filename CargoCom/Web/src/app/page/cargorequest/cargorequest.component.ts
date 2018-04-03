@@ -1,6 +1,10 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
 import {MatTableDataSource, MatPaginator} from '@angular/material';
 import {MatDatepickerModule} from '@angular/material/datepicker';
+import {BlockChainService} from "../../service/blockchain/block-chain.service";
+import {AuthService} from "../../service/auth.service";
+import {SettingService} from "../../service/setting/setting.service";
+import {HttpClient} from "@angular/common/http";
 
 @Component({
   selector: 'app-flight',
@@ -9,32 +13,26 @@ import {MatDatepickerModule} from '@angular/material/datepicker';
 })
 export class CargoRequestComponent implements OnInit {
 
-  constructor() { }
+  constructor(private http: HttpClient,
+              private service: SettingService,
+              public authService: AuthService,
+              public blockChainService: BlockChainService) { }
 
   ngOnInit() {
   }
 
-    cargoInfo = [{item:'furniture', weight:40, owner: 'SIA Cargo', status:'Ready'},
-        {item:'toys', weight:70, owner: 'Cathay Cargo', status:'Ready'},];
+    displayedColumns = [ 'Owner', 'Departure', 'Destination','DeliveryDate', 'Option'];
+    dataSource = new MatTableDataSource([]);
 
-    displayedColumns = ['ItemType', 'Owner', 'Departure', 'Destination','DeliveryDate', 'Option'];
-    dataSource = new MatTableDataSource(ELEMENT_DATA);
+    cargoRequest:any;
 
-    cargorequest = {
-        itemType: '',
-        owner: '',
-        departure: '',
-        destination: '',
-        deliveryDate: '',
-        flight:''
-    };
+    cargoInfo:any;
 
-    isCreate = false;
-
-    availFlight = [{flightNo: 'SQ851', date: '01-03-2018 08:20', departure: 'SIN', landing: 'CAN'},
-        {flightNo: 'SQ852', date: '01-03-2018 13:10', departure: 'CAN', landing: 'SIN'},
-        {flightNo: 'SQ800', date: '02-03-2018 02:20', departure: 'SIN', landing: 'PEK'},
-        {flightNo: 'SQ801', date: '02-03-2018 10:30', departure: 'PEK', landing: 'SIN'}];
+    availFlight = [
+        {id:''},
+        {flightNumber:''},
+        {departureTime: new Date()}
+    ];
 
     applyFilter(filterValue: string) {
         filterValue = filterValue.trim(); // Remove whitespace
@@ -46,40 +44,24 @@ export class CargoRequestComponent implements OnInit {
 
     ngAfterViewInit() {
         this.dataSource.paginator = this.paginator;
+        this.fetchRequestList();
     }
 
     update(element){
-        this.isCreate = false;
-        this.cargorequest = element;
+        this.cargoRequest = element;
     }
 
-    create() {
-        this.isCreate = true;
-        this.cargorequest = {
-            itemType: '',
-            owner: '',
-            departure: '',
-            destination: '',
-            deliveryDate: '',
-            flight:''
-        };
+    async fetchRequestList(){
+        let requestList: any = await this.http.get(
+            `${this.service.ENDPOINT}/blockchain/user/${this.authService.admin.id}/api/org.airline.airChain.CargoRequest`,
+            {withCredentials: true}
+        ).toPromise();
+        this.loadDataInTable(requestList)
     }
 
+    loadDataInTable(requestList) {
+        this.dataSource = new MatTableDataSource<any>(requestList);
+        this.dataSource.paginator = this.paginator;
+    }
 
 }
-export interface CargoRequest {
-    itemType: string;
-    owner: string;
-    departure: string;
-    destination: string;
-    deliveryDate: string;
-    flight: string
-}
-
-const ELEMENT_DATA: CargoRequest[] = [
-    {itemType: 'furniture', owner: '', departure: 'SIN', destination: 'CAN', deliveryDate: '01-03-2018 08:20', flight: ''},
-    {itemType: 'toy', owner: '', departure: 'CAN', destination: 'SIN', deliveryDate: '01-03-2018 13:10', flight: ''},
-    {itemType: 'electronics', owner: '', departure: 'SIN', destination: 'PEK', deliveryDate: '02-03-2018 02:20', flight: ''},
-    {itemType: 'kitchenware', owner: '', departure: 'PEK', destination: 'SIN', deliveryDate: '02-03-2018 10:30', flight: ''},
-
-];

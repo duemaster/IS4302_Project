@@ -25,23 +25,16 @@
 
           <mat-table #table [dataSource]="dataSource">
 
-
-            <!-- Model Column -->
-            <ng-container matColumnDef="ItemType">
-              <mat-header-cell *matHeaderCellDef> Item Type </mat-header-cell>
-              <mat-cell *matCellDef="let element"> {{element.itemType}} </mat-cell>
-            </ng-container>
-
             <!-- ID Column -->
             <ng-container matColumnDef="Owner">
               <mat-header-cell *matHeaderCellDef> Cargo Owner </mat-header-cell>
-              <mat-cell *matCellDef="let element"> {{element.owner}} </mat-cell>
+              <mat-cell *matCellDef="let element"> {{element.company}} </mat-cell>
             </ng-container>
 
             <!-- Manufacturer Column -->
             <ng-container matColumnDef="Departure">
               <mat-header-cell *matHeaderCellDef> Departure </mat-header-cell>
-              <mat-cell *matCellDef="let element"> {{element.departure}} </mat-cell>
+              <mat-cell *matCellDef="let element"> {{element.origin}} </mat-cell>
             </ng-container>
 
             <!-- Cargo Capacity Column -->
@@ -53,7 +46,7 @@
             <!-- Cargo Capacity Column -->
             <ng-container matColumnDef="DeliveryDate">
               <mat-header-cell *matHeaderCellDef> Expected Delivery Date </mat-header-cell>
-              <mat-cell *matCellDef="let element"> {{element.deliveryDate}} </mat-cell>
+              <mat-cell *matCellDef="let element"> {{element.lateDepartureTime}} </mat-cell>
             </ng-container>
 
             <ng-container matColumnDef="Option">
@@ -76,13 +69,7 @@
                          [showFirstLastButtons]="true">
           </mat-paginator>
         </div>
-        <div class="generateBtn">
 
-          <button type="button" class="btn ink-reaction btn-raised btn-primary" data-toggle="modal"
-                  data-target="#formModal" (click)="create()">
-            Add Cargo Request
-          </button>
-        </div>
       </div>
     </div>
   </div>
