@@ -13,8 +13,8 @@
   <form class="form">
 
     <ion-item>
-      <ion-label><i class="fa fa-envelope"></i> EMAIL </ion-label>
-      <ion-input type="text" name="email" [(ngModel)]="email"  placeholder="Your Working Email" required="true"></ion-input>
+      <ion-label><i class="fa fa-envelope"></i> User Name </ion-label>
+      <ion-input type="text" name="userName" [(ngModel)]="userName"  placeholder="Your User Name" required="true"></ion-input>
     </ion-item>
     <ion-item>
       <ion-label><i class="fa fa-lock"></i> PASSWORD</ion-label>
@@ -28,7 +28,7 @@
     <br>
     <div class="submitDiv" padding>
       <button block class="submit" type="submit" (click)="login()">SIGN IN</button>
-      <div tappable (click)="login()">
+      <div tappable (click)="contact()">
         Not have an account?
       </div>
     </div>
