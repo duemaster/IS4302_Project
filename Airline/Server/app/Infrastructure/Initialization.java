@@ -54,7 +54,7 @@ public class Initialization {
 
         //Create User in Composer Network
         ObjectNode userNode = Json.newObject();
-        userNode.put("$class", "org.airline.airChain.AirlineEmployee");
+        userNode.put("$class", User.BLOCKCHAIN_EMPLOYEE_CLASSNAME);
         userNode.put("id", String.valueOf(defaultUser.getId()));
         userNode.put("name", defaultUser.getName());
         userNode.put("role", defaultUser.getRole());
@@ -63,7 +63,7 @@ public class Initialization {
         try {
             //Add User into composer
             HttpResponse<JsonNode> memberReply =
-                    Unirest.post("http://localhost:3000/api/org.airline.airChain.AirlineEmployee")
+                    Unirest.post("http://localhost:3000/api/" + User.BLOCKCHAIN_EMPLOYEE_CLASSNAME)
                             .header("accept", "application/json")
                             .header("Content-Type", "application/json")
                             .body(new JsonNode(userNode.toString()))
@@ -72,7 +72,7 @@ public class Initialization {
             //System.out.println(memberReply.getBody().toString());
 
             HttpResponse<JsonNode> airLineReply =
-                    Unirest.get("http://localhost:3000/api/org.airline.airChain.AirlineCompany/" + User.COMPANY_ID)
+                    Unirest.get("http://localhost:3000/api/" + User.BLOCKCHAIN_COMPANY_CLASSNAME + "/" + User.COMPANY_ID)
                             .header("accept", "application/json")
                             .header("Content-Type", "application/json")
                             .asJson();
@@ -96,7 +96,7 @@ public class Initialization {
 
             //Save Airline Company
             HttpResponse<JsonNode> airlineCompanyReply =
-                    Unirest.put("http://localhost:3000/api/org.airline.airChain.AirlineCompany/" + User.COMPANY_ID)
+                    Unirest.put("http://localhost:3000/api/" + User.BLOCKCHAIN_COMPANY_CLASSNAME + "/" + User.COMPANY_ID)
                             .header("accept", "application/json")
                             .header("Content-Type", "application/json")
                             .body(new JsonNode(airline.toString()))

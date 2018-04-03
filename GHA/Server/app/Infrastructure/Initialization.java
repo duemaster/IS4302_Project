@@ -50,7 +50,7 @@ public class Initialization {
 
         //Create User in Composer Network
         ObjectNode userNode = Json.newObject();
-        userNode.put("$class", "org.airline.airChain.GHAEmployee");
+        userNode.put("$class", User.BLOCKCHAIN_EMPLOYEE_CLASSNAME);
         userNode.put("id", String.valueOf(defaultUser.getId()));
         userNode.put("name", defaultUser.getName());
         userNode.put("role", defaultUser.getRole());
@@ -59,7 +59,7 @@ public class Initialization {
         try {
             //Add User into composer
             HttpResponse<JsonNode> memberReply =
-                    Unirest.post("http://localhost:3000/api/org.airline.airChain.GHAEmployee")
+                    Unirest.post("http://localhost:3000/api/" + User.BLOCKCHAIN_EMPLOYEE_CLASSNAME)
                             .header("accept", "application/json")
                             .header("Content-Type", "application/json")
                             .body(new JsonNode(userNode.toString()))
