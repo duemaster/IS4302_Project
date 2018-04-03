@@ -39,7 +39,7 @@ export class FlightComponent implements AfterViewInit {
         deliverCompany: ''
     };
 
-    cargo: any;
+    cargoList: any;
 
     isCreate = false;
 
@@ -73,27 +73,36 @@ export class FlightComponent implements AfterViewInit {
         console.log(this.flight);
     }
 
+    async viewCargo(flight) {
+        //If Flight currently have not cargo attached
+        if (!flight.cargos) {
+            this.cargoList = [];
+            return;
+        }
 
-    async viewCargo(element) {
-        let cargoList = element.cargo;
-        for (let item of cargoList) {
-            let cargoInfo = await this.http.get(
-                `${this.service.ENDPOINT}/blockchain/user/${this.authService.admin.id}/api/org.airline.airChain.Cargo/${item.id}`,
+        this.cargoList = flight.cargos.flatMap(async (cargo) => {
+            return await this.http.get(
+                `${this.service.ENDPOINT}/blockchain/user/${this.authService.admin.id}/api/org.airline.airChain.Cargo/${cargo.id}`,
                 {withCredentials: true}
             ).toPromise();
-            this.cargo.append(cargoInfo);
-        }
+        });
     }
 
-    async viewService(element) {
-        let service = element.service;
-        for (let item of service) {
-            let serviceInfo = await this.http.get(
-                `${this.service.ENDPOINT}/blockchain/user/${this.authService.admin.id}/api/org.airline.airChain.Cargo/${item.id}`,
+    async viewService(flight) {
+
+        //If Flight currently have not service attached
+        if (!flight.services) {
+            this.serviceList = [];
+            return;
+        }
+
+        this.serviceList = flight.services.flatMap(async (service) => {
+            return await this.http.get(
+                `${this.service.ENDPOINT}/blockchain/user/${this.authService.admin.id}/api/org.airline.airChain.Cargo/${service.id}`,
                 {withCredentials: true}
             ).toPromise();
-            this.serviceList.append(serviceInfo);
-        }
+        });
+        
     }
 
     create() {
@@ -165,11 +174,12 @@ export class FlightComponent implements AfterViewInit {
     }
 
 
-
     private async updateFlight(flight) {
         //remove flightId
         let flightToUpdate = Object.assign({}, flight);
         delete flightToUpdate['id'];
+
+        flightToUpdate = this.addNameSpace(flightToUpdate);
 
         await this.http.put(
             `${this.service.ENDPOINT}/blockchain/user/${this.authService.admin.id}/api/org.airline.airChain.Flight/${this.flight.id}`,
