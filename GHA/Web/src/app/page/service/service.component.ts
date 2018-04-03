@@ -59,8 +59,8 @@ export class ServiceComponent implements OnInit {
             {withCredentials: true}
         ).toPromise();
         //Remove Cabin Crew NameSpace
-        if(flight.cabinCrews) {
-            flight.cabinCrews = flight.cabinCrew.replace(this.blockChainService.AIRLINE_EMPLOYEE, "");
+        if(flight.cabinCrew) {
+            flight.cabinCrew = flight.cabinCrew.replace(this.blockChainService.AIRLINE_EMPLOYEE, "");
         }
 
     }
