@@ -52,7 +52,7 @@ asset Flight identified by id {
     --> Cargo[] cargos optional
     --> Service[] services optional
     --> AirlineCompany company
-    --> AirlineEmployee[] cabinCrews optional
+    --> AirlineEmployee cabinCrew
 
     --> GHACompany collectCompany
     --> GHACompany deliverCompany
