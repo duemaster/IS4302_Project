@@ -37,7 +37,7 @@ export class FlightComponent implements OnInit {
         paxCount: 0,
         company: '',
         status: '',
-        cabinCrews: [{}],
+        cabinCrew: [{}],
         cargo: [{}],
         service: [{}],
         aircraft: {},
@@ -157,7 +157,7 @@ export class FlightComponent implements OnInit {
         flightList = flightList.map((flight) => {
             //Remove Cabin Crew NameSpace
             if(flight.cabinCrews) {
-                flight.cabinCrews = flight.cabinCrew.replace(this.blockChainService.AIRLINE_EMPLOYEE, "");
+                flight.cabinCrew = flight.cabinCrew.replace(this.blockChainService.AIRLINE_EMPLOYEE, "");
 
             }
 
