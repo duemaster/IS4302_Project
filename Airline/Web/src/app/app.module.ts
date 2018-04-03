@@ -1,5 +1,5 @@
 import {BrowserModule} from '@angular/platform-browser';
-import {NgModule} from '@angular/core';
+import {CUSTOM_ELEMENTS_SCHEMA, NgModule} from '@angular/core';
 import {HttpClientModule} from '@angular/common/http';
 import {ROUTING} from './app.routing';
 import {FormsModule} from "@angular/forms";
@@ -57,6 +57,7 @@ import {BlockChainService} from "./service/blockchain/block-chain.service";
     ],
     providers: [AuthService, AuthGuard, ToastModule,Util,SettingService, BlockChainService],
     bootstrap: [AppComponent],
+    schemas: [CUSTOM_ELEMENTS_SCHEMA]
 })
 export class AppModule {
 }
