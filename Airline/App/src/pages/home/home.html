@@ -15,8 +15,8 @@
   <div class="flightInfo">
     <div>
       <p>
-        <span>SIN</span><br>
-        Singapore
+        <span>{{flightProvider.flight.departureCode}}</span><br>
+        {{flightProvider.flight.departure}}
       </p>
     </div>
     <div class="connection">
@@ -26,8 +26,8 @@
     </div>
     <div>
       <p>
-        <span>CKG</span><br>
-        Chongqing
+        <span>{{flightProvider.flight.destinationCode}}</span><br>
+        {{flightProvider.flight.destination}}
       </p>
     </div>
   </div>
