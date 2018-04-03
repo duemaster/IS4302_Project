@@ -102,6 +102,7 @@ asset Service identified by id {
 enum CARGO_SERVICE_STATUS {
     o PENDING
 	  o ACCEPTED
+    o CANCELLED
 }
 
 asset CargoRequest identified by id {
