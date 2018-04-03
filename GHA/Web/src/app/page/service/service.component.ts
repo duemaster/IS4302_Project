@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewChild } from '@angular/core';
+import {AfterViewInit, Component, OnInit, ViewChild} from '@angular/core';
 import {MatTableDataSource, MatPaginator} from '@angular/material';
 import {BlockChainService} from "../../service/blockchain/block-chain.service";
 import {AuthService} from "../../service/auth.service";
@@ -10,27 +10,25 @@ import {SettingService} from "../../service/setting/setting.service";
   templateUrl: './service.component.html',
   styleUrls: ['./service.component.scss']
 })
-export class ServiceComponent implements OnInit {
+export class ServiceComponent implements AfterViewInit {
 
   constructor(private http: HttpClient,
               private service: SettingService,
               public authService: AuthService,
               public blockChainService: BlockChainService) { }
 
-  ngOnInit() {
-  }
-    displayedColumns = ['id', 'Type', 'Description', 'Status', 'Flight', 'Option'];
+    displayedColumns = ['Type', 'Description', 'Status', 'Flight', 'Option'];
     dataSource = new MatTableDataSource([]);
+
     serviceInfo: any = {
         type: '',
         id: '',
         description: '',
         status: '',
         staff: '',
-        flight: {},
+        flight: '',
         flightList: ''
     };
-
 
     flight:any;
 
@@ -46,8 +44,6 @@ export class ServiceComponent implements OnInit {
         this.dataSource.paginator = this.paginator;
         this.fetchServiceList();
     }
-
-
 
     update(element) {
         this.serviceInfo = element;

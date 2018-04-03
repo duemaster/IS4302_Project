@@ -220,14 +220,12 @@
                 </select>
               </div>
             </div>
-            <button type="button" class="btn ink-reaction btn-raised btn-primary" (click)="addService()">
+            <button type="button" class="btn ink-reaction btn-raised btn-primary button1" (click)="addService()">
               Add
             </button>
-            <div class="card">
-              <div class="card-head">
-                <header>Current Services</header>
-              </div>
-              <div class="card-body">
+
+            <h4>Current Services</h4>
+
                 <table class="table no-margin">
                   <thead>
                   <tr>
@@ -244,12 +242,11 @@
                   </tr>
                   </tbody>
                 </table>
-              </div><!--end .card-body -->
-            </div><!--end .card -->
+
           </div>
 
           <div class="modal-footer">
-            <button type="button" class="btn btn-primary">Done</button>
+            <button type="button" class="btn btn-primary" data-dismiss="modal">Done</button>
           </div>
         </form>
       </div><!-- /.modal-content -->

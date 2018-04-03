@@ -81,6 +81,7 @@ export class FlightComponent implements AfterViewInit {
         }
 
         this.cargoList = flight.cargos.flatMap(async (cargo) => {
+            cargo.id = cargo.id.replace(`${this.blockChainService.CARGO}#`,'');
             return await this.http.get(
                 `${this.service.ENDPOINT}/blockchain/user/${this.authService.admin.id}/api/org.airline.airChain.Cargo/${cargo.id}`,
                 {withCredentials: true}
@@ -97,6 +98,7 @@ export class FlightComponent implements AfterViewInit {
         }
 
         this.serviceList = flight.services.flatMap(async (service) => {
+            service.id = service.id.replace(`${this.blockChainService.SERVICE}#`,'');
             return await this.http.get(
                 `${this.service.ENDPOINT}/blockchain/user/${this.authService.admin.id}/api/org.airline.airChain.Cargo/${service.id}`,
                 {withCredentials: true}

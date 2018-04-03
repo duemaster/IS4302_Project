@@ -24,11 +24,6 @@
 
           <mat-table #table [dataSource]="dataSource">
 
-            <!-- ID Column -->
-            <ng-container matColumnDef="id">
-              <mat-header-cell *matHeaderCellDef> Service ID </mat-header-cell>
-              <mat-cell *matCellDef="let element"> {{element.id}} </mat-cell>
-            </ng-container>
 
             <!-- Service Type Column -->
             <ng-container matColumnDef="Type">
@@ -52,7 +47,7 @@
             <ng-container matColumnDef="Flight">
               <mat-header-cell *matHeaderCellDef> Flight No </mat-header-cell>
                 <mat-cell *matCellDef="let element">
-                  <a data-toggle="modal" data-target="#flightModal" (click)="viewFlight(element.flight)" *ngIf="element.flight">
+                  <a data-toggle="modal" data-target="#flightModal" (click)="viewFlight(element.flight)"  *ngIf="element.flight">
                     <span>View</span>
                   </a>
                 </mat-cell>
@@ -128,10 +123,10 @@
 
             <div class="form-group">
               <div class="col-sm-3">
-                <label for="flight" class="control-label">Flight</label>
+                <label for="flightattach" class="control-label">Flight</label>
               </div>
               <div class="col-sm-9">
-                <input id="flight" name="flight" [(ngModel)]='serviceInfo.flight' class="form-control" [disabled]="true">
+                <input id="flightattach" name="flightattach" [(ngModel)]='serviceInfo.flight' class="form-control" [disabled]="true">
               </div>
             </div>
           </div>
@@ -145,7 +140,7 @@
   <!-- END FORM MODAL MARKUP -->
 
   <!-- BEGIN FLIGHT MODAL MARKUP -->
-  <div class="modal fade" id="flightModal" tabindex="-1" role="dialog" aria-labelledby="flightModalLabel" aria-hidden="true">
+  <div *ngIf="flight != null" class="modal fade" id="flightModal" tabindex="-1" role="dialog" aria-labelledby="flightModalLabel" aria-hidden="true">
     <div class="modal-dialog">
       <div class="modal-content">
         <div class="modal-header">

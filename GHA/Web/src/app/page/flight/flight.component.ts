@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewChild } from '@angular/core';
+import {Component, OnInit, ViewChild} from '@angular/core';
 import {MatTableDataSource, MatPaginator} from '@angular/material';
 import {MatDatepickerModule} from '@angular/material/datepicker';
 import {BlockChainService} from "../../service/blockchain/block-chain.service";
@@ -8,32 +8,33 @@ import {HttpClient} from "@angular/common/http";
 import {toPromise} from "rxjs/operator/toPromise";
 
 @Component({
-  selector: 'app-flight',
-  templateUrl: './flight.component.html',
-  styleUrls: ['./flight.component.scss']
+    selector: 'app-flight',
+    templateUrl: './flight.component.html',
+    styleUrls: ['./flight.component.scss']
 })
 export class FlightComponent implements OnInit {
 
-  constructor(private http: HttpClient,
-              private service: SettingService,
-              public authService: AuthService,
-              public blockChainService: BlockChainService) { }
+    constructor(private http: HttpClient,
+                private service: SettingService,
+                public authService: AuthService,
+                public blockChainService: BlockChainService) {
+    }
 
-  ngOnInit() {
-  }
+    ngOnInit() {
+    }
 
-    cargoInfo = [{item:'furniture', weight:40, owner: 'SIA Cargo', status:'Ready'},
-        {item:'toys', weight:70, owner: 'Cathay Cargo', status:'Ready'},];
+    cargoInfo = [{item: 'furniture', weight: 40, owner: 'SIA Cargo', status: 'Ready'},
+        {item: 'toys', weight: 70, owner: 'Cathay Cargo', status: 'Ready'},];
 
 
-    displayedColumns = ['FlightNo', 'Date', 'Departure', 'Landing','Status', 'Option'];
+    displayedColumns = ['FlightNo', 'Date', 'Departure', 'Landing', 'Status', 'Option'];
     dataSource = new MatTableDataSource([]);
 
     flight = {
         departureTime: '',
         id: '',
         origin: '',
-        flightNumber:'',
+        flightNumber: '',
         destination: '',
         paxCount: 0,
         company: '',
@@ -45,31 +46,30 @@ export class FlightComponent implements OnInit {
     };
 
     newService = {
-        id:'',
-        description:'',
-        status:'',
-        type:'',
-        company:'GHA1',
-        flight:'',
+        id: '',
+        description: '',
+        status: '',
+        type: '',
+        company: 'GHA1'
     };
 
-    serviceList =[{
-        id:'',
-        description:'',
-        status:'',
-        type:'',
+    serviceList = [{
+        id: '',
+        description: '',
+        status: '',
+        type: '',
     }];
 
     cargoList = [{
-        id:'',
-        description:'',
-        status:'',
-        company:'',
-        weight:0,
+        id: '',
+        description: '',
+        status: '',
+        company: '',
+        weight: 0,
     }];
 
     isCreate = false;
-    staffList:any;
+    staffList: any;
 
 
     applyFilter(filterValue: string) {
@@ -86,11 +86,13 @@ export class FlightComponent implements OnInit {
         //this.fetchStaffList();
     }
 
-    async viewService(element){
-        this.newService.flight= element.id;
+    async viewService(flight) {
+        this.flight = flight;
         this.serviceList = [];
-        for(let item in element.services){
-            let serviceDetail:any = await this.http.get(
+        for (let item of flight.services) {
+            item = item.replace(`${this.blockChainService.SERVICE}#`,'');
+            console.log(item);
+            let serviceDetail: any = await this.http.get(
                 `${this.service.ENDPOINT}/blockchain/user/${this.authService.admin.id}/api/org.airline.airChain.Service/${item}`,
                 {withCredentials: true}
             ).toPromise();
@@ -98,15 +100,15 @@ export class FlightComponent implements OnInit {
         }
     }
 
-    async viewCargo(element){
+    async viewCargo(flight) {
         this.cargoList = [];
-        for(let item in element.cargos){
-            let cargoDetail:any = await this.http.get(
+        for (let item of flight.cargos) {
+            let cargoDetail: any = await this.http.get(
                 `${this.service.ENDPOINT}/blockchain/user/${this.authService.admin.id}/api/org.airline.airChain.Cargo/${item}`,
                 {withCredentials: true}
             ).toPromise();
             //Remove Cabin Crew NameSpace
-            if(cargoDetail.company) {
+            if (cargoDetail.company) {
                 cargoDetail.company = cargoDetail.company.replace(this.blockChainService.CARGO_COMPANY, "");
             }
             this.cargoList.push(cargoDetail);
@@ -114,33 +116,42 @@ export class FlightComponent implements OnInit {
 
     }
 
-    viewFlight(element){
+    viewFlight(element) {
         this.flight = element;
     }
 
-    async addService(){
-        this.newService.id = (new Date).getTime()+"";
+    async addService() {
+        this.newService.id = `${new Date().getTime()}`;
         this.newService.status = 'PENDING';
-        let flightId = this.newService.flight;
-        this.newService.flight = '';
-        await this.http.post(
+        console.log(this.newService);
+
+        let response1 = await this.http.post(
             `${this.service.ENDPOINT}/blockchain/user/${this.authService.admin.id}/api/org.airline.airChain.Service`,
             this.newService,
             {withCredentials: true})
             .toPromise();
-        await this.http.post(
+
+        console.log(response1);
+
+        let response2 = await this.http.post(
             `${this.service.ENDPOINT}/blockchain/user/${this.authService.admin.id}/api/org.airline.airChain.IssueFlightServiceRequest`,
-            {flight:flightId, service:this.newService.id},
+            {
+                flight: `${this.blockChainService.FLIGHT}#${this.flight.id}`,
+                service: `${this.blockChainService.SERVICE}#${this.newService.id}`
+            },
             {withCredentials: true})
             .toPromise();
+
+        console.log(response2);
+
         this.serviceList.push(this.newService);
+
         this.newService = {
-            id:'',
-            description:'',
-            status:'',
-            type:'',
-            company:'GHA1',
-            flight:'',
+            id: '',
+            description: '',
+            status: '',
+            type: '',
+            company: 'GHA1'
         };
 
     }
@@ -164,14 +175,14 @@ export class FlightComponent implements OnInit {
 
         flightList = flightList.map((flight) => {
             //Remove Cabin Crew NameSpace
-            if(flight.cabinCrews) {
+            if (flight.cabinCrews) {
                 flight.cabinCrew = flight.cabinCrew.replace(this.blockChainService.AIRLINE_EMPLOYEE, "");
 
             }
 
 
             //Remove Aircraft NameSpace
-            if(flight.aircraft) {
+            if (flight.aircraft) {
                 flight.aircraft = flight.aircraft.replace(this.blockChainService.AIRCRAFT, "");
             }
 
@@ -187,9 +198,6 @@ export class FlightComponent implements OnInit {
         this.dataSource = new MatTableDataSource<any>(flightList);
         this.dataSource.paginator = this.paginator;
     }
-
-
-
 
 
 }

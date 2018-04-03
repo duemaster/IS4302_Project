@@ -14,6 +14,8 @@ export class BlockChainService {
     readonly GHA_EMPLOYEE: string = `${this.namespace}.GHAEmployee`;
 
     readonly AIRCRAFT: string = `${this.namespace}.Aircraft`;
+    readonly SERVICE: string = `${this.namespace}.Service`;
+    readonly CARGO: string = `${this.namespace}.Cargo`;
 
     constructor() {
     }
