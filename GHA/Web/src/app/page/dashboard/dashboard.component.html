@@ -90,18 +90,18 @@
           <div class="modal-body">
             <div class="form-group">
               <div class="col-sm-3">
-                <label for="staffId" class="control-label">Staff ID</label>
+                <label for="staffId" class="control-label">Staff Name</label>
               </div>
               <div class="col-sm-9">
-                <input type="text" name="staffId" id="staffId" class="form-control" placeholder="Staff ID" [(ngModel)]="staff.id">
+                <input type="text" name="staffId" id="staffId" class="form-control" placeholder="Staff Name" [(ngModel)]="staff.name">
               </div>
             </div>
-            <div class="form-group">
-              <div class="col-sm-3">
-                <label for="name" class="control-label">Name</label>
+                <div class="form-group">
+                  <div class="col-sm-3">
+                <label for="name" class="control-label">Password</label>
               </div>
               <div class="col-sm-9">
-                <input type="text" name="name" id="name" class="form-control" [(ngModel)]="staff.name" placeholder="Name">
+                <input type="password" name="name" id="name" class="form-control" [(ngModel)]="staff.password" placeholder="Password">
               </div>
             </div>
             <div class="form-group">
@@ -110,8 +110,8 @@
               </div>
               <div class="col-sm-9">
                 <select id="role" name="role" class="form-control" [(ngModel)]="staff.role">
-                  <option value="Officer">Officer</option>
-                  <option value="Staff">Staff</option>
+                  <option value="OFFICER">Officer</option>
+                  <option value="STAFF">Staff</option>
                 </select>
               </div>
             </div>

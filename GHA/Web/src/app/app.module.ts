@@ -22,6 +22,7 @@ import {
     MatFormFieldModule, MatInputModule, MatNativeDateModule, MatPaginatorModule,
     MatTableModule
 } from "@angular/material";
+import {BlockChainService} from "./service/blockchain/block-chain.service";
 
 @NgModule({
     declarations: [
@@ -53,7 +54,7 @@ import {
             primaryColour: '#0aa89e',
         })
     ],
-    providers: [AuthService, AuthGuard, ToastModule,Util,SettingService],
+    providers: [AuthService, AuthGuard, ToastModule,Util,SettingService, BlockChainService],
     bootstrap: [AppComponent],
 })
 export class AppModule {
