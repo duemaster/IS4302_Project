@@ -28,7 +28,7 @@
                         <!-- ID Column -->
                         <ng-container matColumnDef="FlightNo">
                             <mat-header-cell *matHeaderCellDef> Flight No.</mat-header-cell>
-                            <mat-cell *matCellDef="let element"> {{element.id}}</mat-cell>
+                            <mat-cell *matCellDef="let element"> {{element.flightNumber}}</mat-cell>
                         </ng-container>
 
                         <!-- Model Column -->
@@ -115,7 +115,7 @@
                             </div>
                             <div class="col-sm-4">
                                 <input type="text" name="flightNo" id="flightNo" class="form-control"
-                                       [(ngModel)]='flight.id' placeholder="Flight No.">
+                                       [(ngModel)]='flight.flightNumber' placeholder="Flight No.">
                             </div>
                             <div class="col-sm-2">
                                 <label for="departDate" class="control-label">Depart Date</label>
@@ -150,7 +150,7 @@
                                 <label for="ccs" class="control-label">Cabin Crew</label>
                             </div>
                             <div class="col-sm-4">
-                                <select id="ccs" name="ccs" [(ngModel)]='flight.cabinCrews[0]' class="form-control">
+                                <select id="ccs" name="ccs" [(ngModel)]='flight.cabinCrews' class="form-control">
                                     <option *ngFor="let cc of crewList" [ngValue]="cc.id">{{cc.name}}</option>
                                 </select>
                             </div>
@@ -210,7 +210,7 @@
     <!-- END FLIGHT MODAL MARKUP -->
 
     <!-- BEGIN CARGO MODAL MARKUP -->
-    <div class="modal fade" id="cargoModal" tabindex="-1" role="dialog" aria-labelledby="formModalLabel"
+    <div class="modal fade" id="requestModal" tabindex="-1" role="dialog" aria-labelledby="formModalLabel"
          aria-hidden="true">
         <div class="modal-dialog">
             <div class="modal-content">
