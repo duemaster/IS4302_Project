@@ -28,7 +28,7 @@
             <!-- ID Column -->
             <ng-container matColumnDef="FlightNo">
               <mat-header-cell *matHeaderCellDef> Flight No. </mat-header-cell>
-              <mat-cell *matCellDef="let element"> {{element.id}} </mat-cell>
+              <mat-cell *matCellDef="let element"> {{element.flightNumber}} </mat-cell>
             </ng-container>
 
             <!-- Model Column -->
@@ -100,7 +100,7 @@
                 <label for="flightNo" class="control-label">Flight No.</label>
               </div>
               <div class="col-sm-4">
-                <input type="text" name="flightNo" id="flightNo" class="form-control" [(ngModel)]='flight.id' placeholder="Flight No." [disabled]="true">
+                <input type="text" name="flightNo" id="flightNo" class="form-control" [(ngModel)]='flight.flightNumber' placeholder="Flight No." [disabled]="true">
               </div>
               <div class="col-sm-2">
                 <label for="departDate" class="control-label">Depart Date</label>
@@ -128,7 +128,7 @@
                 <label for="ccs" class="control-label">Cabin Crew Supervisor</label>
               </div>
               <div class="col-sm-6">
-                <input type="text" name="ccs" id="ccs" class="form-control" [(ngModel)]='flight.cabinCrews[0]' placeholder="Crew" [disabled]="true">
+                <input type="text" name="ccs" id="ccs" class="form-control" [(ngModel)]='flight.cabinCrews' placeholder="Crew" [disabled]="true">
               </div>
             </div>
             <div class="form-group">

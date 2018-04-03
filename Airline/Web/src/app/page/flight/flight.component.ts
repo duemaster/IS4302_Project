@@ -29,12 +29,13 @@ export class FlightComponent implements OnInit {
     flight = {
         departureTime: '',
         id: '',
+        flightNumber:'',
         origin: '',
         destination: '',
         paxCount: 0,
         company: 'Airline1',
         status: 'SCHEDULED',
-        cabinCrews: [{}],
+        cabinCrews: {},
         cargo: [{}],
         service: [{}],
         aircraft: {},
@@ -101,10 +102,11 @@ export class FlightComponent implements OnInit {
         this.dateTimeExample = new Date();
         this.flight = {
             departureTime: '',
-            id: '',
+            id: (new Date()).getTime()+'',
             paxCount: 0,
             origin: '',
             destination: '',
+            flightNumber:'',
             company: 'Airline1',
             status: 'SCHEDULED',
             cabinCrews: [{}],
@@ -180,9 +182,7 @@ export class FlightComponent implements OnInit {
         flightList = flightList.map((flight) => {
             //Remove Cabin Crew NameSpace
             if(flight.cabinCrews) {
-               flight.cabinCrews = flight.cabinCrews.map((cabinCrew) => {
-                   return cabinCrew.replace(this.blockChainService.AIRLINE_EMPLOYEE, "");
-               });
+               flight.cabinCrews = flight.cabinCrew.replace(this.blockChainService.AIRLINE_EMPLOYEE, "");
            }
            
            //Remove GHA Company Namespace
