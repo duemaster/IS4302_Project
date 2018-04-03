@@ -149,7 +149,7 @@
                                 <label for="ccs" class="control-label">Cabin Crew</label>
                             </div>
                             <div class="col-sm-4">
-                                <select id="ccs" name="ccs" [(ngModel)]='flight.cabinCrews' class="form-control">
+                                <select id="ccs" name="ccs" [(ngModel)]="flight.cabinCrew" class="form-control">
                                     <option *ngFor="let cc of crewList" [ngValue]="cc.id">{{cc.name}}</option>
                                 </select>
                             </div>

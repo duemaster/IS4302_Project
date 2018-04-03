@@ -16,6 +16,7 @@ import {HttpClientModule} from "@angular/common/http";
 import { UtilityProvider } from '../providers/utility/utility';
 import {HomePageModule} from "../pages/home/home.module";
 import {LoginPageModule} from "../pages/login/login.module";
+import { FlightProvider } from '../providers/flight/flight';
 
 
 @NgModule({
@@ -41,7 +42,8 @@ import {LoginPageModule} from "../pages/login/login.module";
     {provide: ErrorHandler, useClass: IonicErrorHandler},
     UserProvider,
     SettingsProvider,
-    UtilityProvider
+    UtilityProvider,
+    FlightProvider
   ]
 })
 export class AppModule {}

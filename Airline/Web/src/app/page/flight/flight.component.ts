@@ -35,7 +35,7 @@ export class FlightComponent implements OnInit {
         paxCount: 0,
         company: 'Airline1',
         status: 'SCHEDULED',
-        cabinCrews: {},
+        cabinCrew: {},
         cargo: [{}],
         service: [{}],
         aircraft: {},
@@ -109,7 +109,7 @@ export class FlightComponent implements OnInit {
             flightNumber:'',
             company: 'Airline1',
             status: 'SCHEDULED',
-            cabinCrews: [{}],
+            cabinCrew: [{}],
             cargo: [{}],
             service: [{}],
             aircraft: {},
@@ -129,6 +129,7 @@ export class FlightComponent implements OnInit {
         this.flight.departureTime = this.dateTimeExample;
 
         console.log(this.flight);
+        console.log(typeof(this.flight.cabinCrew));
 
         await this.http.post(
             `${this.service.ENDPOINT}/blockchain/user/${this.authService.admin.id}/api/org.airline.airChain.Flight`,
@@ -181,8 +182,8 @@ export class FlightComponent implements OnInit {
 
         flightList = flightList.map((flight) => {
             //Remove Cabin Crew NameSpace
-            if(flight.cabinCrews) {
-               flight.cabinCrews = flight.cabinCrew.replace(this.blockChainService.AIRLINE_EMPLOYEE, "");
+            if(flight.cabinCrew) {
+               flight.cabinCrew = flight.cabinCrew.replace(this.blockChainService.AIRLINE_EMPLOYEE, "");
            }
            
            //Remove GHA Company Namespace

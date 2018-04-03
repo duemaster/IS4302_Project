@@ -1,6 +1,7 @@
 import { Component } from '@angular/core';
 import { IonicPage, NavController, NavParams } from 'ionic-angular';
 import {UserProvider} from "../../providers/user/user";
+import {FlightProvider} from "../../providers/flight/flight";
 
 /**
  * Generated class for the HomePage page.
@@ -17,11 +18,12 @@ import {UserProvider} from "../../providers/user/user";
 export class HomePage {
 
   constructor(public navCtrl: NavController, public navParams: NavParams,
-              public userProvider:UserProvider) {
+              public userProvider:UserProvider,public flightProvider:FlightProvider) {
   }
 
   ionViewDidLoad() {
     console.log('ionViewDidLoad HomePage');
+    this.flightProvider.getFlightList();
   }
 
   logout(){
