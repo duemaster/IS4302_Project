@@ -120,7 +120,7 @@
                             <div class="col-sm-2">
                                 <label for="departDate" class="control-label">Depart Date</label>
                             </div>
-                            <div class="col-sm-4" class="departDate">
+                            <div class="col-sm-4 departDate">
                                 <ngx-datetime-picker id="departDate" [(selectedDateTime)]="dateTimeExample"></ngx-datetime-picker>
                                 <!--<ngx-datetime-picker id="departDate"-->
                                 <!--[(selectedDateTime)]="flight.departureTime">-->
@@ -209,7 +209,7 @@
     <!-- END FLIGHT MODAL MARKUP -->
 
     <!-- BEGIN CARGO MODAL MARKUP -->
-    <div class="modal fade" id="requestModal" tabindex="-1" role="dialog" aria-labelledby="formModalLabel"
+    <div class="modal fade" id="cargoModal" tabindex="-1" role="dialog" aria-labelledby="formModalLabel"
          aria-hidden="true">
         <div class="modal-dialog">
             <div class="modal-content">
@@ -230,7 +230,7 @@
                                 </tr>
                                 </thead>
                                 <tbody>
-                                <tr *ngFor="let item of cargo">
+                                <tr *ngFor="let item of cargoList">
                                     <td>{{item.id}}</td>
                                     <td>{{item.weight}}</td>
                                     <td>{{item.company.id}}</td>
@@ -241,7 +241,7 @@
                         </div><!--end .card-body -->
                     </div><!--end .card -->
                     <div class="modal-footer">
-                        <button type="button" class="btn btn-primary">Okay</button>
+                        <button type="button" class="btn btn-primary" data-dismiss="modal">Okay</button>
                     </div>
                 </form>
             </div><!-- /.modal-content -->
@@ -276,7 +276,7 @@
                                 <td>{{item.company.id}}</td>
                                 <td>{{item.status}}</td>
                                 <td>
-                                    <button type="button" class="btn btn-primary" (click)="acceptService(item)">Accept
+                                    <button type="button" class="btn btn-primary"  data-dismiss="modal" (click)="acceptService(item)">Accept
                                     </button>
                                 </td>
                             </tr>
