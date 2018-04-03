@@ -102,17 +102,22 @@ Vagrant.configure('2') do |config|
   config.vm.network :forwarded_port, guest: 3001, host: 3001  #marbles-ui
 
   # Airline
-  for i in 20000..20009
+  for i in 15000..15019
     config.vm.network :forwarded_port, guest: i, host: i
   end
 
   # Cargo
-  for i in 20010..20019
+  for i in 15020..15039
+    config.vm.network :forwarded_port, guest: i, host: i
+  end
+
+  # Cargo 2
+  for i in 15040..15059
     config.vm.network :forwarded_port, guest: i, host: i
   end
 
   # GHA
-  for i in 20020..20029
+  for i in 15060..15079
     config.vm.network :forwarded_port, guest: i, host: i
   end
 
