@@ -95,7 +95,7 @@ rule AllowAirlineCabinCrewUpdateServiceDelivery {
    participant (p): "org.airline.airChain.GHAEmployee"
    operation: UPDATE
    resource (r): "org.airline.airChain.Flight"
-   transaction (txn): "org.airline.airChain.ProcessFlightServiceDelivery"
+   transaction (txn): "org.airline.airChain.IssueFlightServiceRequest"
    condition: (txn.service.status == "PENDING")
    action: ALLOW
  }

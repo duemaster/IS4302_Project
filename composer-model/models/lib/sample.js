@@ -91,9 +91,14 @@ function IssueFlightServiceRequest(tx) {
         throw new Error("Flight not in scheduled status");
 
     //Add Services to Flight
+  	if(!flight.services)
+      flight.services = [];
+  
     flight.services.push(service);
     service.flight = flight;
-
+  
+  	console.log(flight.services.length);
+  
     //Save Flight & service
     saveFlight(flight);
     saveService(service);
