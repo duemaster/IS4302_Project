@@ -10,7 +10,10 @@ export class AuthService {
 
     constructor(private http: HttpClient,
                 public setting: SettingService) {
-        this.admin = JSON.parse(localStorage.getItem('admin'));
+        let adminStorage = localStorage.getItem('admin');
+        if (!adminStorage) {
+            this.admin = JSON.parse(adminStorage);
+        }
         console.log(this.admin);
     }
 
@@ -21,6 +24,8 @@ export class AuthService {
                 {name: userName, password: password},
                 {withCredentials: true}
             ).toPromise();
+
+            console.log(this.admin);
 
             //Save in Cookie
             localStorage.setItem("admin", JSON.stringify(this.admin));
