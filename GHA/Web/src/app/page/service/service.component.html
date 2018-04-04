@@ -1,3 +1,4 @@
+<ngx-loading [show]="loading"></ngx-loading>
 <section>
   <div class="section-body contain-lg">
     <!-- BEGIN INTRO -->
@@ -45,7 +46,7 @@
 
             <!-- Flight No Column -->
             <ng-container matColumnDef="Flight">
-              <mat-header-cell *matHeaderCellDef> Flight No </mat-header-cell>
+              <mat-header-cell *matHeaderCellDef> Flight Info </mat-header-cell>
                 <mat-cell *matCellDef="let element">
                   <a data-toggle="modal" data-target="#flightModal" (click)="viewFlight(element.flight)"  *ngIf="element.flight">
                     <span>View</span>
@@ -190,7 +191,7 @@
                 <label for="paxload" class="control-label">Passenger Loading</label>
               </div>
               <div class="col-sm-9">
-                <input type="number" name="paxload" id="paxload" class="form-control" placeholder="Number of Passengers" [disabled]="true">
+                <input type="text" name="paxload" id="paxload" class="form-control" [(ngModel)]='flight.paxCount' placeholder="Number of Passengers" [disabled]="true">
               </div>
             </div>
           </div>

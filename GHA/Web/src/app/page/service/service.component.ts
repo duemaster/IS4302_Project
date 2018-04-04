@@ -20,6 +20,7 @@ export class ServiceComponent implements AfterViewInit {
     displayedColumns = ['Type', 'Description', 'Status', 'Flight', 'Option'];
     dataSource = new MatTableDataSource([]);
 
+    public loading = false;
     serviceInfo: any = {
         type: '',
         id: '',
@@ -47,17 +48,19 @@ export class ServiceComponent implements AfterViewInit {
 
     update(element) {
         this.serviceInfo = element;
+        if(this.serviceInfo.flight)
+            this.serviceInfo.flight = this.serviceInfo.flight.replace(`${this.blockChainService.FLIGHT}#`, "");
     }
 
     async viewFlight(flight){
+        flight = flight.replace(`${this.blockChainService.FLIGHT}#`, "");
+
         this.flight = await this.http.get(
             `${this.service.ENDPOINT}/blockchain/user/${this.authService.admin.id}/api/org.airline.airChain.Flight/${flight}`,
             {withCredentials: true}
         ).toPromise();
         //Remove Cabin Crew NameSpace
-        if(flight.cabinCrew) {
-            flight.cabinCrew = flight.cabinCrew.replace(this.blockChainService.AIRLINE_EMPLOYEE, "");
-        }
+        console.log(this.flight);
 
     }
     async fetchServiceList() {

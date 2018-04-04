@@ -23,10 +23,7 @@ export class FlightComponent implements OnInit {
     ngOnInit() {
     }
 
-    cargoInfo = [{item: 'furniture', weight: 40, owner: 'SIA Cargo', status: 'Ready'},
-        {item: 'toys', weight: 70, owner: 'Cathay Cargo', status: 'Ready'},];
-
-
+    public loading = false;
     displayedColumns = ['FlightNo', 'Date', 'Departure', 'Landing', 'Status', 'Option'];
     dataSource = new MatTableDataSource([]);
 
@@ -87,6 +84,7 @@ export class FlightComponent implements OnInit {
     }
 
     async viewService(flight) {
+        this.loading = true;
         this.flight = flight;
         this.serviceList = [];
         for (let item of flight.services) {
@@ -96,11 +94,14 @@ export class FlightComponent implements OnInit {
                 `${this.service.ENDPOINT}/blockchain/user/${this.authService.admin.id}/api/org.airline.airChain.Service/${item}`,
                 {withCredentials: true}
             ).toPromise();
+            serviceDetail.company = serviceDetail.company.replace(`${this.blockChainService.GHA_COMPANY}#`,'');
             this.serviceList.push(serviceDetail);
         }
+        this.loading = false;
     }
 
     async viewCargo(flight) {
+        this.loading = true;
         this.cargoList = [];
         for (let item of flight.cargos) {
             let cargoDetail: any = await this.http.get(
@@ -113,6 +114,7 @@ export class FlightComponent implements OnInit {
             }
             this.cargoList.push(cargoDetail);
         }
+        this.loading = false;
 
     }
 
@@ -121,17 +123,15 @@ export class FlightComponent implements OnInit {
     }
 
     async addService() {
+        this.loading = true;
         this.newService.id = `${new Date().getTime()}`;
         this.newService.status = 'PENDING';
-        console.log(this.newService);
 
         let response1 = await this.http.post(
             `${this.service.ENDPOINT}/blockchain/user/${this.authService.admin.id}/api/org.airline.airChain.Service`,
             this.newService,
             {withCredentials: true})
             .toPromise();
-
-        console.log(response1);
 
         let response2 = await this.http.post(
             `${this.service.ENDPOINT}/blockchain/user/${this.authService.admin.id}/api/org.airline.airChain.IssueFlightServiceRequest`,
@@ -141,9 +141,7 @@ export class FlightComponent implements OnInit {
             },
             {withCredentials: true})
             .toPromise();
-
-        console.log(response2);
-
+        this.loading = false;
         this.serviceList.push(this.newService);
 
         this.newService = {
@@ -156,16 +154,17 @@ export class FlightComponent implements OnInit {
 
     }
 
-    async fetchStaffList() {
-        this.staffList = await this.http.get(
-            `${this.service.ENDPOINT}/blockchain/user/${this.authService.admin.id}/api/org.airline.airChain.GHAEmployee`,
+    async deleteService(service) {
+        this.loading = true;
+        await this.http.delete(
+            `${this.service.ENDPOINT}/blockchain/user/${this.authService.admin.id}/api/org.airline.airChain.Service/${service.id}`,
             {withCredentials: true}
         ).toPromise();
-        this.staffList = this.staffList.filter((staff) => {
-            return staff.role == 'STAFF'
-        });
+        this.serviceList.splice(this.serviceList.indexOf(service), 1);
+        this.loading = false;
 
     }
+
 
     async fetchFlightList() {
         let flightList: any = await this.http.get(
@@ -179,7 +178,6 @@ export class FlightComponent implements OnInit {
                 flight.cabinCrew = flight.cabinCrew.replace(this.blockChainService.AIRLINE_EMPLOYEE, "");
 
             }
-
 
             //Remove Aircraft NameSpace
             if (flight.aircraft) {

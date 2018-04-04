@@ -1,3 +1,4 @@
+<ngx-loading [show]="loading" ></ngx-loading>
 <section>
     <div class="section-body contain-lg">
         <!-- BEGIN INTRO -->
@@ -264,6 +265,7 @@
                             <thead>
                             <tr>
                                 <th>Item</th>
+                                <th>Type</th>
                                 <th>GHA</th>
                                 <th>Status</th>
                                 <th>Action</th>
@@ -273,10 +275,10 @@
                             <tr *ngFor="let item of serviceList">
                                 <td>{{item.description}}</td>
                                 <td>{{item.type}}</td>
-                                <td>{{item.company.id}}</td>
+                                <td>{{item.company}}</td>
                                 <td>{{item.status}}</td>
                                 <td>
-                                    <button type="button" class="btn btn-primary"  data-dismiss="modal" (click)="acceptService(item)">Accept
+                                    <button type="button" class="btn btn-primary" *ngIf="item.status==='PENDING'" (click)="acceptService(item)">Accept
                                     </button>
                                 </td>
                             </tr>

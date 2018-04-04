@@ -17,6 +17,8 @@ export class AircraftComponent implements OnInit {
 
   ngOnInit() {
   }
+    public loading = false;
+
     displayedColumns = ['id', 'Model', 'PaxCapacity', 'CargoCapacity', 'Option'];
     dataSource = new MatTableDataSource([]);
     aircraft: any = {
@@ -63,6 +65,7 @@ export class AircraftComponent implements OnInit {
     }
 
     async addAircraft() {
+        this.loading = true;
         await this.http.post(
             `${this.service.ENDPOINT}/blockchain/user/${this.authService.admin.id}/api/org.airline.airChain.Aircraft`,
             this.aircraft,
@@ -71,11 +74,11 @@ export class AircraftComponent implements OnInit {
 
         //Refresh Data Table
         this.fetchAircraftList();
+        this.loading = false;
     }
 
     async editAircraft() {
-
-
+        this.loading = true;
         await this.http.put(
             `${this.service.ENDPOINT}/blockchain/user/${this.authService.admin.id}/api/org.airline.airChain.Aircraft/${this.aircraft.id}`,
             this.aircraft,
@@ -84,9 +87,11 @@ export class AircraftComponent implements OnInit {
 
         //Refresh Data Table
         this.fetchAircraftList();
+        this.loading = false;
     }
 
     async deleteAircraft() {
+        this.loading = true;
         await this.http.delete(
             `${this.service.ENDPOINT}/blockchain/user/${this.authService.admin.id}/api/org.airline.airChain.Aircraft/${this.aircraft.id}`,
             {withCredentials: true})
@@ -94,6 +99,7 @@ export class AircraftComponent implements OnInit {
 
         //Refresh Data Table
         this.fetchAircraftList();
+        this.loading = false;
     }
 
     update(element) {

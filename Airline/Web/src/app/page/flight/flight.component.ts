@@ -4,6 +4,7 @@ import {HttpClient} from '@angular/common/http';
 import {SettingService} from '../../service/setting/setting.service';
 import {AuthService} from '../../service/auth.service';
 import {BlockChainService} from '../../service/blockchain/block-chain.service';
+import {Observable} from 'rxjs/Observable';
 
 @Component({
     selector: 'app-flight',
@@ -22,6 +23,7 @@ export class FlightComponent implements AfterViewInit {
     dataSource = new MatTableDataSource([]);
     dateTimeExample;
 
+    public loading = false;
     flight = {
         departureTime: '',
         id: '',
@@ -81,7 +83,7 @@ export class FlightComponent implements AfterViewInit {
         }
 
         this.cargoList = flight.cargos.flatMap(async (cargo) => {
-            cargo.id = cargo.id.replace(`${this.blockChainService.CARGO}#`,'');
+            cargo.id = cargo.id.replace(`${this.blockChainService.CARGO}#`, '');
             return await this.http.get(
                 `${this.service.ENDPOINT}/blockchain/user/${this.authService.admin.id}/api/org.airline.airChain.Cargo/${cargo.id}`,
                 {withCredentials: true}
@@ -97,14 +99,19 @@ export class FlightComponent implements AfterViewInit {
             return;
         }
 
-        this.serviceList = flight.services.flatMap(async (service) => {
-            service.id = service.id.replace(`${this.blockChainService.SERVICE}#`,'');
-            return await this.http.get(
-                `${this.service.ENDPOINT}/blockchain/user/${this.authService.admin.id}/api/org.airline.airChain.Cargo/${service.id}`,
+        this.serviceList = [];
+        flight.services.forEach(async (service) => {
+            service = service.replace(`${this.blockChainService.SERVICE}#`, '');
+            let serviceResponse:any = await this.http.get(
+                `${this.service.ENDPOINT}/blockchain/user/${this.authService.admin.id}/api/org.airline.airChain.Service/${service}`,
                 {withCredentials: true}
             ).toPromise();
+            serviceResponse.company = serviceResponse.company.replace(`${this.blockChainService.GHA_COMPANY}#`,'');
+
+            this.serviceList.push(serviceResponse);
         });
-        
+
+        console.log(this.serviceList);
     }
 
     create() {
@@ -136,6 +143,7 @@ export class FlightComponent implements AfterViewInit {
     }
 
     async addFlight() {
+        this.loading = true;
         this.flight.departureTime = this.dateTimeExample;
         let processedFlight = this.addNameSpace(this.flight);
         await this.http.post(
@@ -143,36 +151,44 @@ export class FlightComponent implements AfterViewInit {
             processedFlight,
             {withCredentials: true})
             .toPromise();
-
         //Refresh Data Table
         this.fetchFlightList();
+        this.loading = false;
     }
 
     async editFlight() {
+        this.loading = true;
         this.flight.departureTime = this.dateTimeExample;
         await this.updateFlight(this.flight);
         //Refresh Data Table
         this.fetchFlightList();
+        this.loading = false;
     }
 
     async cancelFlight() {
+        this.loading = true;
         this.flight.status = 'CANCELLED';
 
         await this.updateFlight(this.flight);
 
         //Refresh Data Table
         this.fetchFlightList();
+        this.loading = false;
     }
 
     async acceptService(service) {
-        await this.http.post(
+        this.loading = true;
+        console.log(service);
+        let response = await this.http.post(
             `${this.service.ENDPOINT}/blockchain/user/${this.authService.admin.id}/api/org.airline.airChain.HandleFlightServiceRequest`,
-            {service: service, isApproved: true},
+            {service: service.id, isApproved: true},
             {withCredentials: true})
             .toPromise();
 
+        console.log(response);
         //Update Service Status locally
         service.status = 'APPROVED';
+        this.loading = false;
     }
 
 
