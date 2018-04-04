@@ -76,7 +76,7 @@ rule AllowAirlineOfficerUpdateService {
   operation: UPDATE
   resource (r): "org.airline.airChain.Service"
   transaction (txn): "org.airline.airChain.HandleFlightServiceRequest"
-  condition: (r.status == "PENDING")
+  condition: (r.status == "PENDING" && r.flight.status == "SCHEDULED" && p.company.flights.some(function(flight){return flight.getIdentifier() == r.flight.getIdentifier();}))
   action: ALLOW
 }
 
@@ -86,7 +86,7 @@ rule AllowAirlineCabinCrewUpdateServiceDelivery {
    operation: UPDATE
    resource (r): "org.airline.airChain.Service"
    transaction (txn): "org.airline.airChain.ProcessFlightServiceDelivery"
-   condition: (r.status == "APPROVED")
+   condition: (r.status == "APPROVED" && r.flight.status == "SCHEDULED" && p.company.flights.some(function(flight){return flight.getIdentifier() == r.flight.getIdentifier();}))
    action: ALLOW
  }
 
