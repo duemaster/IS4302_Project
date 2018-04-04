@@ -28,7 +28,7 @@ function HandleFlightServiceRequest(tx) {
     var isApproved = tx.isApproved;
 
     //Get access to calling participant
-    var caller = getParticipant();
+    var caller = getCurrentParticipant();
 
     //Only allow if Service is attached to flight the participant is incharge of
     var isAuthorised = caller.company.flights.filter(function (flight) {
@@ -57,7 +57,7 @@ function ProcessFlightServiceDelivery(tx) {
     var service = tx.service;
     var isApproved = tx.isApproved;
 
-    var caller = getParticipant();
+    var caller = getCurrentParticipant();
     var isAuthorised = service.flight.cabinCrews.filter(function (crew) {
         return crew.getIdentifier() == caller.getIdentifier();
     }).length == 1;
@@ -96,8 +96,6 @@ function IssueFlightServiceRequest(tx) {
   
     flight.services.push(service);
     service.flight = flight;
-  
-  	console.log(flight.services.length);
   
     //Save Flight & service
     saveFlight(flight);
@@ -149,13 +147,16 @@ function AssignCargoToFlight(tx) {
     var cargo = tx.cargo;
     var flight = tx.flight;
 
+    if(!flight.cargos) {
+        flight.cargos = [];
+    }
+
     //Ensure Cargo does not exceed weight limit
     var limit = flight.aircraft.cargoCapacity;
     var loadedWeight = flight.cargos.reduce(function (a, b) { a + b.weight }, 0);
 
     if (loadedWeight + cargo.weight > limit)
         throw new Error('Total weight has exceeded limit');
-
 
     //Attach Cargo to flight
     flight.cargos.push(cargo);
@@ -189,6 +190,10 @@ function AcceptCargoRequest(tx) {
 
     if (cargoRequest.lateDepartureTime <= flight.departureTime || cargoRequest.earlyDepartureTime >= flight.departureTime)
         throw new Error('CargoRequest departureTime mismatch with flight departureTime!');
+
+    if(!flight.cargos) {
+        flight.cargos = [];
+    }
 
     //Ensure Cargo does not exceed weight limit
     var limit = flight.aircraft.cargoCapacity;
