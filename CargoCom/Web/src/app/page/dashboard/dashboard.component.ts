@@ -22,7 +22,7 @@ export class DashboardComponent implements OnInit {
     displayedColumns = ['Staff Id', 'Role', 'Name', "Option"];
     dataSource = new MatTableDataSource([]);
     staff: any = {
-        id: '',
+        password: '',
         name: '',
         role: ''
     };
@@ -46,7 +46,7 @@ export class DashboardComponent implements OnInit {
         this.isCreate = true;
         this.staff = {
             name: '',
-            id: '',
+            password: '',
             role: '',
         };
     }
