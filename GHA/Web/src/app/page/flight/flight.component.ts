@@ -155,10 +155,12 @@ export class FlightComponent implements OnInit {
     }
 
     async deleteService(service) {
-        this.loading = true;
-        await this.http.delete(
+
+        service.status = 'CANCELLED';
+        await this.http.put(
             `${this.service.ENDPOINT}/blockchain/user/${this.authService.admin.id}/api/org.airline.airChain.Service/${service.id}`,
-            {withCredentials: true}
+            {withCredentials: true},
+            service
         ).toPromise();
         this.serviceList.splice(this.serviceList.indexOf(service), 1);
         this.loading = false;

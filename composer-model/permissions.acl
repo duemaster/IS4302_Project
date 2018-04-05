@@ -1,4 +1,4 @@
- /**
+/**
   * Create Transaction ACL
   */
 
@@ -76,7 +76,7 @@ rule AllowAirlineOfficerUpdateService {
   operation: UPDATE
   resource (r): "org.airline.airChain.Service"
   transaction (txn): "org.airline.airChain.HandleFlightServiceRequest"
-  condition: (r.status == "PENDING" && r.flight.status == "SCHEDULED" && p.company.flights.some(function(flight){return flight.getIdentifier() == r.flight.getIdentifier();}))
+  condition: (r.status == "PENDING")
   action: ALLOW
 }
 
@@ -86,7 +86,7 @@ rule AllowAirlineCabinCrewUpdateServiceDelivery {
    operation: UPDATE
    resource (r): "org.airline.airChain.Service"
    transaction (txn): "org.airline.airChain.ProcessFlightServiceDelivery"
-   condition: (r.status == "APPROVED" && r.flight.status == "SCHEDULED" && p.company.flights.some(function(flight){return flight.getIdentifier() == r.flight.getIdentifier();}))
+   condition: (r.status == "APPROVED")
    action: ALLOW
  }
 
@@ -177,7 +177,7 @@ rule AllowGHAToViewFlight {
 
 rule AllowCargoToViewFlight {
   description:  "Allow Cargo to view flights"
-  participant (p): "org.airline.airChain.GHAEmployee"
+  participant (p): "org.airline.airChain.CargoEmployee"
   operation: READ
   resource (r): "org.airline.airChain.Flight"
   condition: (r.company.authorisedCargoCompany.getIdentifier() == p.company.getIdentifier())
