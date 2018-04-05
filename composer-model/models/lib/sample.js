@@ -15,32 +15,6 @@
 var namespace = "org.airline.airChain";
 
 /*
- ** Generic Company Action
- */
-
-/**
- * Sample transaction processor function.
- * @param {org.airline.airChain.AddEmployeeToCompany} tx The sample transaction instance.
- * @transaction
- */
-function AddEmployeeToCompany(tx) {
-    var employee = tx.employee;
-    var caller = getCurrentParticipant();
-
-    employee.company = caller.company;
-
-    if (!caller.company.employees) {
-        caller.company.employees = [];
-    }
-
-    caller.company.employees.push(employee);
-
-    saveCompany(caller.company);
-    saveEmployee(employee);
-}
-
-
-/*
  ** Airline Company Action
  */
 
@@ -147,6 +121,27 @@ function ProcessFlightServiceDelivery(tx) {
 
 /**
  * Sample transaction processor function.
+ * @param {org.airline.airChain.AddServiceToCompany} tx The sample transaction instance.
+ * @transaction
+ */
+function AddServiceToCompany(tx) {
+    var service = tx.service;
+
+    var caller = getCurrentParticipant();
+
+    if (!caller.company.services) {
+        caller.company.services = [];
+    }
+
+    service.company = caller.company;
+    caller.company.services.push(service);
+
+    saveService(service);
+    saveCompany(caller.company);
+}
+
+/**
+ * Sample transaction processor function.
  * @param {org.airline.airChain.IssueFlightServiceRequest} tx The sample transaction instance.
  * @transaction
  */
@@ -180,7 +175,7 @@ function CollectCargoFromWarehouse(tx) {
     //Update Cargo status
     cargo.status = "COLLECTED";
 
-    //Save cargos
+    //Save cargo
     saveCargo(cargo);
 }
 
@@ -188,6 +183,28 @@ function CollectCargoFromWarehouse(tx) {
 /*
  ** Cargo Company Action
  */
+
+
+/**
+ * Sample transaction processor function.
+ * @param {org.airline.airChain.AddCargoToCompany} tx The sample transaction instance.
+ * @transaction
+ */
+function AddCargoToCompany(tx) {
+    var cargo = tx.cargo;
+
+    var caller = getCurrentParticipant();
+
+    if (!caller.company.cargos) {
+        caller.company.cargos = [];
+    }
+
+    caller.company.cargos.push(cargo);
+    cargo.company = caller.company;
+
+    saveCargo(cargo);
+    saveCompany(caller.company);
+}
 
 /**
  * Sample transaction processor function.

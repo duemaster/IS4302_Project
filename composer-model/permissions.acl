@@ -1,4 +1,45 @@
 /**
+  * Helpful Transaction ACL
+  */
+
+rule AllowAirlineAddFlight {
+  description:  "Allow Airline company to add Flights"
+  participant (p): "org.airline.airChain.AirlineEmployee"
+  operation: CREATE
+  resource (r): "org.airline.airChain.AddFlightToCompany"
+  condition: (p.role == "OFFICER")
+  action: ALLOW
+}
+
+rule AllowAirlineAddAircraft {
+  description:  "Allow Airline company to add Aircraft"
+  participant (p): "org.airline.airChain.AirlineEmployee"
+  operation: CREATE
+  resource (r): "org.airline.airChain.AddAircraftToCompany"
+  condition: (p.role == "OFFICER")
+  action: ALLOW
+}
+
+rule AllowGHAAddServices {
+  description:  "Allow GHA company to add Services"
+  participant (p): "org.airline.airChain.GHAEmployee"
+  operation: CREATE
+  resource (r): "org.airline.airChain.AddServiceToCompany"
+  condition: (p.role == "OFFICER")
+  action: ALLOW
+}
+
+rule AllowCargoAddCargo {
+  description:  "Allow Cargo company to add Cargo"
+  participant (p): "org.airline.airChain.CargoEmployee"
+  operation: CREATE
+  resource (r): "org.airline.airChain.AddCargoToCompany"
+  condition: (p.role == "OFFICER")
+  action: ALLOW
+}
+
+
+/**
   * Create Transaction ACL
   */
 

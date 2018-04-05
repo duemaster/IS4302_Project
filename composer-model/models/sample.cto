@@ -139,14 +139,6 @@ participant GHAEmployee extends Employee {
 }
 
 /*
-** Generic Company Action
-*/
-
-transaction AddEmployeeToCompany {
-	--> Employee employee
-}
-
-/*
 ** Airline Company Action
 */
 
