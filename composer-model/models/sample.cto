@@ -101,7 +101,7 @@ asset Service identified by id {
 
 enum CARGO_SERVICE_STATUS {
     o PENDING
-	o ACCEPTED
+	  o ACCEPTED
     o CANCELLED
 }
 
@@ -144,7 +144,6 @@ participant GHAEmployee extends Employee {
 
 transaction AddEmployeeToCompany {
 	--> Employee employee
-    --> Company company
 }
 
 /*
@@ -152,7 +151,11 @@ transaction AddEmployeeToCompany {
 */
 
 transaction AddFlightToCompany {
-	
+	 --> Flight flight
+}
+
+transaction AddAircraftToCompany {
+  --> Aircraft aircraft
 }
 
 transaction HandleFlightServiceRequest {
@@ -168,6 +171,11 @@ transaction ProcessFlightServiceDelivery {
 /*
 ** GHA Company Action
 */
+
+transaction AddServiceToCompany {
+  --> Service service
+}
+
 transaction IssueFlightServiceRequest {
     --> Flight flight
     --> Service service
@@ -180,6 +188,10 @@ transaction CollectCargoFromWarehouse {
 /*
 ** Cargo Company Action
 */
+
+transaction AddCargoToCompany {
+  --> Cargo cargo
+}
 
 transaction ConfirmCargoToWarehouse {
     --> Cargo cargo
