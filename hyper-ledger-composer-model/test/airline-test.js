@@ -161,6 +161,11 @@ describe("Airline Testing", () => {
         const airlineOfficer = await participantRegistry.get("AirlineOfficer");
 
         expect(airlineCompany.employees.length).be.equal(1);
-        //expect([1, 2, 3]).to.include(2);
+        let isEmployeeInCompany = airlineCompany.employees.some((employee) => {
+            return employee.getFullyQualifiedIdentifier() === airlineOfficer.getFullyQualifiedIdentifier();
+        });
+
+        expect(isEmployeeInCompany).to.be.equal(true);
+        expect(airlineOfficer.company.getFullyQualifiedIdentifier() === airlineCompany.getFullyQualifiedIdentifier()).to.be.equal(true);
     })
 })
