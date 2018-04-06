@@ -19,6 +19,7 @@ export class DashboardComponent implements OnInit {
     ngOnInit() {
     }
 
+    public loading = false;
     displayedColumns = ['Staff Id', 'Role', 'Name', "Option"];
     dataSource = new MatTableDataSource([]);
     staff: any = {
@@ -59,6 +60,7 @@ export class DashboardComponent implements OnInit {
     }
 
     async addStaff() {
+        this.loading = true;
         await this.http.post(
             `${this.service.ENDPOINT}/user/${this.authService.admin.id}/create`,
             this.staff,
@@ -67,12 +69,11 @@ export class DashboardComponent implements OnInit {
 
         //Refresh Data Table
         this.fetchStaffList();
+        this.loading = false;
     }
 
     async editStaff() {
-
-        console.log(this.staff);
-
+        this.loading = true;
         await this.http.post(
             `${this.service.ENDPOINT}/user/${this.authService.admin.id}/update`,
             this.staff,
@@ -81,6 +82,8 @@ export class DashboardComponent implements OnInit {
 
         //Refresh Data Table
         this.fetchStaffList();
+        this.loading = false;
+
     }
 
     async deleteStaff() {
@@ -102,7 +105,7 @@ export class DashboardComponent implements OnInit {
 
     async fetchStaffList() {
         let staffList: any = await this.http.get(
-            `${this.service.ENDPOINT}/blockchain/user/${this.authService.admin.id}/api/org.airline.airChain.AirlineEmployee`,
+            `${this.service.ENDPOINT}/blockchain/user/${this.authService.admin.id}/api/org.airline.airChain.CargoEmployee`,
             {withCredentials: true}
         ).toPromise();
 

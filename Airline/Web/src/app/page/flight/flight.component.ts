@@ -106,6 +106,8 @@ export class FlightComponent implements AfterViewInit {
                 `${this.service.ENDPOINT}/blockchain/user/${this.authService.admin.id}/api/org.airline.airChain.Service/${service}`,
                 {withCredentials: true}
             ).toPromise();
+
+            console.log(serviceResponse);
             serviceResponse.company = serviceResponse.company.replace(`${this.blockChainService.GHA_COMPANY}#`,'');
 
             this.serviceList.push(serviceResponse);

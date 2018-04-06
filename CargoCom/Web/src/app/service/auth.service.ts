@@ -1,6 +1,5 @@
 import {Injectable} from '@angular/core';
 import {HttpClient} from '@angular/common/http';
-import {environment} from '../../environments/environment';
 import {SettingService} from "./setting/setting.service";
 
 @Injectable()
@@ -11,7 +10,7 @@ export class AuthService {
     constructor(private http: HttpClient,
                 public setting: SettingService) {
         let adminStorage = localStorage.getItem('admin');
-        if (!adminStorage) {
+        if (adminStorage != null) {
             this.admin = JSON.parse(adminStorage);
         }
         console.log(this.admin);

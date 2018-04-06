@@ -1,3 +1,4 @@
+<ngx-loading [show]="loading"></ngx-loading>
 <section>
   <div class="section-body contain-lg">
     <!-- BEGIN INTRO -->
@@ -101,7 +102,7 @@
                 <label for="name" class="control-label">Password</label>
               </div>
               <div class="col-sm-9">
-                <input type="text" name="name" id="name" class="form-control" [(ngModel)]="staff.password" placeholder="Password">
+                <input type="password" name="name" id="name" class="form-control" [(ngModel)]="staff.password" placeholder="Password">
               </div>
             </div>
             <div class="form-group">
@@ -110,8 +111,8 @@
               </div>
               <div class="col-sm-9">
                 <select id="role" name="role" class="form-control" [(ngModel)]="staff.role">
-                  <option value="officer">Officer</option>
-                  <option value="crew">Cargo Staff</option>
+                  <option value="OFFICER">Officer</option>
+                  <option value="STAFF">Cargo Staff</option>
                 </select>
               </div>
             </div>

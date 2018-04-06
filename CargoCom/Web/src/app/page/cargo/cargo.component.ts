@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewChild } from '@angular/core';
+import {Component, OnInit, ViewChild} from '@angular/core';
 import {MatTableDataSource, MatPaginator} from '@angular/material';
 import {BlockChainService} from "../../service/blockchain/block-chain.service";
 import {AuthService} from "../../service/auth.service";
@@ -6,19 +6,20 @@ import {SettingService} from "../../service/setting/setting.service";
 import {HttpClient} from "@angular/common/http";
 
 @Component({
-  selector: 'app-flight',
-  templateUrl: './cargo.component.html',
-  styleUrls: ['./cargo.component.scss']
+    selector: 'app-flight',
+    templateUrl: './cargo.component.html',
+    styleUrls: ['./cargo.component.scss']
 })
 export class CargoComponent implements OnInit {
 
-  constructor(private http: HttpClient,
-              private service: SettingService,
-              public authService: AuthService,
-              public blockChainService: BlockChainService) { }
+    constructor(private http: HttpClient,
+                private service: SettingService,
+                public authService: AuthService,
+                public blockChainService: BlockChainService) {
+    }
 
-  ngOnInit() {
-  }
+    ngOnInit() {
+    }
 
     displayedColumns = ['CargoNo', 'ItemType', 'Weight', 'Status', 'Option'];
     dataSource = new MatTableDataSource([]);
@@ -28,9 +29,9 @@ export class CargoComponent implements OnInit {
         description: '',
         weight: 0,
         status: 'PENDING',
-        company:'Cargo1',
-        flight:{},
-        request:{}
+        company: 'Cargo1',
+        flight: '',
+        request: ''
     };
 
     isCreate = false;
@@ -38,7 +39,7 @@ export class CargoComponent implements OnInit {
     flight = {
         departureTime: new Date(),
         id: '',
-        flightNumber:'',
+        flightNumber: '',
         origin: '',
         destination: '',
         paxCount: 0,
@@ -48,15 +49,14 @@ export class CargoComponent implements OnInit {
         deliverCompany: {}
     };
 
-    flightList:any;
+    flightList: any;
 
-    availFlight=[
-        {id:''},
-        {flightNumber:''},
-        {departureTime: new Date()}
+    availFlight = [
+        {id: '', flightNumber: '', departureTime: new Date()}
     ];
 
-    cargoRequest:any;
+    public loading = false;
+    cargoRequest: any;
     isPending = true;
 
     applyFilter(filterValue: string) {
@@ -73,12 +73,12 @@ export class CargoComponent implements OnInit {
         this.fetchFlightList();
     }
 
-    update(element){
+    update(element) {
         this.isCreate = false;
         this.cargo = element;
     }
 
-    async viewFlight(flightId){
+    async viewFlight(flightId) {
         this.flight = this.flightList.filter((flight) => {
             return flightId === flight.id;
         })[0];
@@ -88,31 +88,31 @@ export class CargoComponent implements OnInit {
     create() {
         this.isCreate = true;
         this.cargo = {
-            id: (new Date()).getTime()+'',
+            id: `${this.blockChainService.CARGO}#${(new Date()).getTime()}`,
             description: '',
             weight: 0,
-            status: '',
-            company:'Cargo1',
-            flight:{},
-            request:{}
+            status: 'PENDING',
+            company: 'Cargo1',
+            flight: '',
+            request: ''
         };
     }
 
-    async request(element){
+    async request(element) {
         this.cargo = element;
-        if(this.cargo.request){
+        if (this.cargo.request) {
             this.cargoRequest = this.http.get(
                 `${this.service.ENDPOINT}/blockchain/user/${this.authService.admin.id}/api/org.airline.airChain.CargoRequest${this.cargo.request}`,
                 {withCredentials: true})
                 .toPromise();
-            if(this.cargoRequest.status === 'PENDING')
+            if (this.cargoRequest.status === 'PENDING')
                 this.isPending = true;
             else
                 this.isPending = false;
-        }else {
+        } else {
             this.isPending = true;
             this.cargoRequest = {
-                id: (new Date()).getTime()+'',
+                id: `${this.blockChainService.CARGO}#${(new Date()).getTime()}`,
                 description: '',
                 origin: '',
                 destination: '',
@@ -132,14 +132,28 @@ export class CargoComponent implements OnInit {
     }
 
     async addCargo() {
+        // console.log(this.availFlight);
+        // this.loading = true;
+        // console.log(this.cargo);
+        // let flightId = `${this.blockChainService.FLIGHT}#${this.cargo.flight}`;
+        // console.log(flightId);
+        // this.cargo.flight = flightId;
+        console.log(this.cargo);
         await this.http.post(
             `${this.service.ENDPOINT}/blockchain/user/${this.authService.admin.id}/api/org.airline.airChain.Cargo`,
             this.cargo,
             {withCredentials: true})
             .toPromise();
 
+        // await this.http.post(
+        //     `${this.service.ENDPOINT}/blockchain/user/${this.authService.admin.id}/api/org.airline.airChain.AssignCargoToFlight`,
+        //     {flight:flightId, cargo:this.cargo.id},
+        //     {withCredentials: true}).toPromise();
+
         //Refresh Data Table
         this.fetchCargoList();
+        this.loading = false;
+
     }
 
     async addRequest() {
@@ -178,7 +192,7 @@ export class CargoComponent implements OnInit {
             this.cargoRequest,
             {withCredentials: true})
             .toPromise();
-        this.cargo.request = {};
+        this.cargo.request = '';
         this.editCargo();
     }
 
@@ -200,23 +214,21 @@ export class CargoComponent implements OnInit {
 
         flightList = flightList.map((flight) => {
             //Remove Cabin Crew NameSpace
-            if(flight.cabinCrews) {
-                flight.cabinCrews = flight.cabinCrews.map((cabinCrew) => {
-                    return cabinCrew.replace(this.blockChainService.AIRLINE_EMPLOYEE, "");
-                });
+            if (flight.cabinCrew) {
+                flight.cabinCrew = flight.cabinCrew.replace(this.blockChainService.AIRLINE_EMPLOYEE, "");
             }
 
             //Remove GHA Company Namespace
-            if(flight.deliverCompany) {
+            if (flight.deliverCompany) {
                 flight.deliverCompany = flight.deliverCompany.replace(this.blockChainService.GHA_COMPANY, "");
             }
 
-            if(flight.collectCompany) {
+            if (flight.collectCompany) {
                 flight.collectCompany = flight.collectCompany.replace(this.blockChainService.GHA_COMPANY, "");
             }
 
             //Remove Aircraft NameSpace
-            if(flight.aircraft) {
+            if (flight.aircraft) {
                 flight.aircraft = flight.aircraft.replace(this.blockChainService.AIRCRAFT, "");
             }
 
@@ -225,12 +237,18 @@ export class CargoComponent implements OnInit {
 
         console.log(flightList);
 
+        this.availFlight = [];
         this.flightList = flightList;
 
-        for(let flight of this.flightList){
-            if(flight.status === 'SCHEDULED')
-                this.availFlight.push({id:this.flight.id},{flightNumber:this.flight.flightNumber},{departureTime:this.flight.departureTime});
+        for (let flight of this.flightList) {
+            if (flight.status === 'SCHEDULED')
+                this.availFlight.push({
+                    id: flight.id,
+                    flightNumber: flight.flightNumber,
+                    departureTime: flight.departureTime
+                });
         }
+        console.log(this.availFlight);
     }
 
     async fetchCargoList() {
