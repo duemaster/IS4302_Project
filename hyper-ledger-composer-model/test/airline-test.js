@@ -16,6 +16,7 @@ const airlineParticipant = "AirlineEmployee";
 
 //Assets
 const airlineCompanyAsset = "AirlineCompany";
+const airlineAircraftAsset = "Aircraft";
 
 //Roles
 const ROLE_OFFICER = "OFFICER";
@@ -168,4 +169,22 @@ describe("Airline Testing", () => {
         expect(isEmployeeInCompany).to.be.equal(true);
         expect(airlineOfficer.company.getFullyQualifiedIdentifier() === airlineCompany.getFullyQualifiedIdentifier()).to.be.equal(true);
     })
+
+    it("Airline Officer should be able to add Aircraft to company", async () => {
+        await useIdentity("AirlineOfficer");
+    
+        //Create new aircraft
+        let aircraft = factory.newResource(namespace, airlineAircraftAsset, "SQ123");
+        aircraft.model = "A380";
+        aircraft.passengerCapacity = 10;
+        aircraft.cargoCapacity = 20;
+        aircraft.company = factory.newRelationship(namespace, airlineCompanyAsset, "AircraftCompany");
+        const aircraftAssetRegistry = await businessNetworkConnection.getAssetRegistry(`${namespace}.${airlineAircraftAsset}`);
+        aircraftAssetRegistry.addAll[aircraft];
+
+        //Submit Add Aircraft Transaction
+        const addAircraftTransaction = factory.newTransaction(namespace, "AddAircraftToCompany");
+        addAircraftTransaction.aircraft = factory.newRelationship(namespace, airlineAircraftAsset, "SQ123");
+        await businessNetworkConnection.submitTransaction(addAircraftTransaction);
+    });
 })
