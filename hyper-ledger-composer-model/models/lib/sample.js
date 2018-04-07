@@ -34,8 +34,9 @@ function AddFlightToCompany(tx) {
     }
 
     company.flights.push(flight);
-    saveAirlineCompany(company);
-    saveFlight(flight);
+    return saveAirlineCompany(company).then(function() {
+        return saveFlight(flight);
+    })
 }
 
 /**
@@ -137,8 +138,9 @@ function IssueFlightServiceRequest(tx) {
     service.flight = flight;
 
     //Save Flight & service
-    saveFlight(flight);
-    saveService(service);
+    return saveFlight(flight).then(function() {
+        saveService(service);
+    })
 }
 
 /**
@@ -153,7 +155,7 @@ function CollectCargoFromWarehouse(tx) {
     cargo.status = "COLLECTED";
 
     //Save cargo
-    saveCargo(cargo);
+    return saveCargo(cargo);
 }
 
 
@@ -178,8 +180,9 @@ function AddCargoToCompany(tx) {
     cargo.company = company;
     company.cargos.push(cargo);
 
-    saveCargo(cargo);
-    saveCargoCompany(company);
+    return saveCargo(cargo).then(function() {
+        return saveCargoCompany(company);
+    })
 }
 
 /**
@@ -194,7 +197,7 @@ function ConfirmCargoToWarehouse(tx) {
     cargo.status = "DELIVERED";
 
     //Save cargos
-    saveCargo(cargo);
+    return saveCargo(cargo);
 }
 
 
@@ -226,10 +229,10 @@ function AssignCargoToFlight(tx) {
     cargo.flight = flight;
 
     //Save cargo
-    saveCargo(cargo);
-
-    //Save flight
-    saveFlight(flight);
+    return saveCargo(cargo).then(function() {
+        //Save flight
+        return saveFlight(flight);
+    })
 }
 
 /**
@@ -273,13 +276,11 @@ function AcceptCargoRequest(tx) {
     cargoRequest.acceptedCompany = flight.company.authorisedCargoCompany;
 
     //Save cargos
-    saveCargo(cargo);
-
-    //Save flight
-    saveFlight(flight);
-
-    //Save cargoRequest
-    saveCargoRequest(cargoRequest);
+    return saveCargo(cargo).then(function() {
+        return saveFlight(flight).then(function() {
+            return saveCargoRequest(cargoRequest);
+        });
+    });
 }
 
 
