@@ -292,7 +292,7 @@ rule AllowGHACompanyToManageService {
   participant (p): "org.airline.airChain.GHAEmployee"
   operation: ALL
   resource (r): "org.airline.airChain.Service"
-  condition: (r.role == "OFFICER" && r.company.getIdentifier() == p.company.getIdentifier())
+  condition: (p.role == "OFFICER" && r.company.getIdentifier() == p.company.getIdentifier())
   action: ALLOW
 }
 
