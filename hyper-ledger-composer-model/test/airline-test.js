@@ -172,17 +172,29 @@ describe("Airline Testing", () => {
         await useIdentity("AirlineOfficer");
 
         //Create new aircraft
-        let aircraft = factory.newResource(namespace, airlineAircraftAsset, "SQ123");
-        aircraft.model = "A380";
-        aircraft.passengerCapacity = 10;
-        aircraft.cargoCapacity = 20;
-        aircraft.company = factory.newRelationship(namespace, airlineCompanyAsset, "AircraftCompany");
+        let newAircraft = factory.newResource(namespace, airlineAircraftAsset, "SQ123");
+        newAircraft.model = "A380";
+        newAircraft.passengerCapacity = 10;
+        newAircraft.cargoCapacity = 20;
+        newAircraft.company = factory.newRelationship(namespace, airlineCompanyAsset, "AirlineCompany");
         const aircraftAssetRegistry = await businessNetworkConnection.getAssetRegistry(`${namespace}.${airlineAircraftAsset}`);
-        await aircraftAssetRegistry.addAll[aircraft];
+        await aircraftAssetRegistry.addAll([newAircraft]);
 
         //Submit Add Aircraft Transaction
+        let companyAssetRegistry = await businessNetworkConnection.getAssetRegistry(`${namespace}.${airlineCompanyAsset}`);
+        let airlineCompany = await companyAssetRegistry.get("AirlineCompany");
+
         const addAircraftTransaction = factory.newTransaction(namespace, "AddAircraftToCompany");
         addAircraftTransaction.aircraft = factory.newRelationship(namespace, airlineAircraftAsset, "SQ123");
+        addAircraftTransaction.company = factory.newRelationship(namespace, airlineCompanyAsset, "AirlineCompany");
         await businessNetworkConnection.submitTransaction(addAircraftTransaction);
+
+        airlineCompany = await companyAssetRegistry.get("AirlineCompany");
+
+        let hasAircraft = airlineCompany.aircrafts.some((aircraft) => {
+            return aircraft.getFullyQualifiedIdentifier() === newAircraft.getFullyQualifiedIdentifier();
+        })
+
+        expect(hasAircraft).to.be.equal(true);
     });
 })

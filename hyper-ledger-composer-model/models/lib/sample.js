@@ -25,16 +25,16 @@ var namespace = "org.airline.airChain";
  */
 function AddFlightToCompany(tx) {
     var flight = tx.flight;
-    var caller = getCurrentParticipant();
+    var company = tx.company;
 
-    flight.company = caller.company;
+    flight.company = company;
 
-    if (!caller.company.flights) {
-        caller.company.flights = [];
+    if (!company.flights) {
+        company.flights = [];
     }
 
-    caller.company.flights.push(flight);
-    saveCompany(caller.company);
+    company.flights.push(flight);
+    saveAirlineCompany(company);
     saveFlight(flight);
 }
 
@@ -45,17 +45,15 @@ function AddFlightToCompany(tx) {
  */
 function AddAircraftToCompany(tx) {
     var aircraft = tx.aircraft;
-    var caller = getCurrentParticipant();
+    var company = tx.company;
 
-    aircraft.company = caller.company;
-
-    if (!caller.company.aircrafts) {
-        caller.company.aircrafts = [];
+    if (!company.aircrafts) {
+        company.aircrafts = [];
     }
 
-    caller.company.aircrafts.push(aircraft);
+    company.aircrafts.push(aircraft);
 
-    saveCompany(caller.company);
+    saveAirlineCompany(company);
     saveAircraft(aircraft);
 }
 
@@ -307,18 +305,17 @@ function AcceptCargoRequest(tx) {
 }
 
 
-
-function saveEmployee(employee) {
-    return getAssetRegistry(namespace + ".Employee")
-        .then(function(employeeRegistry) {
-            return employeeRegistry.update(employee);
-        })
-}
-
 function saveCompany(company) {
     return getAssetRegistry(namespace + ".Company")
         .then(function(companyRegistry) {
             return companyRegistry.update(company);
+        })
+}
+
+function saveAirlineCompany(airlineCompany) {
+    return getAssetRegistry(namespace + ".AirlineCompany")
+        .then(function(companyRegistry) {
+            return companyRegistry.update(airlineCompany);
         })
 }
 
