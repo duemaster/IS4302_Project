@@ -51,7 +51,7 @@ describe("Airline Testing", () => {
     // This is the factory for creating instances of types.
     let factory;
 
-    before(async () => {
+    before(async() => {
         //Setup Business Network
 
         // Generate certificates for use with the embedded connection
@@ -90,18 +90,16 @@ describe("Airline Testing", () => {
     }
 
     // This is called before each test is executed.
-    beforeEach(async () => {
+    beforeEach(async() => {
         // Generate a business network definition from the project directory.
         let businessNetworkDefinition = await BusinessNetworkDefinition.fromDirectory(path.resolve(__dirname, '..'));
         businessNetworkName = businessNetworkDefinition.getName();
         await adminConnection.install(businessNetworkDefinition);
         const startOptions = {
-            networkAdmins: [
-                {
-                    userName: 'admin',
-                    enrollmentSecret: 'adminpw'
-                }
-            ]
+            networkAdmins: [{
+                userName: 'admin',
+                enrollmentSecret: 'adminpw'
+            }]
         };
         const adminCards = await adminConnection.start(businessNetworkName, businessNetworkDefinition.getVersion(), startOptions);
         await adminConnection.importCard(adminCardName, adminCards.get('admin'));
@@ -153,7 +151,7 @@ describe("Airline Testing", () => {
         factory = businessNetworkConnection.getBusinessNetwork().getFactory();
     }
 
-    it("Airline Officer should be in Airline Company", async () => {
+    it("Airline Officer should be in Airline Company", async() => {
         await useIdentity("AirlineOfficer");
 
         const assetRegistry = await businessNetworkConnection.getAssetRegistry(`${namespace}.${airlineCompanyAsset}`);
@@ -170,9 +168,9 @@ describe("Airline Testing", () => {
         expect(airlineOfficer.company.getFullyQualifiedIdentifier() === airlineCompany.getFullyQualifiedIdentifier()).to.be.equal(true);
     })
 
-    it("Airline Officer should be able to add Aircraft to company", async () => {
+    it("Airline Officer should be able to add Aircraft to company", async() => {
         await useIdentity("AirlineOfficer");
-    
+
         //Create new aircraft
         let aircraft = factory.newResource(namespace, airlineAircraftAsset, "SQ123");
         aircraft.model = "A380";
@@ -180,7 +178,7 @@ describe("Airline Testing", () => {
         aircraft.cargoCapacity = 20;
         aircraft.company = factory.newRelationship(namespace, airlineCompanyAsset, "AircraftCompany");
         const aircraftAssetRegistry = await businessNetworkConnection.getAssetRegistry(`${namespace}.${airlineAircraftAsset}`);
-        aircraftAssetRegistry.addAll[aircraft];
+        await aircraftAssetRegistry.addAll[aircraft];
 
         //Submit Add Aircraft Transaction
         const addAircraftTransaction = factory.newTransaction(namespace, "AddAircraftToCompany");
