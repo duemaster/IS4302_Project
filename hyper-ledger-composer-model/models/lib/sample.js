@@ -51,6 +51,8 @@ function AddAircraftToCompany(tx) {
         company.aircrafts = [];
     }
 
+    aircraft.company = company;
+
     company.aircrafts.push(aircraft);
 
     saveAirlineCompany(company);
@@ -66,21 +68,6 @@ function HandleFlightServiceRequest(tx) {
     var service = tx.service;
     var isApproved = tx.isApproved;
 
-    //Get access to calling participant
-    var caller = getCurrentParticipant();
-
-    //Only allow if Service is attached to flight the participant is incharge of
-    var isAuthorised = caller.company.flights.filter(function(flight) {
-        return flight.getIdentifier() == service.flight.getIdentifier();
-    }).length === 1;
-
-    if (!isAuthorised)
-        throw new Error("Not authorised to approve flight services");
-
-    //Only allow if flight status is "SCHEDULED"
-    if (service.flight.status != "SCHEDULED")
-        throw new Error("Flight is not in scheduled status!");
-
     //Process Services
     service.status = isApproved ? "APPROVED" : "REJECTED";
     saveService(service);
@@ -95,17 +82,6 @@ function HandleFlightServiceRequest(tx) {
 function ProcessFlightServiceDelivery(tx) {
     var service = tx.service;
     var isApproved = tx.isApproved;
-
-    var caller = getCurrentParticipant();
-    var isAuthorised = service.flight.cabinCrews.filter(function(crew) {
-        return crew.getIdentifier() == caller.getIdentifier();
-    }).length == 1;
-
-    if (!isAuthorised)
-        throw new Error("Staff not authorised to confirm services");
-
-    if (service.flight.status != "SCHEDULED")
-        throw new Error("Flight is not in scheduled status");
 
     //Process Services
     service.status = isApproved ? "DONE" : "NOT_DONE";
@@ -124,18 +100,17 @@ function ProcessFlightServiceDelivery(tx) {
  */
 function AddServiceToCompany(tx) {
     var service = tx.service;
+    var company = tx.company;
 
-    var caller = getCurrentParticipant();
-
-    if (!caller.company.services) {
-        caller.company.services = [];
+    if (company.services) {
+        company.services = [];
     }
 
     service.company = caller.company;
-    caller.company.services.push(service);
+    company.services.push(service);
 
     saveService(service);
-    saveCompany(caller.company);
+    saveGHACompany(company);
 }
 
 /**
@@ -190,18 +165,17 @@ function CollectCargoFromWarehouse(tx) {
  */
 function AddCargoToCompany(tx) {
     var cargo = tx.cargo;
+    var company = tx.company;
 
-    var caller = getCurrentParticipant();
-
-    if (!caller.company.cargos) {
-        caller.company.cargos = [];
+    if (company.cargos) {
+        company.cargos = [];
     }
 
-    caller.company.cargos.push(cargo);
-    cargo.company = caller.company;
+    cargo.company = company;
+    company.cargos.push(cargo);
 
     saveCargo(cargo);
-    saveCompany(caller.company);
+    saveCargoCompany(company);
 }
 
 /**
@@ -305,17 +279,24 @@ function AcceptCargoRequest(tx) {
 }
 
 
-function saveCompany(company) {
-    return getAssetRegistry(namespace + ".Company")
-        .then(function(companyRegistry) {
-            return companyRegistry.update(company);
-        })
-}
-
 function saveAirlineCompany(airlineCompany) {
     return getAssetRegistry(namespace + ".AirlineCompany")
         .then(function(companyRegistry) {
             return companyRegistry.update(airlineCompany);
+        })
+}
+
+function saveGHACompany(ghaCompany) {
+    return getAssetRegistry(namespace + ".GHACompany")
+        .then(function(companyRegistry) {
+            return companyRegistry.update(ghaCompany);
+        })
+}
+
+function saveCargoCompany(cargoCompany) {
+    return getAssetRegistry(namespace + ".CargoCompany")
+        .then(function(companyRegistry) {
+            return companyRegistry.update(cargoCompany);
         })
 }
 

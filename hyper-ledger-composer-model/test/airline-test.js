@@ -159,6 +159,8 @@ describe("Airline Testing", () => {
         const airlineCompany = await assetRegistry.get("AirlineCompany");
         const airlineOfficer = await participantRegistry.get("AirlineOfficer");
 
+        expect(airlineOfficer.company.getFullyQualifiedIdentifier() === airlineCompany.getFullyQualifiedIdentifier()).to.be.equal(true);
+
         expect(airlineCompany.employees.length).be.equal(1);
         let isEmployeeInCompany = airlineCompany.employees.some((employee) => {
             return employee.getFullyQualifiedIdentifier() === airlineOfficer.getFullyQualifiedIdentifier();
@@ -182,14 +184,15 @@ describe("Airline Testing", () => {
 
         //Submit Add Aircraft Transaction
         let companyAssetRegistry = await businessNetworkConnection.getAssetRegistry(`${namespace}.${airlineCompanyAsset}`);
-        let airlineCompany = await companyAssetRegistry.get("AirlineCompany");
 
         const addAircraftTransaction = factory.newTransaction(namespace, "AddAircraftToCompany");
         addAircraftTransaction.aircraft = factory.newRelationship(namespace, airlineAircraftAsset, "SQ123");
         addAircraftTransaction.company = factory.newRelationship(namespace, airlineCompanyAsset, "AirlineCompany");
         await businessNetworkConnection.submitTransaction(addAircraftTransaction);
 
-        airlineCompany = await companyAssetRegistry.get("AirlineCompany");
+        let airlineCompany = await companyAssetRegistry.get("AirlineCompany");
+
+        expect(airlineCompany.aircrafts.length).to.be.above(0);
 
         let hasAircraft = airlineCompany.aircrafts.some((aircraft) => {
             return aircraft.getFullyQualifiedIdentifier() === newAircraft.getFullyQualifiedIdentifier();

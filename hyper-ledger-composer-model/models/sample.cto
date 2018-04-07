@@ -3,24 +3,25 @@
  */
 namespace org.airline.airChain
 
-abstract asset Company identified by id {
+asset AirlineCompany identified by id {
     o String id
     o String name
-}
-
-asset AirlineCompany extends Company {
     --> Flight[] flights optional
     --> Aircraft[] aircrafts optional
     --> CargoCompany authorisedCargoCompany optional
     --> AirlineEmployee[] employees optional
 }
 
-asset GHACompany extends Company {
+asset GHACompany identified by id {
+    o String id
+    o String name
     --> Service[] services optional
     --> GHAEmployee[] employees optional
 }
 
-asset CargoCompany extends Company {
+asset CargoCompany identified by id {
+   o String id
+   o String name
     --> Cargo[] cargos optional
     --> CargoEmployee[] employees optional
 }
@@ -121,21 +122,25 @@ enum ROLE {
     o STAFF
     o OFFICER
 }
-
-abstract participant Employee identified by id {
-    o String id
+participant AirlineEmployee identified by id{
+      o String id
     o String name
     o ROLE role
-    --> Company company
+    --> AirlineCompany company
 }
 
-participant AirlineEmployee extends Employee {
+participant CargoEmployee identified by id{
+      o String id
+    o String name
+    o ROLE role
+    --> CargoCompany company
 }
 
-participant CargoEmployee extends Employee {
-}
-
-participant GHAEmployee extends Employee {
+participant GHAEmployee identified by id {
+      o String id
+    o String name
+    o ROLE role
+    --> GHACompany company
 }
 
 /*
@@ -144,12 +149,12 @@ participant GHAEmployee extends Employee {
 
 transaction AddFlightToCompany {
 	 --> Flight flight
-   --> Company company
+  --> AirlineCompany company
 }
 
 transaction AddAircraftToCompany {
   --> Aircraft aircraft
-  --> Company company
+  --> AirlineCompany company
 }
 
 transaction HandleFlightServiceRequest {
@@ -168,7 +173,7 @@ transaction ProcessFlightServiceDelivery {
 
 transaction AddServiceToCompany {
   --> Service service
-  --> Company company
+  --> GHACompany company
 }
 
 transaction IssueFlightServiceRequest {
@@ -186,7 +191,7 @@ transaction CollectCargoFromWarehouse {
 
 transaction AddCargoToCompany {
   --> Cargo cargo
-  --> Company company
+  --> CargoCompany company
 }
 
 transaction ConfirmCargoToWarehouse {
