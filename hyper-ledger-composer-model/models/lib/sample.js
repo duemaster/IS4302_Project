@@ -55,8 +55,10 @@ function AddAircraftToCompany(tx) {
 
     company.aircrafts.push(aircraft);
 
-    saveAirlineCompany(company);
-    saveAircraft(aircraft);
+    return saveAirlineCompany(company).then(function() {
+        return saveAircraft(aircraft);
+    })
+
 }
 
 /**
@@ -70,7 +72,7 @@ function HandleFlightServiceRequest(tx) {
 
     //Process Services
     service.status = isApproved ? "APPROVED" : "REJECTED";
-    saveService(service);
+    return saveService(service);
 }
 
 
@@ -85,7 +87,7 @@ function ProcessFlightServiceDelivery(tx) {
 
     //Process Services
     service.status = isApproved ? "DONE" : "NOT_DONE";
-    saveService(service);
+    return saveService(service);
 }
 
 
@@ -109,8 +111,10 @@ function AddServiceToCompany(tx) {
     service.company = company;
     company.services.push(service);
 
-    saveService(service);
-    saveGHACompany(company);
+    return saveService(service).then(function() {
+        return saveGHACompany(company);
+    })
+
 }
 
 /**
