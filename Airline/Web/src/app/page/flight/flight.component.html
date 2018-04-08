@@ -1,4 +1,4 @@
-<ngx-loading [show]="loading" ></ngx-loading>
+<ngx-loading [show]="loading"></ngx-loading>
 <section>
     <div class="section-body contain-lg">
         <!-- BEGIN INTRO -->
@@ -122,7 +122,8 @@
                                 <label for="departDate" class="control-label">Depart Date</label>
                             </div>
                             <div class="col-sm-4 departDate">
-                                <ngx-datetime-picker id="departDate" [(selectedDateTime)]="dateTimeExample"></ngx-datetime-picker>
+                                <ngx-datetime-picker id="departDate"
+                                                     [(selectedDateTime)]="dateTimeExample"></ngx-datetime-picker>
                                 <!--<ngx-datetime-picker id="departDate"-->
                                 <!--[(selectedDateTime)]="flight.departureTime">-->
                                 <!---->
@@ -278,7 +279,8 @@
                                 <td>{{item.company}}</td>
                                 <td>{{item.status}}</td>
                                 <td>
-                                    <button type="button" class="btn btn-primary" *ngIf="item.status==='PENDING'" (click)="acceptService(item)">Accept
+                                    <button type="button" class="btn btn-primary" *ngIf="item.status==='PENDING'"
+                                            (click)="acceptService(item)">Accept
                                     </button>
                                 </td>
                             </tr>

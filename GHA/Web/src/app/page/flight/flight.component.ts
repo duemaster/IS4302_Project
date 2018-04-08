@@ -1,26 +1,35 @@
-import {Component, OnInit, ViewChild} from '@angular/core';
+import {AfterViewInit, Component, OnInit, ViewChild} from '@angular/core';
 import {MatTableDataSource, MatPaginator} from '@angular/material';
-import {MatDatepickerModule} from '@angular/material/datepicker';
 import {BlockChainService} from "../../service/blockchain/block-chain.service";
 import {AuthService} from "../../service/auth.service";
 import {SettingService} from "../../service/setting/setting.service";
 import {HttpClient} from "@angular/common/http";
-import {toPromise} from "rxjs/operator/toPromise";
 
 @Component({
     selector: 'app-flight',
     templateUrl: './flight.component.html',
     styleUrls: ['./flight.component.scss']
 })
-export class FlightComponent implements OnInit {
+export class FlightComponent implements AfterViewInit {
+
+    applyFilter(filterValue: string) {
+        filterValue = filterValue.trim(); // Remove whitespace
+        filterValue = filterValue.toLowerCase(); // MatTableDataSource defaults to lowercase matches
+        this.dataSource.filter = filterValue;
+    }
+
+    @ViewChild(MatPaginator) paginator: MatPaginator;
+
+    ngAfterViewInit() {
+        this.dataSource.paginator = this.paginator;
+        this.fetchFlightList();
+        //this.fetchStaffList();
+    }
 
     constructor(private http: HttpClient,
                 private service: SettingService,
                 public authService: AuthService,
                 public blockChainService: BlockChainService) {
-    }
-
-    ngOnInit() {
     }
 
     public loading = false;
@@ -68,33 +77,23 @@ export class FlightComponent implements OnInit {
     isCreate = false;
     staffList: any;
 
-
-    applyFilter(filterValue: string) {
-        filterValue = filterValue.trim(); // Remove whitespace
-        filterValue = filterValue.toLowerCase(); // MatTableDataSource defaults to lowercase matches
-        this.dataSource.filter = filterValue;
-    }
-
-    @ViewChild(MatPaginator) paginator: MatPaginator;
-
-    ngAfterViewInit() {
-        this.dataSource.paginator = this.paginator;
-        this.fetchFlightList();
-        //this.fetchStaffList();
-    }
-
     async viewService(flight) {
         this.loading = true;
         this.flight = flight;
         this.serviceList = [];
+
+        if(!flight.services) {
+            flight.services = [];
+        }
+
         for (let item of flight.services) {
-            item = item.replace(`${this.blockChainService.SERVICE}#`,'');
+            item = item.replace(`${this.blockChainService.SERVICE}#`, '');
             console.log(item);
             let serviceDetail: any = await this.http.get(
                 `${this.service.ENDPOINT}/blockchain/user/${this.authService.admin.id}/api/org.airline.airChain.Service/${item}`,
                 {withCredentials: true}
             ).toPromise();
-            serviceDetail.company = serviceDetail.company.replace(`${this.blockChainService.GHA_COMPANY}#`,'');
+            serviceDetail.company = serviceDetail.company.replace(`${this.blockChainService.GHA_COMPANY}#`, '');
             this.serviceList.push(serviceDetail);
         }
         this.loading = false;
@@ -103,6 +102,11 @@ export class FlightComponent implements OnInit {
     async viewCargo(flight) {
         this.loading = true;
         this.cargoList = [];
+
+        if(!flight.cargos) {
+            flight.cargos = [];
+        }
+
         for (let item of flight.cargos) {
             let cargoDetail: any = await this.http.get(
                 `${this.service.ENDPOINT}/blockchain/user/${this.authService.admin.id}/api/org.airline.airChain.Cargo/${item}`,
@@ -167,7 +171,6 @@ export class FlightComponent implements OnInit {
 
     }
 
-
     async fetchFlightList() {
         let flightList: any = await this.http.get(
             `${this.service.ENDPOINT}/blockchain/user/${this.authService.admin.id}/api/org.airline.airChain.Flight`,
@@ -194,7 +197,7 @@ export class FlightComponent implements OnInit {
         this.loadDataInTable(flightList);
     }
 
-    loadDataInTable(flightList) {
+    private loadDataInTable(flightList) {
         this.dataSource = new MatTableDataSource<any>(flightList);
         this.dataSource.paginator = this.paginator;
     }

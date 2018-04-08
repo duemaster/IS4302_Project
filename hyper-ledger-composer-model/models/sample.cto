@@ -130,7 +130,7 @@ participant AirlineEmployee identified by id{
 }
 
 participant CargoEmployee identified by id{
-      o String id
+    o String id
     o String name
     o ROLE role
     --> CargoCompany company
@@ -147,13 +147,15 @@ participant GHAEmployee identified by id {
 ** Airline Company Action
 */
 
-transaction AddFlightToCompany {
-	 --> Flight flight
-  --> AirlineCompany company
+transaction AddAircraft {
+  o String id
+  o String model
+  o Integer passengerCapacity
+  o Double cargoCapacity
 }
 
-transaction AddAircraftToCompany {
-  --> Aircraft aircraft
+transaction AddFlightToCompany {
+	--> Flight flight
   --> AirlineCompany company
 }
 

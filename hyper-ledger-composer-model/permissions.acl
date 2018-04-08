@@ -15,8 +15,8 @@ rule AllowAirlineAddAircraft {
   description:  "Allow Airline company to add Aircraft"
   participant (p): "org.airline.airChain.AirlineEmployee"
   operation: CREATE
-  resource (r): "org.airline.airChain.AddAircraftToCompany"
-  condition: (p.role == "OFFICER" && r.company.getIdentifier() == p.company.getIdentifier())
+  resource (r): "org.airline.airChain.AddAircraft"
+  condition: (p.role == "OFFICER")
   action: ALLOW
 }
 
@@ -352,6 +352,19 @@ rule AllowOfficerCreateThings {
   participant (p): "org.hyperledger.composer.system.Participant"
   operation: CREATE
   resource (r): "org.hyperledger.composer.system.*"
+  condition: (p.role == "OFFICER")
+  action: ALLOW
+}
+
+/*
+* View of Companies
+*/
+
+rule AllowAirlineCompanyViewListofGHACompany {
+  description:  "Allow Airline Officer to view list of GHAs for Cargo Management"
+  participant (p): "org.airline.airChain.AirlineEmployee"
+  operation: READ
+  resource (r): "org.airline.airChain.GHACompany"
   condition: (p.role == "OFFICER")
   action: ALLOW
 }
