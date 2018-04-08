@@ -24,6 +24,8 @@ const airlineFlightAsset = "Flight";
 const ghaCompanyAsset = "GHACompany";
 const ghaServiceAsset = "Service";
 
+const cargoCompanyAsset = "CargoCompany";
+const cargoCargoAsset = "Cargo";
 
 //Roles
 const ROLE_OFFICER = "OFFICER";
@@ -53,7 +55,7 @@ describe("Airline Testing", () => {
     // This is the factory for creating instances of types.
     let factory;
 
-    before(async() => {
+    before(async () => {
         //Setup Business Network
 
         // Generate certificates for use with the embedded connection
@@ -92,7 +94,7 @@ describe("Airline Testing", () => {
     }
 
     // This is called before each test is executed.
-    beforeEach(async() => {
+    beforeEach(async () => {
         // Generate a business network definition from the project directory.
         let businessNetworkDefinition = await BusinessNetworkDefinition.fromDirectory(path.resolve(__dirname, '..'));
         businessNetworkName = businessNetworkDefinition.getName();
@@ -113,43 +115,43 @@ describe("Airline Testing", () => {
         // Get the factory for the business network.
         factory = businessNetworkConnection.getBusinessNetwork().getFactory();
 
-        const participantRegistry = await businessNetworkConnection.getParticipantRegistry(`${namespace}.${airlineParticipant}`);
+        // const participantRegistry = await businessNetworkConnection.getParticipantRegistry(`${namespace}.${airlineParticipant}`);
 
-        //Create Airline Company
-        const assetRegistry = await businessNetworkConnection.getAssetRegistry(`${namespace}.${airlineCompanyAsset}`);
-        // Create the assets.
-        const airlineCompany = factory.newResource(namespace, airlineCompanyAsset, 'AirlineCompany');
-        airlineCompany.name = "Singapore Airlines";
-        //TODO: Fill in other components of Airline Company
+        // //Create Airline Company
+        // const assetRegistry = await businessNetworkConnection.getAssetRegistry(`${namespace}.${airlineCompanyAsset}`);
+        // // Create the assets.
+        // const airlineCompany = factory.newResource(namespace, airlineCompanyAsset, 'AirlineCompany');
+        // airlineCompany.name = "Singapore Airlines";
 
-        // // Create the participants.
-        const airlineOfficer = factory.newResource(namespace, airlineParticipant, 'AirlineOfficer');
-        airlineOfficer.role = ROLE_OFFICER;
-        airlineOfficer.name = "Airline Officer 1";
+        // // // Create the participants.
+        // const airlineOfficer = factory.newResource(namespace, airlineParticipant, 'AirlineOfficer');
+        // airlineOfficer.role = ROLE_OFFICER;
+        // airlineOfficer.name = "Airline Officer 1";
 
-        const airlineStaff = factory.newResource(namespace, airlineParticipant, 'AirlineStaff');
-        airlineStaff.role = ROLE_STAFF;
-        airlineStaff.name = "Airline Staff 1";
+        // const airlineStaff = factory.newResource(namespace, airlineParticipant, 'AirlineStaff');
+        // airlineStaff.role = ROLE_STAFF;
+        // airlineStaff.name = "Airline Staff 1";
 
-        //Add Airline Employee to Airline Company
-        airlineOfficer.company = factory.newRelationship(namespace, airlineCompanyAsset, "AirlineCompany");
-        airlineStaff.company = factory.newRelationship(namespace, airlineCompanyAsset, "AirlineCompany");
-        airlineCompany.employees = [];
-        airlineCompany.employees.push(
-            factory.newRelationship(namespace, airlineParticipant, "AirlineOfficer")
-        );
-        airlineCompany.employees.push(
-            factory.newRelationship(namespace, airlineParticipant, "AirlineStaff")
-        );
+        // //Add Airline Employee to Airline Company
+        // airlineOfficer.company = factory.newRelationship(namespace, airlineCompanyAsset, "AirlineCompany");
+        // airlineStaff.company = factory.newRelationship(namespace, airlineCompanyAsset, "AirlineCompany");
+        // airlineCompany.employees = [];
+        // airlineCompany.employees.push(
+        //     factory.newRelationship(namespace, airlineParticipant, "AirlineOfficer")
+        // );
+        // airlineCompany.employees.push(
+        //     factory.newRelationship(namespace, airlineParticipant, "AirlineStaff")
+        // );
 
-        await participantRegistry.addAll([airlineOfficer, airlineStaff]);
-        await assetRegistry.addAll([airlineCompany]);
+        // await participantRegistry.addAll([airlineOfficer, airlineStaff]);
+        // await assetRegistry.addAll([airlineCompany]);
 
-        // Issue the identities.
-        let identity = await businessNetworkConnection.issueIdentity(`${namespace}.${airlineParticipant}#AirlineOfficer`, 'AirlineOfficer');
-        await importCardForIdentity("AirlineOfficer", identity);
-
+        // // Issue the identities.
+        // let identity = await businessNetworkConnection.issueIdentity(`${namespace}.${airlineParticipant}#AirlineOfficer`, 'AirlineOfficer');
+        // await importCardForIdentity("AirlineOfficer", identity);
+        await setUpAirlineCompany();
         await setUpGHACompany();
+        await setUpCargoCompany();
     });
 
     /**
@@ -161,6 +163,38 @@ describe("Airline Testing", () => {
         businessNetworkConnection = new BusinessNetworkConnection({ cardStore: cardStore });
         await businessNetworkConnection.connect(cardName);
         factory = businessNetworkConnection.getBusinessNetwork().getFactory();
+    }
+
+    async function setUpAirlineCompany() {
+        //Add Company
+        const airlineAssetCompanyRegistry = await businessNetworkConnection.getAssetRegistry(`${namespace}.${airlineCompanyAsset}`);
+        const airlineCompany = factory.newResource(namespace, airlineCompanyAsset, "AirlineCompany1");
+        airlineCompany.name = "Airline1"
+
+        await airlineAssetCompanyRegistry.addAll([airlineCompany]);
+
+
+        //Add Employee
+        const airlineParticipantRegistry = await businessNetworkConnection.getParticipantRegistry(`${namespace}.${airlineParticipant}`);
+        const airlineOfficer = factory.newResource(namespace, airlineParticipant, "AirlineOfficer");
+        airlineOfficer.role = ROLE_OFFICER;
+        airlineOfficer.name = "Airline Officer 1";
+        airlineOfficer.company = factory.newRelationship(namespace, airlineCompanyAsset, "AirlineCompany1");
+
+        const airlineStaff = factory.newResource(namespace, airlineParticipant, "AirlineStaff");
+        airlineStaff.role = ROLE_STAFF;
+        airlineStaff.name = "Airline Staff 1";
+        airlineStaff.company = factory.newRelationship(namespace, airlineCompanyAsset, "AirlineCompany1");
+
+        await airlineParticipantRegistry.addAll([airlineOfficer, airlineStaff]);
+
+
+        // Issue the identities.
+        let identity = await businessNetworkConnection.issueIdentity(`${namespace}.${airlineParticipant}#${airlineOfficer.$identifier}`, "AirlineOfficer");
+        await importCardForIdentity("AirlineOfficer", identity);
+
+        identity = await businessNetworkConnection.issueIdentity(`${namespace}.${airlineParticipant}#${airlineStaff.$identifier}`, "AirlineStaff");
+        await importCardForIdentity("AirlineStaff", identity);
     }
 
     async function setUpGHACompany() {
@@ -186,6 +220,13 @@ describe("Airline Testing", () => {
 
         await ghaParticipantRegistry.addAll([ghaOfficer, ghaStaff]);
 
+        ghaCompany.employees = [
+            factory.newRelationship(namespace, ghaParticipant, "GHAOfficer"),
+            factory.newRelationship(namespace, ghaParticipant, "GHAStaff")
+        ];
+
+        ghaAssetCompanyRegistry.update(ghaCompany);
+
 
         // Issue the identities.
         let identity = await businessNetworkConnection.issueIdentity(`${namespace}.${ghaParticipant}#${ghaOfficer.$identifier}`, "GHAOfficer");
@@ -195,26 +236,46 @@ describe("Airline Testing", () => {
         await importCardForIdentity("GHAStaff", identity);
     }
 
-    it("Airline Officer should be in Airline Company", async() => {
-        await useIdentity("AirlineOfficer");
+    async function setUpCargoCompany() {
+        //Add Company
+        const cargoAssetCompanyRegistry = await businessNetworkConnection.getAssetRegistry(`${namespace}.${cargoCompanyAsset}`);
+        const cargoCompany = factory.newResource(namespace, cargoCompanyAsset, "CargoCompany1");
+        cargoCompany.name = "Cargo1"
 
-        const assetRegistry = await businessNetworkConnection.getAssetRegistry(`${namespace}.${airlineCompanyAsset}`);
-        const participantRegistry = await businessNetworkConnection.getParticipantRegistry(`${namespace}.${airlineParticipant}`);
-        const airlineCompany = await assetRegistry.get("AirlineCompany");
-        const airlineOfficer = await participantRegistry.get("AirlineOfficer");
+        await cargoAssetCompanyRegistry.addAll([cargoCompany]);
 
-        expect(airlineOfficer.company.getFullyQualifiedIdentifier() === airlineCompany.getFullyQualifiedIdentifier()).to.be.equal(true);
 
-        expect(airlineCompany.employees.length).be.above(0);
-        let isEmployeeInCompany = airlineCompany.employees.some((employee) => {
-            return employee.getFullyQualifiedIdentifier() === airlineOfficer.getFullyQualifiedIdentifier();
-        });
+        //Add Employee
+        const cargoParticipantRegistry = await businessNetworkConnection.getParticipantRegistry(`${namespace}.${cargoParticipant}`);
+        const cargoOfficer = factory.newResource(namespace, cargoParticipant, "CargoOfficer");
+        cargoOfficer.role = ROLE_OFFICER;
+        cargoOfficer.name = "Cargo Officer 1";
+        cargoOfficer.company = factory.newRelationship(namespace, cargoCompanyAsset, "CargoCompany1");
 
-        expect(isEmployeeInCompany).to.be.equal(true);
-        expect(airlineOfficer.company.getFullyQualifiedIdentifier() === airlineCompany.getFullyQualifiedIdentifier()).to.be.equal(true);
-    })
+        const cargoStaff = factory.newResource(namespace, cargoParticipant, "CargoStaff");
+        cargoStaff.role = ROLE_STAFF;
+        cargoStaff.name = "Cargo Staff 1";
+        cargoStaff.company = factory.newRelationship(namespace, cargoCompanyAsset, "CargoCompany1");
 
-    it("Airline Officer should be able to add Aircraft to company", async() => {
+        await cargoParticipantRegistry.addAll([cargoOfficer, cargoStaff]);
+
+        cargoCompany.employees = [
+            factory.newRelationship(namespace, cargoParticipant, "CargoOfficer"),
+            factory.newRelationship(namespace, cargoParticipant, "CargoStaff")
+        ];
+
+        cargoAssetCompanyRegistry.update(cargoCompany);
+
+
+        // Issue the identities.
+        let identity = await businessNetworkConnection.issueIdentity(`${namespace}.${cargoParticipant}#${cargoOfficer.$identifier}`, "CargoOfficer");
+        await importCardForIdentity("CargoOfficer", identity);
+
+        identity = await businessNetworkConnection.issueIdentity(`${namespace}.${cargoParticipant}#${cargoStaff.$identifier}`, "CargoStaff");
+        await importCardForIdentity("CargoStaff", identity);
+    }
+
+    it("Airline Officer should be able to add Aircraft to company", async () => {
         await useIdentity("AirlineOfficer");
 
         //Create new aircraft
@@ -222,7 +283,7 @@ describe("Airline Testing", () => {
         newAircraft.model = "A380";
         newAircraft.passengerCapacity = 10;
         newAircraft.cargoCapacity = 20;
-        newAircraft.company = factory.newRelationship(namespace, airlineCompanyAsset, "AirlineCompany");
+        newAircraft.company = factory.newRelationship(namespace, airlineCompanyAsset, "AirlineCompany1");
         const aircraftAssetRegistry = await businessNetworkConnection.getAssetRegistry(`${namespace}.${airlineAircraftAsset}`);
         await aircraftAssetRegistry.addAll([newAircraft]);
 
@@ -231,12 +292,10 @@ describe("Airline Testing", () => {
 
         const addAircraftTransaction = factory.newTransaction(namespace, "AddAircraftToCompany");
         addAircraftTransaction.aircraft = factory.newRelationship(namespace, airlineAircraftAsset, "SQ123");
-        addAircraftTransaction.company = factory.newRelationship(namespace, airlineCompanyAsset, "AirlineCompany");
+        addAircraftTransaction.company = factory.newRelationship(namespace, airlineCompanyAsset, "AirlineCompany1");
         await businessNetworkConnection.submitTransaction(addAircraftTransaction);
 
-        let airlineCompany = await companyAssetRegistry.get("AirlineCompany");
-
-        expect(airlineCompany.aircrafts.length).to.be.above(0);
+        let airlineCompany = await companyAssetRegistry.get("AirlineCompany1");
 
         let hasAircraft = airlineCompany.aircrafts.some((aircraft) => {
             return aircraft.getFullyQualifiedIdentifier() === newAircraft.getFullyQualifiedIdentifier();
@@ -278,7 +337,7 @@ describe("Airline Testing", () => {
     //     expect(hasAircraft).to.be.equal(true);
     // });
 
-    it("GHA Officer should be able to create Service", async() => {
+    it("GHA Officer should be able to create Service", async () => {
         await useIdentity("GHAOfficer");
 
         //Add Service
@@ -308,5 +367,37 @@ describe("Airline Testing", () => {
         })
 
         expect(hasService).to.be.equal(true);
+    })
+
+    it("Cargo Officer should be able to create Cargo", async () => {
+        await useIdentity("CargoOfficer");
+
+        //Add Cargo
+        const cargoAssetRegistry = await businessNetworkConnection.getAssetRegistry(`${namespace}.${cargoCargoAsset}`);
+        let newCargo = factory.newResource(namespace, cargoCargoAsset, "Cargo1");
+        newCargo.description = "Test Cargo";
+        newCargo.weight = 10;
+        newCargo.status = "PENDING";
+        newCargo.company = factory.newRelationship(namespace, cargoCompanyAsset, "CargoCompany1");
+        await cargoAssetRegistry.addAll([newCargo]);
+
+        //Check for cargo
+        newCargo = await cargoAssetRegistry.get("Cargo1");
+        expect(newCargo).not.be.equal(null);
+
+        //Submit Add Service to Company Transaction
+        let transaction = factory.newTransaction(namespace, "AddCargoToCompany");
+        transaction.company = factory.newRelationship(namespace, cargoCompanyAsset, "CargoCompany1");
+        transaction.cargo = factory.newRelationship(namespace, cargoCargoAsset, "Cargo1");
+        await businessNetworkConnection.submitTransaction(transaction);
+
+        //Check if company has cargo
+        const cargoCompanyAssetRegistry = await businessNetworkConnection.getAssetRegistry(`${namespace}.${cargoCompanyAsset}`);
+        const cargoCompany = await cargoCompanyAssetRegistry.get("CargoCompany1");
+        let hasCargo = cargoCompany.cargos.some((cargo) => {
+            return cargo.getFullyQualifiedIdentifier() == newCargo.getFullyQualifiedIdentifier();
+        })
+
+        expect(hasCargo).to.be.equal(true);
     })
 })
