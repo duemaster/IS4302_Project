@@ -20,15 +20,6 @@ rule AllowAirlineAddAircraft {
   action: ALLOW
 }
 
-rule AllowGHAAddServices {
-  description:  "Allow GHA company to add Services"
-  participant (p): "org.airline.airChain.GHAEmployee"
-  operation: CREATE
-  resource (r): "org.airline.airChain.AddServiceToCompany"
-  condition: (p.role == "OFFICER" && r.company.getIdentifier() == p.company.getIdentifier())
-  action: ALLOW
-}
-
 rule AllowCargoAddCargo {
   description:  "Allow Cargo company to add Cargo"
   participant (p): "org.airline.airChain.CargoEmployee"
@@ -66,7 +57,7 @@ rule AllowGHAIssueFlightServiceRequest {
   participant (p): "org.airline.airChain.GHAEmployee"
   operation: CREATE
   resource (r): "org.airline.airChain.IssueFlightServiceRequest"
-  condition: (p.role == "OFFICER")
+  condition: (p.role == "OFFICER" && r.flight.status == "SCHEDULED")
   action: ALLOW
 }
 
@@ -137,7 +128,7 @@ rule AllowAirlineCabinCrewUpdateServiceDelivery {
    operation: UPDATE
    resource (r): "org.airline.airChain.Flight"
    transaction (txn): "org.airline.airChain.IssueFlightServiceRequest"
-   condition: (txn.service.status == "PENDING")
+   condition: (p.role == "OFFICER" && txn.flight.status == "SCHEDULED")
    action: ALLOW
  }
 

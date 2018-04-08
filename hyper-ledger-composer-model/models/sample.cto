@@ -96,7 +96,7 @@ asset Service identified by id {
     o SERVICE_STATUS status
     o SERVICE_TYPE type
     --> GHACompany company
-    --> Flight flight optional
+    --> Flight flight
 }
 
 
@@ -182,15 +182,11 @@ transaction ProcessFlightServiceDelivery {
 /*
 ** GHA Company Action
 */
-
-transaction AddServiceToCompany {
-  --> Service service
-  --> GHACompany company
-}
-
 transaction IssueFlightServiceRequest {
+    o String id
+    o String description
+    o SERVICE_TYPE type
     --> Flight flight
-    --> Service service
 }
 
 transaction CollectCargoFromWarehouse {

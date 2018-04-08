@@ -67,7 +67,6 @@ function AddFlightToCompany(tx) {
  * @transaction
  */
 function AddAircraft(tx) {
-
     var company = getCurrentParticipant().company;
     return getAssetRegistry(namespace + ".AirlineCompany").then(function(companyAssetRegistry) {
         return companyAssetRegistry.get(company.$identifier).then(function(company) {
@@ -129,49 +128,67 @@ function ProcessFlightServiceDelivery(tx) {
 
 /**
  * Sample transaction processor function.
- * @param {org.airline.airChain.AddServiceToCompany} tx The sample transaction instance.
- * @transaction
- */
-function AddServiceToCompany(tx) {
-    var service = tx.service;
-    var company = tx.company;
-
-    if (!company.services) {
-        company.services = [];
-    }
-
-    service.company = company;
-    company.services.push(service);
-
-    return saveService(service).then(function() {
-        return saveGHACompany(company);
-    })
-
-}
-
-/**
- * Sample transaction processor function.
  * @param {org.airline.airChain.IssueFlightServiceRequest} tx The sample transaction instance.
  * @transaction
  */
 function IssueFlightServiceRequest(tx) {
-    var service = tx.service;
-    var flight = tx.flight;
 
-    if (flight.status != "SCHEDULED")
-        throw new Error("Flight not in scheduled status");
+    var company = getCurrentParticipant().company;
+    return getAssetRegistry(namespace + ".GHACompany").then(function(companyAssetRegistry) {
+        return companyAssetRegistry.get(company.$identifier).then(function(company) {
+            var service = getFactory().newResource(namespace, "Service", tx.id);
+            service.description = tx.description;
+            service.type = tx.type;
+            service.status = "PENDING";
+            service.flight = tx.flight;
+            service.company = company;
 
-    //Add Services to Flight
-    if (!flight.services)
-        flight.services = [];
+            //Add Service to Company
+            if (!company.services) {
+                company.services = [];
+            }
+            company.services.push(service);
 
-    flight.services.push(service);
-    service.flight = flight;
+            //Add Service to Flight
+            if (!service.flight.services) {
+                service.flight.services = [];
+            }
 
-    //Save Flight & service
-    return saveFlight(flight).then(function() {
-        saveService(service);
-    })
+            service.flight.services.push(service);
+
+            return getAssetRegistry(namespace + ".Service")
+                .then(function(assetRegistry) {
+                    return assetRegistry.add(service)
+                        .then(function() {
+                            return saveGHACompany(company)
+                                .then(function() {
+                                    return saveFlight(service.flight);
+                                })
+                        })
+                });
+        })
+    });
+
+
+
+
+    // var service = tx.service;
+    // var flight = tx.flight;
+
+    // if (flight.status != "SCHEDULED")
+    //     throw new Error("Flight not in scheduled status");
+
+    // //Add Services to Flight
+    // if (!flight.services)
+    //     flight.services = [];
+
+    // flight.services.push(service);
+    // service.flight = flight;
+
+    // //Save Flight & service
+    // return saveFlight(flight).then(function() {
+    //     saveService(service);
+    // })
 }
 
 /**

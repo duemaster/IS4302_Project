@@ -20,9 +20,9 @@ export class FlightComponent implements AfterViewInit {
 
     @ViewChild(MatPaginator) paginator: MatPaginator;
 
-    ngAfterViewInit() {
+    async ngAfterViewInit() {
         this.dataSource.paginator = this.paginator;
-        this.fetchFlightList();
+        await this.fetchFlightList();
         //this.fetchStaffList();
     }
 
@@ -51,20 +51,9 @@ export class FlightComponent implements AfterViewInit {
         aircraft: {},
     };
 
-    newService = {
-        id: '',
-        description: '',
-        status: '',
-        type: '',
-        company: 'GHA1'
-    };
+    newService: any;
 
-    serviceList = [{
-        id: '',
-        description: '',
-        status: '',
-        type: '',
-    }];
+    serviceList: any;
 
     cargoList = [{
         id: '',
@@ -78,24 +67,12 @@ export class FlightComponent implements AfterViewInit {
     staffList: any;
 
     async viewService(flight) {
+
+        this.newService = {};
+
         this.loading = true;
         this.flight = flight;
-        this.serviceList = [];
-
-        if(!flight.services) {
-            flight.services = [];
-        }
-
-        for (let item of flight.services) {
-            item = item.replace(`${this.blockChainService.SERVICE}#`, '');
-            console.log(item);
-            let serviceDetail: any = await this.http.get(
-                `${this.service.ENDPOINT}/blockchain/user/${this.authService.admin.id}/api/org.airline.airChain.Service/${item}`,
-                {withCredentials: true}
-            ).toPromise();
-            serviceDetail.company = serviceDetail.company.replace(`${this.blockChainService.GHA_COMPANY}#`, '');
-            this.serviceList.push(serviceDetail);
-        }
+        this.serviceList = await this.fetchServiceListForFlight(this.flight.id);
         this.loading = false;
     }
 
@@ -103,7 +80,7 @@ export class FlightComponent implements AfterViewInit {
         this.loading = true;
         this.cargoList = [];
 
-        if(!flight.cargos) {
+        if (!flight.cargos) {
             flight.cargos = [];
         }
 
@@ -128,33 +105,22 @@ export class FlightComponent implements AfterViewInit {
 
     async addService() {
         this.loading = true;
-        this.newService.id = `${new Date().getTime()}`;
-        this.newService.status = 'PENDING';
+        this.newService.id = new Date().getTime().toString();
 
-        let response1 = await this.http.post(
-            `${this.service.ENDPOINT}/blockchain/user/${this.authService.admin.id}/api/org.airline.airChain.Service`,
-            this.newService,
-            {withCredentials: true})
-            .toPromise();
+        //add Flight Information
+        this.newService.flight = `${this.blockChainService.FLIGHT}#${this.flight.id}`;
 
-        let response2 = await this.http.post(
+        //Submit Transaction
+        await this.http.post(
             `${this.service.ENDPOINT}/blockchain/user/${this.authService.admin.id}/api/org.airline.airChain.IssueFlightServiceRequest`,
-            {
-                flight: `${this.blockChainService.FLIGHT}#${this.flight.id}`,
-                service: `${this.blockChainService.SERVICE}#${this.newService.id}`
-            },
-            {withCredentials: true})
-            .toPromise();
-        this.loading = false;
-        this.serviceList.push(this.newService);
+            this.newService,
+            {withCredentials: true}
+        ).toPromise();
 
-        this.newService = {
-            id: '',
-            description: '',
-            status: '',
-            type: '',
-            company: 'GHA1'
-        };
+        this.serviceList = await this.fetchServiceListForFlight(this.flight.id);
+
+        this.loading = false;
+        this.newService = {};
 
     }
 
@@ -200,6 +166,20 @@ export class FlightComponent implements AfterViewInit {
     private loadDataInTable(flightList) {
         this.dataSource = new MatTableDataSource<any>(flightList);
         this.dataSource.paginator = this.paginator;
+    }
+
+    private async fetchServiceListForFlight(flightId: string) {
+        let entireServiceList: any = await this.http.get(
+            `${this.service.ENDPOINT}/blockchain/user/${this.authService.admin.id}/api/org.airline.airChain.Service`,
+            {withCredentials: true}
+        ).toPromise();
+
+        //Filter out those that do not belong to flight
+        let serviceList = entireServiceList.filter((service) => {
+            return service.flight === `${this.blockChainService.FLIGHT}#${flightId}`;
+        });
+
+        return serviceList;
     }
 
 

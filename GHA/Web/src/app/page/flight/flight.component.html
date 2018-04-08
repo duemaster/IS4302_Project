@@ -201,7 +201,8 @@
     <!-- END CARGO MODAL MARKUP -->
 
     <!-- BEGIN SERVICE  MODAL MARKUP -->
-    <div class="modal fade" id="serviceModal" tabindex="-1" role="dialog" aria-labelledby="formModalLabel"
+    <div *ngIf="newService" class="modal fade" id="serviceModal" tabindex="-1" role="dialog"
+         aria-labelledby="formModalLabel"
          aria-hidden="true">
         <div class="modal-dialog">
             <div class="modal-content">
@@ -211,33 +212,34 @@
                 </div>
                 <form class="form-horizontal" role="form">
                     <div class="modal-body">
-                        <h4>Add New Service</h4>
-                        <div class="form-group">
-                            <div class="col-sm-3">
-                                <label for="serviceId" class="control-label">Service</label>
+                        <ng-container *ngIf="flight && flight.status === 'SCHEDULED'">
+                            <h4>Add New Service</h4>
+                            <div class="form-group">
+                                <div class="col-sm-3">
+                                    <label for="serviceId" class="control-label">Service</label>
+                                </div>
+                                <div class="col-sm-9">
+                                    <input type="text" name="serviceId" id="serviceId" class="form-control"
+                                           [(ngModel)]="newService.description" placeholder="Service Detail">
+                                </div>
                             </div>
-                            <div class="col-sm-9">
-                                <input type="text" name="serviceId" id="serviceId" class="form-control"
-                                       [(ngModel)]="newService.description" placeholder="Service Detail">
+                            <div class="form-group">
+                                <div class="col-sm-3">
+                                    <label for="serviceType" class="control-label">Type</label>
+                                </div>
+                                <div class="col-sm-9">
+                                    <select id="serviceType" name="serviceType" [(ngModel)]="newService.type"
+                                            class="form-control">
+                                        <option value="FOOD">Food</option>
+                                        <option value="UTILITY">Utilities</option>
+                                    </select>
+                                </div>
                             </div>
-                        </div>
-                        <div class="form-group">
-                            <div class="col-sm-3">
-                                <label for="serviceType" class="control-label">Type</label>
-                            </div>
-                            <div class="col-sm-9">
-                                <select id="serviceType" name="serviceType" [(ngModel)]="newService.type"
-                                        class="form-control">
-                                    <option value="FOOD">Food</option>
-                                    <option value="UTILITY">Utilities</option>
-                                </select>
-                            </div>
-                        </div>
-                        <button type="button" class="btn ink-reaction btn-raised btn-primary button1"
-                                (click)="addService()">
-                            Add
-                        </button>
-
+                            <button type="button" class="btn ink-reaction btn-raised btn-primary button1"
+                                    (click)="addService()">
+                                Add
+                            </button>
+                        </ng-container>
                         <h4>Current Services</h4>
 
                         <table class="table no-margin">
