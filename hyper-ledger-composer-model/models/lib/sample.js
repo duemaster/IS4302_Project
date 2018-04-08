@@ -214,23 +214,38 @@ function CollectCargoFromWarehouse(tx) {
 
 /**
  * Sample transaction processor function.
- * @param {org.airline.airChain.AddCargoToCompany} tx The sample transaction instance.
+ * @param {org.airline.airChain.AddCargo} tx The sample transaction instance.
  * @transaction
  */
 function AddCargoToCompany(tx) {
-    var cargo = tx.cargo;
-    var company = tx.company;
 
-    if (!company.cargos) {
-        company.cargos = [];
-    }
+    var company = getCurrentParticipant().company;
 
-    cargo.company = company;
-    company.cargos.push(cargo);
+    return getAssetRegistry(namespace + ".CargoCompany")
+        .then(function(companyAssetRegistry) {
+            return companyAssetRegistry.get(company.$identifier)
+                .then(function(company) {
+                    var cargo = getFactory().newResource(namespace, "Cargo", tx.id);
+                    cargo.description = tx.description;
+                    cargo.weight = tx.weight;
+                    cargo.company = company;
+                    cargo.status = "PENDING";
 
-    return saveCargo(cargo).then(function() {
-        return saveCargoCompany(company);
-    })
+                    if (!company.cargos) {
+                        company.cargos = [];
+                    }
+
+                    company.cargos.push(cargo);
+
+                    return getAssetRegistry(namespace + ".Cargo")
+                        .then(function(cargoAssetRegistry) {
+                            return cargoAssetRegistry.add(cargo)
+                                .then(function() {
+                                    return saveCargoCompany(company);
+                                });
+                        });
+                });
+        });
 }
 
 /**

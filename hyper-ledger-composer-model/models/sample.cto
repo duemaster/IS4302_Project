@@ -137,7 +137,7 @@ participant CargoEmployee identified by id{
 }
 
 participant GHAEmployee identified by id {
-      o String id
+    o String id
     o String name
     o ROLE role
     --> GHACompany company
@@ -197,9 +197,10 @@ transaction CollectCargoFromWarehouse {
 ** Cargo Company Action
 */
 
-transaction AddCargoToCompany {
-  --> Cargo cargo
-  --> CargoCompany company
+transaction AddCargo {
+    o String id
+    o String description
+    o Double weight
 }
 
 transaction ConfirmCargoToWarehouse {

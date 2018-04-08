@@ -24,8 +24,8 @@ rule AllowCargoAddCargo {
   description:  "Allow Cargo company to add Cargo"
   participant (p): "org.airline.airChain.CargoEmployee"
   operation: CREATE
-  resource (r): "org.airline.airChain.AddCargoToCompany"
-  condition: (p.role == "OFFICER" && r.company.getIdentifier() == p.company.getIdentifier())
+  resource (r): "org.airline.airChain.AddCargo"
+  condition: (p.role == "OFFICER")
   action: ALLOW
 }
 
