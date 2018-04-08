@@ -107,22 +107,6 @@ export class FlightComponent implements AfterViewInit {
             id: new Date().getTime().toString()
         };
         this.dateTimeExample = new Date();
-        // this.flight = {
-        //     departureTime: '',
-        //     id: (new Date()).getTime() + '',
-        //     paxCount: 0,
-        //     origin: '',
-        //     destination: '',
-        //     flightNumber: '',
-        //     company: 'Airline1',
-        //     status: 'SCHEDULED',
-        //     cabinCrew: '',
-        //     cargo: [],
-        //     service: [],
-        //     aircraft: '',
-        //     collectCompany: '',
-        //     deliverCompany: ''
-        // };
     }
 
     processFlight() {
@@ -176,7 +160,7 @@ export class FlightComponent implements AfterViewInit {
         console.log(service);
         let response = await this.http.post(
             `${this.service.ENDPOINT}/blockchain/user/${this.authService.admin.id}/api/org.airline.airChain.HandleFlightServiceRequest`,
-            {service: service.id, isApproved: true},
+            {service: `${this.blockChainService.SERVICE}#${service.id}`, isApproved: true},
             {withCredentials: true})
             .toPromise();
 
