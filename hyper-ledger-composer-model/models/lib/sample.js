@@ -20,22 +20,44 @@ var namespace = "org.airline.airChain";
 
 /**
  * Sample transaction processor function.
- * @param {org.airline.airChain.AddFlightToCompany} tx The sample transaction instance.
+ * @param {org.airline.airChain.AddFlight} tx The sample transaction instance.
  * @transaction
  */
 function AddFlightToCompany(tx) {
-    var flight = tx.flight;
-    var company = tx.company;
 
-    flight.company = company;
+    var factory = getFactory();
 
-    if (!company.flights) {
-        company.flights = [];
-    }
+    var company = getCurrentParticipant().company;
+    return getAssetRegistry(namespace + ".AirlineCompany").then(function(companyAssetRegistry) {
+        return companyAssetRegistry.get(company.$identifier).then(function(company) {
+            var flight = factory.newResource(namespace, "Flight", tx.id);
+            flight.origin = tx.origin;
+            flight.destination = tx.destination;
+            flight.flightNumber = tx.flightNumber;
+            flight.departureTime = tx.departureTime;
+            flight.paxCount = tx.paxCount;
+            flight.status = "SCHEDULED";
 
-    company.flights.push(flight);
-    return saveAirlineCompany(company).then(function() {
-        return saveFlight(flight);
+            flight.aircraft = tx.aircraft;
+            flight.company = company;
+            flight.cabinCrew = tx.cabinCrew;
+            flight.collectCompany = tx.collectCompany;
+            flight.deliverCompany = tx.deliverCompany;
+
+            if (!company.flights) {
+                company.flights = [];
+            }
+
+            company.flights.push(flight);
+
+            return getAssetRegistry(namespace + ".Flight")
+                .then(function(flightAssetRegistry) {
+                    return flightAssetRegistry.add(flight)
+                        .then(function() {
+                            return saveAirlineCompany(company);
+                        })
+                })
+        })
     })
 }
 

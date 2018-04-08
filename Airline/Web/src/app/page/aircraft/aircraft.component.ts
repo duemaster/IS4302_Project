@@ -39,6 +39,7 @@ export class AircraftComponent implements AfterViewInit {
 
     create() {
         this.isCreate = true;
+        this.aircraft = {};
     }
 
     processAircraft() {

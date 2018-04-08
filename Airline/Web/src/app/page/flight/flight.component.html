@@ -99,14 +99,13 @@
         </div>
     </div>
     <!-- BEGIN FLIGHT MODAL MARKUP -->
-    <div class="modal fade" id="formModal" tabindex="-1" role="dialog" aria-labelledby="formModalLabel"
+    <div *ngIf="flight" class="modal fade" id="formModal" tabindex="-1" role="dialog" aria-labelledby="formModalLabel"
          aria-hidden="true">
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">
                     <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-                    <h4 class="modal-title" id="formModalLabel" *ngIf="isCreate">Add Flight</h4>
-                    <h4 class="modal-title" id="formModalLabel1" *ngIf="!isCreate">Edit Flight</h4>
+                    <h4 class="modal-title" id="formModalLabel">{{isCreate ? "Add Flight" : "Edit Flight"}}</h4>
                 </div>
                 <form class="form-horizontal" role="form">
                     <div class="modal-body">
@@ -123,11 +122,9 @@
                             </div>
                             <div class="col-sm-4 departDate">
                                 <ngx-datetime-picker id="departDate"
-                                                     [(selectedDateTime)]="dateTimeExample"></ngx-datetime-picker>
-                                <!--<ngx-datetime-picker id="departDate"-->
-                                <!--[(selectedDateTime)]="flight.departureTime">-->
-                                <!---->
-                                <!--</ngx-datetime-picker>-->
+                                                     [(selectedDateTime)]="dateTimeExample">
+
+                                </ngx-datetime-picker>
                             </div>
                         </div>
                         <div class="form-group">
@@ -296,7 +293,6 @@
         </div><!-- /.modal-dialog -->
     </div><!-- /.modal -->
     <!-- END SERVICE MODAL MARKUP -->
-
 
     <!-- BEGIN SIMPLE MODAL MARKUP -->
     <div class="modal fade" id="deleteModal" tabindex="-1" role="dialog" aria-labelledby="simpleModalLabel"

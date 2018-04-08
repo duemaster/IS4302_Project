@@ -6,8 +6,8 @@ rule AllowAirlineAddFlight {
   description:  "Allow Airline company to add Flights"
   participant (p): "org.airline.airChain.AirlineEmployee"
   operation: CREATE
-  resource (r): "org.airline.airChain.AddFlightToCompany"
-  condition: (p.role == "OFFICER" && r.company.getIdentifier() == p.company.getIdentifier())
+  resource (r): "org.airline.airChain.AddFlight"
+  condition: (p.role == "OFFICER")
   action: ALLOW
 }
 

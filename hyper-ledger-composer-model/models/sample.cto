@@ -154,9 +154,19 @@ transaction AddAircraft {
   o Double cargoCapacity
 }
 
-transaction AddFlightToCompany {
-	--> Flight flight
-  --> AirlineCompany company
+transaction AddFlight {
+    o String id
+    o String origin
+    o String destination
+    o String flightNumber
+    o DateTime departureTime
+    o Integer paxCount
+
+    --> Aircraft aircraft
+    --> AirlineEmployee cabinCrew
+
+    --> GHACompany collectCompany
+    --> GHACompany deliverCompany
 }
 
 transaction HandleFlightServiceRequest {

@@ -24,22 +24,7 @@ export class FlightComponent implements AfterViewInit {
     dateTimeExample;
 
     public loading = false;
-    flight = {
-        departureTime: '',
-        id: '',
-        flightNumber: '',
-        origin: '',
-        destination: '',
-        paxCount: 0,
-        company: 'Airline1',
-        status: 'SCHEDULED',
-        cabinCrew: '',
-        cargo: [],
-        service: [],
-        aircraft: '',
-        collectCompany: '',
-        deliverCompany: ''
-    };
+    flight: any;
 
     cargoList: any;
 
@@ -118,23 +103,26 @@ export class FlightComponent implements AfterViewInit {
 
     create() {
         this.isCreate = true;
-        this.dateTimeExample = new Date();
         this.flight = {
-            departureTime: '',
-            id: (new Date()).getTime() + '',
-            paxCount: 0,
-            origin: '',
-            destination: '',
-            flightNumber: '',
-            company: 'Airline1',
-            status: 'SCHEDULED',
-            cabinCrew: '',
-            cargo: [],
-            service: [],
-            aircraft: '',
-            collectCompany: '',
-            deliverCompany: ''
+            id: new Date().getTime().toString()
         };
+        this.dateTimeExample = new Date();
+        // this.flight = {
+        //     departureTime: '',
+        //     id: (new Date()).getTime() + '',
+        //     paxCount: 0,
+        //     origin: '',
+        //     destination: '',
+        //     flightNumber: '',
+        //     company: 'Airline1',
+        //     status: 'SCHEDULED',
+        //     cabinCrew: '',
+        //     cargo: [],
+        //     service: [],
+        //     aircraft: '',
+        //     collectCompany: '',
+        //     deliverCompany: ''
+        // };
     }
 
     processFlight() {
@@ -147,14 +135,14 @@ export class FlightComponent implements AfterViewInit {
     async addFlight() {
         this.loading = true;
         this.flight.departureTime = this.dateTimeExample;
-        let processedFlight = this.addNameSpace(this.flight);
+
         await this.http.post(
-            `${this.service.ENDPOINT}/blockchain/user/${this.authService.admin.id}/api/org.airline.airChain.Flight`,
-            processedFlight,
+            `${this.service.ENDPOINT}/blockchain/user/${this.authService.admin.id}/api/org.airline.airChain.AddFlight`,
+            this.addNameSpace(this.flight),
             {withCredentials: true})
             .toPromise();
         //Refresh Data Table
-        this.fetchFlightList();
+        await this.fetchFlightList();
         this.loading = false;
     }
 
