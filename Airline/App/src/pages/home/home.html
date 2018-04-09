@@ -15,8 +15,8 @@
   <div class="flightInfo">
     <div>
       <p>
-        <span>{{flightProvider.flight.departureCode}}</span><br>
-        {{flightProvider.flight.departure}}
+        <span>{{flightProvider.flight.originCode}}</span><br>
+        {{flightProvider.flight.origin}}
       </p>
     </div>
     <div class="connection">
@@ -34,19 +34,19 @@
 
   <div class="flightDetail">
     <p class="title">DEPARTURE</p>
-    <p class="text">13-08-2017, 2:30 PM</p>
+    <p class="text">{{flightProvider.flight.departureTime | date:'dd-MM-yyyy, h:mm a'}}</p>
 
     <div class="flightDetail2">
       <div>
         <p>
           <span class="title">FLIGHT</span><br>
-          <span class="text">MTY 270</span>
+          <span class="text">{{flightProvider.flight.flightNumber}}</span>
         </p>
       </div>
       <div>
         <p>
           <span class="title">No. Pax</span><br>
-          <span class="text">180</span>
+          <span class="text">{{flightProvider.flight.paxCount}}</span>
         </p>
       </div>
       <div></div>
@@ -55,14 +55,10 @@
 
   <!--<h3 class="services">Services</h3>-->
   <div class="flightDetail">
-    <div class="service" tappable (click)="viewDetail()">
-      <p class="title">SATS (GHA)</p>
-      <p class="text">Food Service  <ion-icon class="DONE" name="ios-checkmark-circle"></ion-icon></p>
-    </div>
 
-    <div class="service" tappable>
-      <p class="title">SATS (GHA)</p>
-      <p class="text">Clean Service <ion-icon class="APPROVED" name="ios-information-circle"></ion-icon></p>
+    <div class="service" tappable *ngFor="let service of flightProvider.flight.serviceList" (click)="viewDetail(service)">
+      <p class="title">{{service.companyName}} (GHA)</p>
+      <p class="text">{{service.type}} Service <ion-icon [ngClass]="service.status" name="ios-checkmark-circle"></ion-icon></p>
     </div>
 
   </div>

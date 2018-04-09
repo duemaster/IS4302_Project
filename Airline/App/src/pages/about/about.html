@@ -8,14 +8,14 @@
   <img src="./assets/imgs/cake.jpg">
 
   <div class="ionContentDiv">
-    <h3 class="title">Food Service</h3>
-    <span class="GHA">SATS (GHA)</span>
+    <h3 class="title">{{service.type}} Service</h3>
+    <span class="GHA">{{service.companyName}} (GHA)</span>
     <br>
     <br>
     <hr>
 
     <p class="description">
-      SATS Will provide delicious food for each of the customer taking the flight from Singapore to Chong Qing.
+      {{service.description}}
     </p>
     <br>
 
@@ -25,8 +25,8 @@
 
   <!--Requester Actions-->
   <div class="submitDiv" padding >
-    <button block class="submit" (click)="cancel()">CONFIRM</button>
-    <div tappable (click)="login()">
+    <button block class="submit" (click)="callTransaction(true)">CONFIRM</button>
+    <div tappable (click)="callTransaction(false)">
       Reject this service
     </div>
   </div>

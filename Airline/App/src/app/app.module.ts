@@ -35,6 +35,7 @@ import { FlightProvider } from '../providers/flight/flight';
   bootstrap: [IonicApp],
   entryComponents: [
     MyApp,
+    AboutPage
   ],
   providers: [
     StatusBar,

@@ -2,6 +2,7 @@ import { Component } from '@angular/core';
 import { IonicPage, NavController, NavParams } from 'ionic-angular';
 import {UserProvider} from "../../providers/user/user";
 import {FlightProvider} from "../../providers/flight/flight";
+import {AboutPage} from "../about/about";
 
 /**
  * Generated class for the HomePage page.
@@ -28,5 +29,9 @@ export class HomePage {
 
   logout(){
     this.userProvider.logout(this.navCtrl);
+  }
+
+  viewDetail(service){
+    this.navCtrl.push(AboutPage,{service:service});
   }
 }
