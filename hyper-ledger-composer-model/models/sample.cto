@@ -123,7 +123,7 @@ enum ROLE {
     o OFFICER
 }
 participant AirlineEmployee identified by id{
-      o String id
+    o String id
     o String name
     o ROLE role
     --> AirlineCompany company

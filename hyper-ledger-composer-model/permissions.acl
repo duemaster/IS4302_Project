@@ -48,7 +48,7 @@ rule AllowAirlineProcessFlightServiceDelivery {
   participant (p): "org.airline.airChain.AirlineEmployee"
   operation: CREATE
   resource (r): "org.airline.airChain.ProcessFlightServiceDelivery"
-  condition: (p.role == "STAFF" && r.service.flight.status == "SCHEDULED" && r.service.flight.cabinCrews.some(function(cabinCrew) {return cabinCrew.getIdentifier() == p.getIdentifier();}))
+  condition: (p.role == "STAFF" && r.service.flight.status == "SCHEDULED" && r.service.flight.cabinCrew.getIdentifier() == p.getIdentifier())
   action: ALLOW
 }
 

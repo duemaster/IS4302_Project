@@ -55,7 +55,7 @@ describe("Airline Testing", () => {
     // This is the factory for creating instances of types.
     let factory;
 
-    before(async () => {
+    before(async() => {
         //Setup Business Network
 
         // Generate certificates for use with the embedded connection
@@ -94,7 +94,7 @@ describe("Airline Testing", () => {
     }
 
     // This is called before each test is executed.
-    beforeEach(async () => {
+    beforeEach(async() => {
         // Generate a business network definition from the project directory.
         let businessNetworkDefinition = await BusinessNetworkDefinition.fromDirectory(path.resolve(__dirname, '..'));
         businessNetworkName = businessNetworkDefinition.getName();
@@ -241,7 +241,7 @@ describe("Airline Testing", () => {
         await importCardForIdentity("CargoStaff", identity);
     }
 
-    it("Airline Officer should be able to add Aircraft to company", async () => {
+    it("Airline Officer should be able to add Aircraft to company", async() => {
         await useIdentity("AirlineOfficer");
 
         //Submit Add Aircraft Transaction
@@ -266,7 +266,7 @@ describe("Airline Testing", () => {
         expect(newAircraft.company.getFullyQualifiedIdentifier() === airlineCompany.getFullyQualifiedIdentifier()).to.be.equal(true);
     });
 
-    it("Airline Officer should be able to add Flight to company", async () => {
+    it("Airline Officer should be able to add Flight to company", async() => {
         await useIdentity("AirlineOfficer");
 
         //Add New Aircraft
@@ -308,7 +308,7 @@ describe("Airline Testing", () => {
         expect(newFlight.company.getFullyQualifiedIdentifier() === airlineCompany.getFullyQualifiedIdentifier()).to.be.equal(true);
     });
 
-    it("GHA Officer should be able to create Service", async () => {
+    it("GHA Officer should be able to create Service", async() => {
         await useIdentity("AirlineOfficer");
         //Create Aircraft
         const addAircraftTransaction = factory.newTransaction(namespace, "AddAircraft");
@@ -336,7 +336,7 @@ describe("Airline Testing", () => {
         await useIdentity("GHAOfficer");
         //Add Service
         const serviceAssetRegistry = await businessNetworkConnection.getAssetRegistry(`${namespace}.${ghaServiceAsset}`);
-        let newService = factory.newResource(namespace, ghaServiceAsset, "Service1");
+        //let newService = factory.newResource(namespace, ghaServiceAsset, "Service1");
 
         let addServiceTransaction = factory.newTransaction(namespace, "IssueFlightServiceRequest");
         addServiceTransaction.id = "Service1";
@@ -346,7 +346,7 @@ describe("Airline Testing", () => {
         await businessNetworkConnection.submitTransaction(addServiceTransaction);
 
         //Check for service
-        newService = await serviceAssetRegistry.get("Service1");
+        let newService = await serviceAssetRegistry.get("Service1");
 
         //Check if company has service
         const ghaCompanyAssetRegistry = await businessNetworkConnection.getAssetRegistry(`${namespace}.${ghaCompanyAsset}`);
@@ -359,7 +359,7 @@ describe("Airline Testing", () => {
         expect(newService.company.getFullyQualifiedIdentifier() === ghaCompany.getFullyQualifiedIdentifier()).to.be.equal(true);
     })
 
-    it("Cargo Officer should be able to create Cargo", async () => {
+    it("Cargo Officer should be able to create Cargo", async() => {
         await useIdentity("CargoOfficer");
 
         //Add Cargo
@@ -384,7 +384,7 @@ describe("Airline Testing", () => {
         expect(newCargo.company.getFullyQualifiedIdentifier() === cargoCompany.getFullyQualifiedIdentifier()).to.be.equal(true);
     })
 
-    it("Cargo Officer can attach cargo to flight", async () => {
+    it("Cargo Officer can attach cargo to flight", async() => {
         await useIdentity("AirlineOfficer");
         //Create Aircraft
         const addAircraftTransaction = factory.newTransaction(namespace, "AddAircraft");
@@ -443,7 +443,7 @@ describe("Airline Testing", () => {
         expect(newCargo.flight.getFullyQualifiedIdentifier() === newFlight.getFullyQualifiedIdentifier()).to.be.equal(true);
     })
 
-    it("Cargo Officer can view flights that the airline Company allows", async () => {
+    it("Cargo Officer can view flights that the airline Company allows", async() => {
         await useIdentity("AirlineOfficer");
         //Create Aircraft
         const addAircraftTransaction = factory.newTransaction(namespace, "AddAircraft");
@@ -480,5 +480,68 @@ describe("Airline Testing", () => {
         let flights = await flightAssetRegistry.getAll();
 
         expect(flights.length).to.be.above(0);
+    })
+
+    it("Airline Staff able to process Inflight Request", async() => {
+        await useIdentity("AirlineOfficer");
+        //Create Aircraft
+        const addAircraftTransaction = factory.newTransaction(namespace, "AddAircraft");
+        addAircraftTransaction.id = "SQ123";
+        addAircraftTransaction.model = "QWE";
+        addAircraftTransaction.passengerCapacity = 12;
+        addAircraftTransaction.cargoCapacity = 12.2;
+        await businessNetworkConnection.submitTransaction(addAircraftTransaction);
+
+        //Create Flight
+        const addFlightTransaction = factory.newTransaction(namespace, "AddFlight");
+        addFlightTransaction.id = "Flight1";
+        addFlightTransaction.origin = "Singapore";
+        addFlightTransaction.destination = "Tianjin";
+        addFlightTransaction.flightNumber = "TZ189";
+        addFlightTransaction.departureTime = new Date();
+        addFlightTransaction.paxCount = 12;
+        addFlightTransaction.aircraft = factory.newRelationship(namespace, "Aircraft", "SQ123");
+        addFlightTransaction.cabinCrew = factory.newRelationship(namespace, airlineParticipant, "AirlineStaff");
+        addFlightTransaction.collectCompany = factory.newRelationship(namespace, ghaCompanyAsset, "GHACompany");
+        addFlightTransaction.deliverCompany = factory.newRelationship(namespace, ghaCompanyAsset, "GHACompany");
+        await businessNetworkConnection.submitTransaction(addFlightTransaction);
+
+        //Expect Current Staff to be in cabin crew
+        const flightAssetRegistry = await businessNetworkConnection.getAssetRegistry(`${namespace}.${airlineFlightAsset}`);
+        let flight = await flightAssetRegistry.get("Flight1");
+
+        const airlineEmployeeRegistry = await businessNetworkConnection.getParticipantRegistry(`${namespace}.${airlineParticipant}`);
+        let cabinCrew = await airlineEmployeeRegistry.get("AirlineStaff");
+
+        expect(flight.cabinCrew.getFullyQualifiedIdentifier() === cabinCrew.getFullyQualifiedIdentifier());
+
+        await useIdentity("GHAOfficer");
+        //Assign Service to Flight
+        let addServiceTransaction = factory.newTransaction(namespace, "IssueFlightServiceRequest");
+        addServiceTransaction.id = "Service1";
+        addServiceTransaction.description = "Test Service";
+        addServiceTransaction.type = "FOOD";
+        addServiceTransaction.flight = factory.newRelationship(namespace, airlineFlightAsset, "Flight1");
+        await businessNetworkConnection.submitTransaction(addServiceTransaction);
+
+        await useIdentity("AirlineOfficer");
+        //Accept Service
+        let handleFlightServiceTransaction = factory.newTransaction(namespace, "HandleFlightServiceRequest");
+        handleFlightServiceTransaction.service = factory.newRelationship(namespace, ghaServiceAsset, "Service1");
+        handleFlightServiceTransaction.isApproved = true;
+        await businessNetworkConnection.submitTransaction(handleFlightServiceTransaction);
+
+        await useIdentity("AirlineStaff");
+        //Confirm Service Delivery
+        let confirmServiceDeliveryTransaction = factory.newTransaction(namespace, "ProcessFlightServiceDelivery");
+        confirmServiceDeliveryTransaction.service = factory.newRelationship(namespace, ghaServiceAsset, "Service1");
+        confirmServiceDeliveryTransaction.isApproved = true;
+        await businessNetworkConnection.submitTransaction(confirmServiceDeliveryTransaction);
+
+
+        //Confirm Service Status is delivered
+        const serviceAssetRegistry = await businessNetworkConnection.getAssetRegistry(`${namespace}.${ghaServiceAsset}`);
+        let service = await serviceAssetRegistry.get("Service1");
+        expect(service.status).to.be.equal("DONE");
     })
 })
