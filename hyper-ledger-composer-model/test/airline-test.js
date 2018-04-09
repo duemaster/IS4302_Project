@@ -384,7 +384,7 @@ describe("Airline Testing", () => {
         expect(newCargo.company.getFullyQualifiedIdentifier() === cargoCompany.getFullyQualifiedIdentifier()).to.be.equal(true);
     })
 
-    it("Cargo Officer can attach cargo to flight", async() => {
+    it("Cargo Officer can attach cargo to flight repeatly", async() => {
         await useIdentity("AirlineOfficer");
         //Create Aircraft
         const addAircraftTransaction = factory.newTransaction(namespace, "AddAircraft");
@@ -395,8 +395,21 @@ describe("Airline Testing", () => {
         await businessNetworkConnection.submitTransaction(addAircraftTransaction);
 
         //Create Flight
-        const addFlightTransaction = factory.newTransaction(namespace, "AddFlight");
+        let addFlightTransaction = factory.newTransaction(namespace, "AddFlight");
         addFlightTransaction.id = "Flight1";
+        addFlightTransaction.origin = "Singapore";
+        addFlightTransaction.destination = "Tianjin";
+        addFlightTransaction.flightNumber = "TZ189";
+        addFlightTransaction.departureTime = new Date();
+        addFlightTransaction.paxCount = 12;
+        addFlightTransaction.aircraft = factory.newRelationship(namespace, "Aircraft", "SQ123");
+        addFlightTransaction.cabinCrew = factory.newRelationship(namespace, airlineParticipant, "AirlineStaff");
+        addFlightTransaction.collectCompany = factory.newRelationship(namespace, ghaCompanyAsset, "GHACompany");
+        addFlightTransaction.deliverCompany = factory.newRelationship(namespace, ghaCompanyAsset, "GHACompany");
+        await businessNetworkConnection.submitTransaction(addFlightTransaction);
+
+        addFlightTransaction = factory.newTransaction(namespace, "AddFlight");
+        addFlightTransaction.id = "Flight2";
         addFlightTransaction.origin = "Singapore";
         addFlightTransaction.destination = "Tianjin";
         addFlightTransaction.flightNumber = "TZ189";
@@ -423,24 +436,53 @@ describe("Airline Testing", () => {
         addCargoTransaction.weight = 12.012;
         await businessNetworkConnection.submitTransaction(addCargoTransaction);
 
-        const attachCargoToFlightTransaction = factory.newTransaction(namespace, "AssignCargoToFlight");
+        //Attach Cargo to first Flight
+        let attachCargoToFlightTransaction = factory.newTransaction(namespace, "AssignCargoToFlight");
         attachCargoToFlightTransaction.flight = factory.newRelationship(namespace, airlineFlightAsset, "Flight1");
         attachCargoToFlightTransaction.cargo = factory.newRelationship(namespace, cargoCargoAsset, "Cargo1");
         await businessNetworkConnection.submitTransaction(attachCargoToFlightTransaction);
 
-        //Retrieve Flight
         const flightAssetRegistry = await businessNetworkConnection.getAssetRegistry(`${namespace}.${airlineFlightAsset}`);
-        let newFlight = await flightAssetRegistry.get("Flight1");
-        //Retrieve Cargo
         const cargoAssetRegistry = await businessNetworkConnection.getAssetRegistry(`${namespace}.${cargoCargoAsset}`);
+
+        //Retrieve Flight
+        let firstFlight = await flightAssetRegistry.get("Flight1");
+        //Retrieve Cargo
         let newCargo = await cargoAssetRegistry.get("Cargo1");
 
-        let isCargoOnFlight = newFlight.cargos.some((cargo) => {
+        let isCargoOnFlight = firstFlight.cargos.some((cargo) => {
             return newCargo.getFullyQualifiedIdentifier() === cargo.getFullyQualifiedIdentifier();
         });
 
+        //Ensure Cargo is on first flight
         expect(isCargoOnFlight).to.be.equal(true);
-        expect(newCargo.flight.getFullyQualifiedIdentifier() === newFlight.getFullyQualifiedIdentifier()).to.be.equal(true);
+        expect(newCargo.flight.getFullyQualifiedIdentifier() === firstFlight.getFullyQualifiedIdentifier()).to.be.equal(true);
+
+        //Attach Cargo to second Flight
+        attachCargoToFlightTransaction = factory.newTransaction(namespace, "AssignCargoToFlight");
+        attachCargoToFlightTransaction.flight = factory.newRelationship(namespace, airlineFlightAsset, "Flight2");
+        attachCargoToFlightTransaction.cargo = factory.newRelationship(namespace, cargoCargoAsset, "Cargo1");
+        await businessNetworkConnection.submitTransaction(attachCargoToFlightTransaction);
+
+        //Retrieve Flight
+        firstFlight = await flightAssetRegistry.get("Flight1");
+        let secondFlight = await flightAssetRegistry.get("Flight2");
+
+        //Get updated Cargo status
+        newCargo = await cargoAssetRegistry.get("Cargo1");
+
+        let isCargoOnFirstFlight = firstFlight.cargos.some((cargo) => {
+            return newCargo.getFullyQualifiedIdentifier() === cargo.getFullyQualifiedIdentifier();
+        });
+
+        let isCargoOnSecondFlight = secondFlight.cargos.some((cargo) => {
+            return newCargo.getFullyQualifiedIdentifier() === cargo.getFullyQualifiedIdentifier();
+        });
+
+        //Ensure Cargo is on second flight
+        expect(isCargoOnFirstFlight).to.be.equal(false);
+        expect(isCargoOnSecondFlight).to.be.equal(true);
+        expect(newCargo.flight.getFullyQualifiedIdentifier() === secondFlight.getFullyQualifiedIdentifier()).to.be.equal(true);
     })
 
     it("Cargo Officer can view flights that the airline Company allows", async() => {

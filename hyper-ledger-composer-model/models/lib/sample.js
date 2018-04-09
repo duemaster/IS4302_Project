@@ -281,6 +281,18 @@ function ConfirmCargoToWarehouse(tx) {
  */
 function AssignCargoToFlight(tx) {
     var cargo = tx.cargo;
+
+    //Remove cargo from old flight if possible
+    var oldFlight = cargo.flight;
+    if (oldFlight) {
+        var oldCargos = oldFlight.cargos;
+        var index = oldCargos.find(function(currCargo) {
+            return currCargo.getIdentifier() == cargo.getIdentifier();
+        });
+
+        oldCargos.splice(index, 1);
+    }
+
     var flight = tx.flight;
 
     if (!flight.cargos) {
@@ -304,7 +316,15 @@ function AssignCargoToFlight(tx) {
     //Save cargo
     return saveCargo(cargo).then(function() {
         //Save flight
-        return saveFlight(flight);
+        return saveFlight(flight)
+            .then(function() {
+                //Save old flight if exists
+                if (oldFlight) {
+                    return saveFlight(oldFlight);
+                } else {
+                    return;
+                }
+            });
     })
 }
 
