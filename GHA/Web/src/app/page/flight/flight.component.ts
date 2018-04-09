@@ -80,23 +80,6 @@ export class FlightComponent implements AfterViewInit {
         this.loading = true;
 
         this.cargoList = await this.fetchCargoListForFlight(flight.id);
-        // this.cargoList = [];
-        //
-        // if (!flight.cargos) {
-        //     flight.cargos = [];
-        // }
-        //
-        // for (let item of flight.cargos) {
-        //     let cargoDetail: any = await this.http.get(
-        //         `${this.service.ENDPOINT}/blockchain/user/${this.authService.admin.id}/api/org.airline.airChain.Cargo/${item}`,
-        //         {withCredentials: true}
-        //     ).toPromise();
-        //     //Remove Cabin Crew NameSpace
-        //     if (cargoDetail.company) {
-        //         cargoDetail.company = cargoDetail.company.replace(this.blockChainService.CARGO_COMPANY, "");
-        //     }
-        //     this.cargoList.push(cargoDetail);
-        // }
         this.loading = false;
 
     }
@@ -137,8 +120,8 @@ export class FlightComponent implements AfterViewInit {
 
         let response = await this.http.put(
             `${this.service.ENDPOINT}/blockchain/user/${this.authService.admin.id}/api/org.airline.airChain.Service/${service.id}`,
-            {withCredentials: true},
-            serviceToDelete
+            serviceToDelete,
+            {withCredentials: true}
         ).toPromise();
         console.log(response);
 
