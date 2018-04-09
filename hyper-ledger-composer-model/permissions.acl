@@ -238,12 +238,12 @@ rule AllowAirlineOfficerViewCargo {
   action: ALLOW
 }
 
-rule AllowGHAStaffViewCargo {
-  description:  "Allow GHA staff to view Cargo only they are assigned to manage the cargo"
+rule AllowGHAEmployeeViewCargo {
+  description:  "Allow GHA to view Cargo only they are assigned to manage the cargo"
   participant (p): "org.airline.airChain.GHAEmployee"
   operation: READ
   resource (r): "org.airline.airChain.Cargo"
-  condition: (p.role == "STAFF" && (r.flight.collectCompany.getIdentifier() == p.company.getIdentifier() || r.flight.deliverCompany.getIdentifier() == p.company.getIdentifier()))
+  condition: (r.flight.collectCompany.getIdentifier() == p.company.getIdentifier() || r.flight.deliverCompany.getIdentifier() == p.company.getIdentifier())
   action: ALLOW
 }
 
@@ -337,12 +337,11 @@ rule AllowCargoOfficerManageCargoEmployees {
   action: ALLOW
 }
 
-rule AllowOfficerCreateThings {
-  description:  "Allow Officer to create related participants/assets"
-  participant (p): "org.hyperledger.composer.system.Participant"
+rule AllowParticipantCreateThings {
+  description:  "Allow Officer/Participant to create related participants/assets"
+  participant: "org.hyperledger.composer.system.Participant"
   operation: CREATE
-  resource (r): "org.hyperledger.composer.system.*"
-  condition: (p.role == "OFFICER")
+  resource: "org.hyperledger.composer.system.*"
   action: ALLOW
 }
 

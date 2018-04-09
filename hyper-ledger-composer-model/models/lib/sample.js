@@ -168,27 +168,6 @@ function IssueFlightServiceRequest(tx) {
                 });
         })
     });
-
-
-
-
-    // var service = tx.service;
-    // var flight = tx.flight;
-
-    // if (flight.status != "SCHEDULED")
-    //     throw new Error("Flight not in scheduled status");
-
-    // //Add Services to Flight
-    // if (!flight.services)
-    //     flight.services = [];
-
-    // flight.services.push(service);
-    // service.flight = flight;
-
-    // //Save Flight & service
-    // return saveFlight(flight).then(function() {
-    //     saveService(service);
-    // })
 }
 
 /**
