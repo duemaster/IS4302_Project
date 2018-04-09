@@ -57,6 +57,7 @@ export class CargoComponent implements AfterViewInit {
     update(element) {
         this.isCreate = false;
         this.cargo = element;
+        this.assignedFlightId = this.cargo.flight;
     }
 
     async viewFlight(flightId) {
@@ -90,14 +91,8 @@ export class CargoComponent implements AfterViewInit {
 
         //If there is flight
         if (this.assignedFlightId) {
-            await this.http.post(
-                `${this.service.ENDPOINT}/blockchain/user/${this.authService.admin.id}/api/org.airline.airChain.AssignCargoToFlight`,
-                {
-                    cargo: `${this.blockChainService.CARGO}#${this.cargo.id}`,
-                    flight: `${this.blockChainService.FLIGHT}#${this.assignedFlightId}`
-                },
-                {withCredentials: true}
-            ).toPromise();
+            await this.assignCargoToFlight(this.cargo.id, this.assignedFlightId);
+            this.assignedFlightId = null;
         }
 
         //Refresh Data Table
@@ -107,26 +102,52 @@ export class CargoComponent implements AfterViewInit {
     }
 
     async editCargo() {
-        await this.http.put(
+        this.loading = true;
+
+        let cargoToEdit = Object.assign({}, this.cargo);
+        delete cargoToEdit["id"];
+
+        let response = await this.http.put(
             `${this.service.ENDPOINT}/blockchain/user/${this.authService.admin.id}/api/org.airline.airChain.Cargo/${this.cargo.id}`,
-            this.cargo,
+            cargoToEdit,
             {withCredentials: true})
             .toPromise();
 
+        console.log(response);
+
+        //If there is flight
+        if (this.assignedFlightId) {
+            await this.assignCargoToFlight(this.cargo.id, this.assignedFlightId);
+        }
+
         //Refresh Data Table
-        this.fetchCargoList();
+        await this.fetchCargoList();
+        this.assignedFlightId = null;
+        this.loading = false;
     }
 
     async deleteCargo() {
+        this.loading = true;
         await this.http.delete(
             `${this.service.ENDPOINT}/blockchain/user/${this.authService.admin.id}/api/org.airline.airChain.Cargo/${this.cargo.id}`,
             {withCredentials: true})
             .toPromise();
 
         //Refresh Data Table
-        this.fetchCargoList();
+        await this.fetchCargoList();
+        this.loading = false;
     }
 
+    private async assignCargoToFlight(cargoId: string, flightId: string) {
+        await this.http.post(
+            `${this.service.ENDPOINT}/blockchain/user/${this.authService.admin.id}/api/org.airline.airChain.AssignCargoToFlight`,
+            {
+                cargo: `${this.blockChainService.CARGO}#${cargoId}`,
+                flight: `${this.blockChainService.FLIGHT}#${flightId}`
+            },
+            {withCredentials: true}
+        ).toPromise();
+    }
 
     async request(element) {
         this.cargo = element;
@@ -191,21 +212,21 @@ export class CargoComponent implements AfterViewInit {
         flightList = flightList.map((flight) => {
             //Remove Cabin Crew NameSpace
             if (flight.cabinCrew) {
-                flight.cabinCrew = flight.cabinCrew.replace(this.blockChainService.AIRLINE_EMPLOYEE, "");
+                flight.cabinCrew = flight.cabinCrew.replace(`${this.blockChainService.AIRLINE_EMPLOYEE}#`, "");
             }
 
             //Remove GHA Company Namespace
             if (flight.deliverCompany) {
-                flight.deliverCompany = flight.deliverCompany.replace(this.blockChainService.GHA_COMPANY, "");
+                flight.deliverCompany = flight.deliverCompany.replace(`${this.blockChainService.GHA_COMPANY}#`, "");
             }
 
             if (flight.collectCompany) {
-                flight.collectCompany = flight.collectCompany.replace(this.blockChainService.GHA_COMPANY, "");
+                flight.collectCompany = flight.collectCompany.replace(`${this.blockChainService.GHA_COMPANY}#`, "");
             }
 
             //Remove Aircraft NameSpace
             if (flight.aircraft) {
-                flight.aircraft = flight.aircraft.replace(this.blockChainService.AIRCRAFT, "");
+                flight.aircraft = flight.aircraft.replace(`${this.blockChainService.AIRCRAFT}#`, "");
             }
 
             return flight;
