@@ -99,7 +99,6 @@ asset Service identified by id {
     --> Flight flight
 }
 
-
 enum CARGO_SERVICE_STATUS {
     o PENDING
 	  o ACCEPTED
@@ -177,6 +176,10 @@ transaction HandleFlightServiceRequest {
 transaction ProcessFlightServiceDelivery {
     --> Service service
     o Boolean isApproved
+}
+
+transaction UpdateFlightTakeOff {
+  --> Flight flight
 }
 
 /*

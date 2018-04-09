@@ -52,6 +52,15 @@ rule AllowAirlineProcessFlightServiceDelivery {
   action: ALLOW
 }
 
+rule AllowAirlineUpdateFlightTakeOff {
+  description:  "Allow Airline company update flight progress"
+  participant (p): "org.airline.airChain.AirlineEmployee"
+  operation: CREATE
+  resource (r): "org.airline.airChain.UpdateFlightTakeOff"
+  condition: (p.role == "STAFF" && r.flight.cabinCrew.getIdentifier() == p.getIdentifier() && r.flight.status == "SCHEDULED")
+  action: ALLOW
+}
+
 rule AllowGHAIssueFlightServiceRequest {
   description:  "Allow Authorised GHA to create Flight Service Request"
   participant (p): "org.airline.airChain.GHAEmployee"
@@ -118,6 +127,16 @@ rule AllowAirlineCabinCrewUpdateServiceDelivery {
    operation: UPDATE
    resource (r): "org.airline.airChain.Service"
    transaction (txn): "org.airline.airChain.ProcessFlightServiceDelivery"
+   condition: (r.status == "APPROVED")
+   action: ALLOW
+ }
+
+ rule AllowAirlineCabinCrewUpdateServiceDuringTakeOff {
+   description:  "Allow Airline Cabin Crew Update Service during Takeoff"
+   participant (p): "org.airline.airChain.AirlineEmployee"
+   operation: UPDATE
+   resource (r): "org.airline.airChain.Service"
+   transaction (txn): "org.airline.airChain.UpdateFlightTakeOff"
    condition: (r.status == "APPROVED")
    action: ALLOW
  }

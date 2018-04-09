@@ -544,4 +544,112 @@ describe("Airline Testing", () => {
         let service = await serviceAssetRegistry.get("Service1");
         expect(service.status).to.be.equal("DONE");
     })
+
+    it("Airline Staff update TakeOff", async() => {
+        await useIdentity("AirlineOfficer");
+        //Create Aircraft
+        const addAircraftTransaction = factory.newTransaction(namespace, "AddAircraft");
+        addAircraftTransaction.id = "SQ123";
+        addAircraftTransaction.model = "QWE";
+        addAircraftTransaction.passengerCapacity = 12;
+        addAircraftTransaction.cargoCapacity = 12.2;
+        await businessNetworkConnection.submitTransaction(addAircraftTransaction);
+
+        //Create Flight
+        const addFlightTransaction = factory.newTransaction(namespace, "AddFlight");
+        addFlightTransaction.id = "Flight1";
+        addFlightTransaction.origin = "Singapore";
+        addFlightTransaction.destination = "Tianjin";
+        addFlightTransaction.flightNumber = "TZ189";
+        addFlightTransaction.departureTime = new Date();
+        addFlightTransaction.paxCount = 12;
+        addFlightTransaction.aircraft = factory.newRelationship(namespace, "Aircraft", "SQ123");
+        addFlightTransaction.cabinCrew = factory.newRelationship(namespace, airlineParticipant, "AirlineStaff");
+        addFlightTransaction.collectCompany = factory.newRelationship(namespace, ghaCompanyAsset, "GHACompany");
+        addFlightTransaction.deliverCompany = factory.newRelationship(namespace, ghaCompanyAsset, "GHACompany");
+        await businessNetworkConnection.submitTransaction(addFlightTransaction);
+
+        await useIdentity("GHAOfficer");
+        //Assign Service to Flight
+        let addServiceTransaction = factory.newTransaction(namespace, "IssueFlightServiceRequest");
+        addServiceTransaction.id = "Service1";
+        addServiceTransaction.description = "Test Service";
+        addServiceTransaction.type = "FOOD";
+        addServiceTransaction.flight = factory.newRelationship(namespace, airlineFlightAsset, "Flight1");
+        await businessNetworkConnection.submitTransaction(addServiceTransaction);
+
+        addServiceTransaction = factory.newTransaction(namespace, "IssueFlightServiceRequest");
+        addServiceTransaction.id = "Service2";
+        addServiceTransaction.description = "Test Service";
+        addServiceTransaction.type = "UTILITY";
+        addServiceTransaction.flight = factory.newRelationship(namespace, airlineFlightAsset, "Flight1");
+        await businessNetworkConnection.submitTransaction(addServiceTransaction);
+
+        addServiceTransaction = factory.newTransaction(namespace, "IssueFlightServiceRequest");
+        addServiceTransaction.id = "Service3";
+        addServiceTransaction.description = "Test Service";
+        addServiceTransaction.type = "UTILITY";
+        addServiceTransaction.flight = factory.newRelationship(namespace, airlineFlightAsset, "Flight1");
+        await businessNetworkConnection.submitTransaction(addServiceTransaction);
+
+        addServiceTransaction = factory.newTransaction(namespace, "IssueFlightServiceRequest");
+        addServiceTransaction.id = "Service4";
+        addServiceTransaction.description = "Test Service";
+        addServiceTransaction.type = "FOOD";
+        addServiceTransaction.flight = factory.newRelationship(namespace, airlineFlightAsset, "Flight1");
+        await businessNetworkConnection.submitTransaction(addServiceTransaction);
+
+        await useIdentity("AirlineOfficer");
+        //Accept only 2 services
+        let handleFlightServiceTransaction = factory.newTransaction(namespace, "HandleFlightServiceRequest");
+        handleFlightServiceTransaction.service = factory.newRelationship(namespace, ghaServiceAsset, "Service1");
+        handleFlightServiceTransaction.isApproved = true;
+        await businessNetworkConnection.submitTransaction(handleFlightServiceTransaction);
+
+        handleFlightServiceTransaction = factory.newTransaction(namespace, "HandleFlightServiceRequest");
+        handleFlightServiceTransaction.service = factory.newRelationship(namespace, ghaServiceAsset, "Service2");
+        handleFlightServiceTransaction.isApproved = true;
+        await businessNetworkConnection.submitTransaction(handleFlightServiceTransaction);
+
+        //Reject 1 service
+        handleFlightServiceTransaction = factory.newTransaction(namespace, "HandleFlightServiceRequest");
+        handleFlightServiceTransaction.service = factory.newRelationship(namespace, ghaServiceAsset, "Service3");
+        handleFlightServiceTransaction.isApproved = false;
+        await businessNetworkConnection.submitTransaction(handleFlightServiceTransaction);
+
+        await useIdentity("AirlineStaff");
+        //Confirm only one service
+        let confirmServiceDeliveryTransaction = factory.newTransaction(namespace, "ProcessFlightServiceDelivery");
+        confirmServiceDeliveryTransaction.service = factory.newRelationship(namespace, ghaServiceAsset, "Service1");
+        confirmServiceDeliveryTransaction.isApproved = true;
+        await businessNetworkConnection.submitTransaction(confirmServiceDeliveryTransaction);
+
+        //Update Flight TakeOff
+        let updateFlightTakeOffTransaction = factory.newTransaction(namespace, "UpdateFlightTakeOff");
+        updateFlightTakeOffTransaction.flight = factory.newRelationship(namespace, airlineFlightAsset, "Flight1");
+        await businessNetworkConnection.submitTransaction(updateFlightTakeOffTransaction);
+
+        const serviceAssetRegistry = await businessNetworkConnection.getAssetRegistry(`${namespace}.${ghaServiceAsset}`);
+        //Check Service 1 
+        let service1 = await serviceAssetRegistry.get("Service1");
+        expect(service1.status).to.be.equal("DONE");
+
+        //Check Service 2 
+        let service2 = await serviceAssetRegistry.get("Service2");
+        expect(service2.status).to.be.equal("NOT_DONE");
+
+        //Check Service 3 
+        let service3 = await serviceAssetRegistry.get("Service3");
+        expect(service3.status).to.be.equal("REJECTED");
+
+        //Check Service 4 
+        let service4 = await serviceAssetRegistry.get("Service4");
+        expect(service4.status).to.be.equal("PENDING");
+
+        //Check Flight status
+        const flightAssetRegistry = await businessNetworkConnection.getAssetRegistry(`${namespace}.${airlineFlightAsset}`);
+        let flight = await flightAssetRegistry.get("Flight1");
+
+        expect(flight.status).to.be.equal("DEPARTED");
+    })
 })

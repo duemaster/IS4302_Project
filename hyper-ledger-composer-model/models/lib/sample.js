@@ -121,6 +121,37 @@ function ProcessFlightServiceDelivery(tx) {
     return saveService(service);
 }
 
+/**
+ * Sample transaction processor function.
+ * @param {org.airline.airChain.UpdateFlightTakeOff} tx The sample transaction instance.
+ * @transaction
+ */
+function UpdateFlightTakeOff(tx) {
+    var flight = tx.flight;
+
+    flight.status = "DEPARTED";
+    //Update Services to "NOT_DONE" for those not approved
+    if (!flight.services) {
+        flight.services = [];
+    }
+
+    var servicePromiseArr =
+        flight.services
+        .filter(function(service) {
+            return service.status === "APPROVED";
+        })
+        .map(function(service) {
+            service.status = "NOT_DONE";
+            return saveService(service);
+        });
+
+    //Update Services and Flight
+    return saveFlight(flight)
+        .then(function() {
+            return Promise.all(servicePromiseArr);
+        });
+}
+
 
 /*
  ** GHA Company Action
