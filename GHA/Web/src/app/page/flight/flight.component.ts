@@ -126,13 +126,21 @@ export class FlightComponent implements AfterViewInit {
 
     async deleteService(service) {
 
-        service.status = 'CANCELLED';
-        await this.http.put(
+        let serviceToDelete = Object.assign({}, service);
+        delete serviceToDelete["id"];
+        serviceToDelete.status = 'CANCELLED';
+        this.loading = true;
+
+        console.log(serviceToDelete);
+
+        let response = await this.http.put(
             `${this.service.ENDPOINT}/blockchain/user/${this.authService.admin.id}/api/org.airline.airChain.Service/${service.id}`,
             {withCredentials: true},
-            service
+            serviceToDelete
         ).toPromise();
-        this.serviceList.splice(this.serviceList.indexOf(service), 1);
+        console.log(response);
+
+        this.serviceList = await this.fetchServiceListForFlight(this.flight.id);
         this.loading = false;
 
     }

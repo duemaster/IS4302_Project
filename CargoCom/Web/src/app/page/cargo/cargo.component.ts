@@ -1,4 +1,4 @@
-import {Component, OnInit, ViewChild} from '@angular/core';
+import {AfterViewInit, Component, ViewChild} from '@angular/core';
 import {MatTableDataSource, MatPaginator} from '@angular/material';
 import {BlockChainService} from "../../service/blockchain/block-chain.service";
 import {AuthService} from "../../service/auth.service";
@@ -10,7 +10,17 @@ import {HttpClient} from "@angular/common/http";
     templateUrl: './cargo.component.html',
     styleUrls: ['./cargo.component.scss']
 })
-export class CargoComponent implements OnInit {
+export class CargoComponent implements AfterViewInit {
+
+    @ViewChild(MatPaginator) paginator: MatPaginator;
+
+    async ngAfterViewInit() {
+        //this.loading = true;
+        this.dataSource.paginator = this.paginator;
+        await this.fetchCargoList();
+        await this.fetchFlightList();
+        //this.loading = false;
+    }
 
     constructor(private http: HttpClient,
                 private service: SettingService,
@@ -18,37 +28,16 @@ export class CargoComponent implements OnInit {
                 public blockChainService: BlockChainService) {
     }
 
-    ngOnInit() {
-    }
-
-    displayedColumns = ['CargoNo', 'ItemType', 'Weight', 'Status', 'Option'];
+    displayedColumns = ['ItemType', 'Weight', 'Status', 'Flight', 'Option'];
     dataSource = new MatTableDataSource([]);
 
-    cargo = {
-        id: '',
-        description: '',
-        weight: 0,
-        status: 'PENDING',
-        company: 'Cargo1',
-        flight: '',
-        request: ''
-    };
+    cargo: any;
 
     isCreate = false;
 
-    flight = {
-        departureTime: new Date(),
-        id: '',
-        flightNumber: '',
-        origin: '',
-        destination: '',
-        paxCount: 0,
-        status: '',
-        aircraft: {},
-        collectCompany: {},
-        deliverCompany: {}
-    };
 
+    assignedFlightId: any;
+    flight: any;
     flightList: any;
 
     availFlight = [
@@ -65,14 +54,6 @@ export class CargoComponent implements OnInit {
         this.dataSource.filter = filterValue;
     }
 
-    @ViewChild(MatPaginator) paginator: MatPaginator;
-
-    ngAfterViewInit() {
-        this.dataSource.paginator = this.paginator;
-        this.fetchCargoList();
-        this.fetchFlightList();
-    }
-
     update(element) {
         this.isCreate = false;
         this.cargo = element;
@@ -82,21 +63,70 @@ export class CargoComponent implements OnInit {
         this.flight = this.flightList.filter((flight) => {
             return flightId === flight.id;
         })[0];
-
     }
 
     create() {
         this.isCreate = true;
-        this.cargo = {
-            id: `${this.blockChainService.CARGO}#${(new Date()).getTime()}`,
-            description: '',
-            weight: 0,
-            status: 'PENDING',
-            company: 'Cargo1',
-            flight: '',
-            request: ''
-        };
+        this.cargo = {};
     }
+
+    processCargo() {
+        if (this.isCreate)
+            this.addCargo();
+        else
+            this.editCargo();
+    }
+
+    async addCargo() {
+
+        this.cargo.id = new Date().getTime().toString();
+
+        //Create Cargo
+        await this.http.post(
+            `${this.service.ENDPOINT}/blockchain/user/${this.authService.admin.id}/api/org.airline.airChain.AddCargo`,
+            this.cargo,
+            {withCredentials: true})
+            .toPromise();
+
+        //If there is flight
+        if (this.assignedFlightId) {
+            await this.http.post(
+                `${this.service.ENDPOINT}/blockchain/user/${this.authService.admin.id}/api/org.airline.airChain.AssignCargoToFlight`,
+                {
+                    cargo: `${this.blockChainService.CARGO}#${this.cargo.id}`,
+                    flight: `${this.blockChainService.FLIGHT}#${this.assignedFlightId}`
+                },
+                {withCredentials: true}
+            ).toPromise();
+        }
+
+        //Refresh Data Table
+        await this.fetchCargoList();
+        this.loading = false;
+
+    }
+
+    async editCargo() {
+        await this.http.put(
+            `${this.service.ENDPOINT}/blockchain/user/${this.authService.admin.id}/api/org.airline.airChain.Cargo/${this.cargo.id}`,
+            this.cargo,
+            {withCredentials: true})
+            .toPromise();
+
+        //Refresh Data Table
+        this.fetchCargoList();
+    }
+
+    async deleteCargo() {
+        await this.http.delete(
+            `${this.service.ENDPOINT}/blockchain/user/${this.authService.admin.id}/api/org.airline.airChain.Cargo/${this.cargo.id}`,
+            {withCredentials: true})
+            .toPromise();
+
+        //Refresh Data Table
+        this.fetchCargoList();
+    }
+
 
     async request(element) {
         this.cargo = element;
@@ -124,38 +154,6 @@ export class CargoComponent implements OnInit {
         }
     }
 
-    processCargo() {
-        if (this.isCreate)
-            this.addCargo();
-        else
-            this.editCargo();
-    }
-
-    async addCargo() {
-        // console.log(this.availFlight);
-        // this.loading = true;
-        // console.log(this.cargo);
-        // let flightId = `${this.blockChainService.FLIGHT}#${this.cargo.flight}`;
-        // console.log(flightId);
-        // this.cargo.flight = flightId;
-        console.log(this.cargo);
-        await this.http.post(
-            `${this.service.ENDPOINT}/blockchain/user/${this.authService.admin.id}/api/org.airline.airChain.Cargo`,
-            this.cargo,
-            {withCredentials: true})
-            .toPromise();
-
-        // await this.http.post(
-        //     `${this.service.ENDPOINT}/blockchain/user/${this.authService.admin.id}/api/org.airline.airChain.AssignCargoToFlight`,
-        //     {flight:flightId, cargo:this.cargo.id},
-        //     {withCredentials: true}).toPromise();
-
-        //Refresh Data Table
-        this.fetchCargoList();
-        this.loading = false;
-
-    }
-
     async addRequest() {
         await this.http.post(
             `${this.service.ENDPOINT}/blockchain/user/${this.authService.admin.id}/api/org.airline.airChain.CargoRequest`,
@@ -163,18 +161,6 @@ export class CargoComponent implements OnInit {
             {withCredentials: true})
             .toPromise();
 
-    }
-
-
-    async editCargo() {
-        await this.http.put(
-            `${this.service.ENDPOINT}/blockchain/user/${this.authService.admin.id}/api/org.airline.airChain.Cargo/${this.cargo.id}`,
-            this.cargo,
-            {withCredentials: true})
-            .toPromise();
-
-        //Refresh Data Table
-        this.fetchCargoList();
     }
 
     async editRequest() {
@@ -194,16 +180,6 @@ export class CargoComponent implements OnInit {
             .toPromise();
         this.cargo.request = '';
         this.editCargo();
-    }
-
-    async deleteCargo() {
-        await this.http.delete(
-            `${this.service.ENDPOINT}/blockchain/user/${this.authService.admin.id}/api/org.airline.airChain.Cargo/${this.cargo.id}`,
-            {withCredentials: true})
-            .toPromise();
-
-        //Refresh Data Table
-        this.fetchCargoList();
     }
 
     async fetchFlightList() {
@@ -256,6 +232,14 @@ export class CargoComponent implements OnInit {
             `${this.service.ENDPOINT}/blockchain/user/${this.authService.admin.id}/api/org.airline.airChain.Cargo`,
             {withCredentials: true}
         ).toPromise();
+
+        //Remove namespace
+        cargoList = cargoList.map((cargo) => {
+            if (cargo.flight)
+                cargo.flight = cargo.flight.replace(`${this.blockChainService.FLIGHT}#`, "");
+            return cargo;
+        });
+
         this.loadDataInTable(cargoList)
 
     }

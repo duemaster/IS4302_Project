@@ -46,12 +46,12 @@
                         </ng-container>
 
                         <!-- Flight Column -->
-                        <ng-container matColumnDef="CargoNo">
+                        <ng-container matColumnDef="Flight">
                             <mat-header-cell *matHeaderCellDef> Flight</mat-header-cell>
                             <mat-cell *matCellDef="let element">
-                                <a data-toggle="modal" data-target="#flightModal" (click)="viewFlight(element.flight)"
-                                   *ngIf="element.flight">
-                                    <span>View</span>
+                                <a *ngIf="element.flight" data-toggle="modal" data-target="#flightModal"
+                                   (click)="viewFlight(element.flight)">
+                                    View
                                 </a>
                             </mat-cell>
                         </ng-container>
@@ -95,7 +95,7 @@
         </div>
     </div>
     <!-- BEGIN CARGO MODAL MARKUP -->
-    <div class="modal fade" id="formModal" tabindex="-1" role="dialog" aria-labelledby="formModalLabel"
+    <div *ngIf="cargo" class="modal fade" id="formModal" tabindex="-1" role="dialog" aria-labelledby="formModalLabel"
          aria-hidden="true">
         <div class="modal-dialog">
             <div class="modal-content">
@@ -129,7 +129,8 @@
                                 <label for="status" class="control-label">Flight</label>
                             </div>
                             <div class="col-sm-9">
-                                <select id="status" name="status" class="form-control" [(ngModel)]="cargo.flight">
+                                <select id="status" name="status" class="form-control" [(ngModel)]="assignedFlightId">
+                                    <option value="Optional"></option>
                                     <option *ngFor="let flight of availFlight" [ngValue]="flight.id">
                                         {{flight.flightNumber}} {{flight.departureTime|date}}
                                     </option>
@@ -172,7 +173,8 @@
     <!-- END SIMPLE MODAL MARKUP -->
 
     <!-- BEGIN FLIGHT MODAL MARKUP -->
-    <div class="modal fade" id="flightModal" tabindex="-1" role="dialog" aria-labelledby="flightModalLabel"
+    <div *ngIf="flight" class="modal fade" id="flightModal" tabindex="-1" role="dialog"
+         aria-labelledby="flightModalLabel"
          aria-hidden="true">
         <div class="modal-dialog">
             <div class="modal-content">
