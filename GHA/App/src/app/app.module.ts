@@ -10,6 +10,11 @@ import { TabsPage } from '../pages/tabs/tabs';
 import { StatusBar } from '@ionic-native/status-bar';
 import { SplashScreen } from '@ionic-native/splash-screen';
 import {LoginPage} from "../pages/login/login";
+import { SettingsProvider } from '../providers/settings/settings';
+import { UserProvider } from '../providers/user/user';
+import { UtilityProvider } from '../providers/utility/utility';
+import {HttpClientModule} from "@angular/common/http";
+import {BarcodeScanner} from "@ionic-native/barcode-scanner";
 
 @NgModule({
   declarations: [
@@ -21,6 +26,7 @@ import {LoginPage} from "../pages/login/login";
   ],
   imports: [
     BrowserModule,
+    HttpClientModule,
     IonicModule.forRoot(MyApp)
   ],
   bootstrap: [IonicApp],
@@ -34,7 +40,11 @@ import {LoginPage} from "../pages/login/login";
   providers: [
     StatusBar,
     SplashScreen,
-    {provide: ErrorHandler, useClass: IonicErrorHandler}
+    {provide: ErrorHandler, useClass: IonicErrorHandler},
+    SettingsProvider,
+    UserProvider,
+    UtilityProvider,
+    BarcodeScanner
   ]
 })
 export class AppModule {}

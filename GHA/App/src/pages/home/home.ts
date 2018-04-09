@@ -1,8 +1,9 @@
 import { Component } from '@angular/core';
 import { NavController } from 'ionic-angular';
-import {AboutPage} from "../serviceDetail/serviceDetail";
+import {ServiceDetailPage} from "../serviceDetail/serviceDetail";
 import {LoginPage} from "../login/login";
 import {BarcodeScanner} from "@ionic-native/barcode-scanner";
+import {UserProvider} from "../../providers/user/user";
 
 @Component({
   selector: 'page-home',
@@ -10,16 +11,17 @@ import {BarcodeScanner} from "@ionic-native/barcode-scanner";
 })
 export class HomePage {
 
-  constructor(public navCtrl: NavController,private barcodeScanner: BarcodeScanner) {
+  constructor(public navCtrl: NavController,private barcodeScanner: BarcodeScanner,
+              public userProvider:UserProvider) {
 
   }
 
   scan(){
-    this.navCtrl.push(AboutPage);
+    this.navCtrl.push(ServiceDetailPage);
   }
 
   logout(){
-    this.navCtrl.setRoot(LoginPage);
+    this.userProvider.logout(this.navCtrl);
   }
 
   openScanner(){
