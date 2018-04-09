@@ -8,8 +8,13 @@ export class AuthService {
 
     admin: any;
 
-    constructor(private http: HttpClient,  public setting: SettingService) {
-        this.admin = localStorage.getItem('admin');
+    constructor(private http: HttpClient, public setting: SettingService) {
+
+        let storageAdmin = localStorage.getItem('admin');
+        if (storageAdmin != null) {
+            this.admin = JSON.parse(localStorage.getItem('admin'));
+        }
+
         console.log(this.admin);
     }
 

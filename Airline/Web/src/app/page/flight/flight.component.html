@@ -1,3 +1,4 @@
+<ngx-loading [show]="loading"></ngx-loading>
 <section>
     <div class="section-body contain-lg">
         <!-- BEGIN INTRO -->
@@ -98,14 +99,13 @@
         </div>
     </div>
     <!-- BEGIN FLIGHT MODAL MARKUP -->
-    <div class="modal fade" id="formModal" tabindex="-1" role="dialog" aria-labelledby="formModalLabel"
+    <div *ngIf="flight" class="modal fade" id="formModal" tabindex="-1" role="dialog" aria-labelledby="formModalLabel"
          aria-hidden="true">
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">
                     <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-                    <h4 class="modal-title" id="formModalLabel" *ngIf="isCreate">Add Flight</h4>
-                    <h4 class="modal-title" id="formModalLabel1" *ngIf="!isCreate">Edit Flight</h4>
+                    <h4 class="modal-title" id="formModalLabel">{{isCreate ? "Add Flight" : "Edit Flight"}}</h4>
                 </div>
                 <form class="form-horizontal" role="form">
                     <div class="modal-body">
@@ -120,12 +120,11 @@
                             <div class="col-sm-2">
                                 <label for="departDate" class="control-label">Depart Date</label>
                             </div>
-                            <div class="col-sm-4" class="departDate">
-                                <ngx-datetime-picker id="departDate" [(selectedDateTime)]="dateTimeExample"></ngx-datetime-picker>
-                                <!--<ngx-datetime-picker id="departDate"-->
-                                <!--[(selectedDateTime)]="flight.departureTime">-->
-                                <!---->
-                                <!--</ngx-datetime-picker>-->
+                            <div class="col-sm-4 departDate">
+                                <ngx-datetime-picker id="departDate"
+                                                     [(selectedDateTime)]="dateTimeExample">
+
+                                </ngx-datetime-picker>
                             </div>
                         </div>
                         <div class="form-group">
@@ -209,7 +208,7 @@
     <!-- END FLIGHT MODAL MARKUP -->
 
     <!-- BEGIN CARGO MODAL MARKUP -->
-    <div class="modal fade" id="requestModal" tabindex="-1" role="dialog" aria-labelledby="formModalLabel"
+    <div class="modal fade" id="cargoModal" tabindex="-1" role="dialog" aria-labelledby="formModalLabel"
          aria-hidden="true">
         <div class="modal-dialog">
             <div class="modal-content">
@@ -230,7 +229,7 @@
                                 </tr>
                                 </thead>
                                 <tbody>
-                                <tr *ngFor="let item of cargo">
+                                <tr *ngFor="let item of cargoList">
                                     <td>{{item.id}}</td>
                                     <td>{{item.weight}}</td>
                                     <td>{{item.company.id}}</td>
@@ -241,7 +240,7 @@
                         </div><!--end .card-body -->
                     </div><!--end .card -->
                     <div class="modal-footer">
-                        <button type="button" class="btn btn-primary">Okay</button>
+                        <button type="button" class="btn btn-primary" data-dismiss="modal">Okay</button>
                     </div>
                 </form>
             </div><!-- /.modal-content -->
@@ -264,6 +263,7 @@
                             <thead>
                             <tr>
                                 <th>Item</th>
+                                <th>Type</th>
                                 <th>GHA</th>
                                 <th>Status</th>
                                 <th>Action</th>
@@ -273,10 +273,11 @@
                             <tr *ngFor="let item of serviceList">
                                 <td>{{item.description}}</td>
                                 <td>{{item.type}}</td>
-                                <td>{{item.company.id}}</td>
+                                <td>{{item.company}}</td>
                                 <td>{{item.status}}</td>
                                 <td>
-                                    <button type="button" class="btn btn-primary" (click)="acceptService(item)">Accept
+                                    <button type="button" class="btn btn-primary" *ngIf="item.status==='PENDING'"
+                                            (click)="acceptService(item)">Accept
                                     </button>
                                 </td>
                             </tr>
@@ -292,7 +293,6 @@
         </div><!-- /.modal-dialog -->
     </div><!-- /.modal -->
     <!-- END SERVICE MODAL MARKUP -->
-
 
     <!-- BEGIN SIMPLE MODAL MARKUP -->
     <div class="modal fade" id="deleteModal" tabindex="-1" role="dialog" aria-labelledby="simpleModalLabel"

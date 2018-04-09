@@ -1,5 +1,7 @@
 package util;
 
+import com.mashape.unirest.http.Unirest;
+import com.mashape.unirest.http.exceptions.UnirestException;
 import models.User;
 
 import java.io.BufferedReader;
@@ -152,6 +154,25 @@ public class VagrantUtil {
         } catch (IOException e) {
             System.out.println("exception happened - here's what I know: ");
             e.printStackTrace();
+        }
+
+        //Ensure Server is up before returning
+        boolean isServerUp = false;
+        while(!isServerUp) {
+            try {
+                Unirest.get(
+                     "http://localhost:" + user.getPortNumber()
+                ).asString();
+
+                isServerUp = true;
+            } catch (UnirestException e) {
+                //.printStackTrace();
+                try {
+                    Thread.sleep(500);
+                } catch (InterruptedException e1) {
+                    e1.printStackTrace();
+                }
+            }
         }
 
         return processId;

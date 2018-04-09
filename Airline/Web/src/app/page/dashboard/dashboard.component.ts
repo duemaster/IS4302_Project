@@ -11,6 +11,7 @@ import {AuthService} from "../../service/auth.service";
 })
 export class DashboardComponent implements AfterViewInit {
 
+    public loading = false;
     displayedColumns = ['Staff Id', 'Role', 'Name', 'Option'];
     dataSource = new MatTableDataSource([]);
     staff: any = {
@@ -56,6 +57,7 @@ export class DashboardComponent implements AfterViewInit {
     }
 
     async addStaff() {
+        this.loading = true;
         await this.http.post(
             `${this.service.ENDPOINT}/user/${this.authService.admin.id}/create`,
             this.staff,
@@ -64,12 +66,11 @@ export class DashboardComponent implements AfterViewInit {
 
         //Refresh Data Table
         this.fetchStaffList();
+        this.loading = false;
     }
 
     async editStaff() {
-
-        console.log(this.staff);
-
+        this.loading = true;
         await this.http.post(
             `${this.service.ENDPOINT}/user/${this.authService.admin.id}/update`,
             this.staff,
@@ -78,9 +79,11 @@ export class DashboardComponent implements AfterViewInit {
 
         //Refresh Data Table
         this.fetchStaffList();
+        this.loading = false;
     }
 
     async deleteStaff() {
+        this.loading = true;
         await this.http.post(
             `${this.service.ENDPOINT}/user/${this.authService.admin.id}/delete`,
             this.staff,
@@ -89,6 +92,7 @@ export class DashboardComponent implements AfterViewInit {
 
         //Refresh Data Table
         this.fetchStaffList();
+        this.loading = false;
     }
 
     update(element) {

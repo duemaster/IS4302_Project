@@ -1,296 +1,333 @@
+<ngx-loading [show]="loading"></ngx-loading>
 <section>
-  <div class="section-body contain-lg">
-    <!-- BEGIN INTRO -->
-    <div class="row">
-      <div class="col-lg-12">
-        <h1 class="text-primary">Cargo Management</h1>
-      </div>
+    <div class="section-body contain-lg">
+        <!-- BEGIN INTRO -->
+        <div class="row">
+            <div class="col-lg-12">
+                <h1 class="text-primary">Cargo Management</h1>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-lg-12">
+
+                <div class="table-container mat-elevation-z8">
+                    <div class="table-header">
+                        <div class="row">
+                            <div class="col-lg-7 col-md-7 col-sm-12">
+                                <h3 style="color: grey">Cargo List</h3>
+                            </div>
+                            <div class="col-lg-5 col-md-5 col-sm-12">
+                                <mat-form-field>
+                                    <input matInput (keyup)="applyFilter($event.target.value)" placeholder="Filter">
+                                </mat-form-field>
+                            </div>
+                        </div>
+                    </div>
+
+                    <mat-table #table [dataSource]="dataSource">
+
+
+                        <!-- Model Column -->
+                        <ng-container matColumnDef="ItemType">
+                            <mat-header-cell *matHeaderCellDef> Item</mat-header-cell>
+                            <mat-cell *matCellDef="let element"> {{element.description}}</mat-cell>
+                        </ng-container>
+
+                        <!-- Cargo Capacity Column -->
+                        <ng-container matColumnDef="Weight">
+                            <mat-header-cell *matHeaderCellDef> Weight (in ton)</mat-header-cell>
+                            <mat-cell *matCellDef="let element"> {{element.weight}}</mat-cell>
+                        </ng-container>
+
+                        <!-- Cargo Capacity Column -->
+                        <ng-container matColumnDef="Status">
+                            <mat-header-cell *matHeaderCellDef> Status</mat-header-cell>
+                            <mat-cell *matCellDef="let element"> {{element.status}}</mat-cell>
+                        </ng-container>
+
+                        <!-- Flight Column -->
+                        <ng-container matColumnDef="CargoNo">
+                            <mat-header-cell *matHeaderCellDef> Flight</mat-header-cell>
+                            <mat-cell *matCellDef="let element">
+                                <a data-toggle="modal" data-target="#flightModal" (click)="viewFlight(element.flight)"
+                                   *ngIf="element.flight">
+                                    <span>View</span>
+                                </a>
+                            </mat-cell>
+                        </ng-container>
+
+                        <ng-container matColumnDef="Option">
+                            <mat-header-cell *matHeaderCellDef> Option</mat-header-cell>
+                            <mat-cell *matCellDef="let element">
+                                <button class="btn btn-sm btn-default" data-toggle="modal" data-target="#formModal"
+                                        (click)="update(element)">
+                                    <span class="glyphicon glyphicon-edit"></span>
+                                </button>
+                                <button class="btn btn-sm btn-default" data-toggle="modal" data-target="#formModal"
+                                        (click)="request(element)">
+                                    <span class="glyphicon glyphicon-send"></span>
+                                </button>
+                                <button class="btn btn-sm btn-default" data-toggle="modal" data-target="#deleteModal"
+                                        (click)="update(element)">
+                                    <span class="glyphicon glyphicon-trash"></span>
+                                </button>
+                            </mat-cell>
+                        </ng-container>
+
+
+                        <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
+                        <mat-row *matRowDef="let row; columns: displayedColumns;"></mat-row>
+                    </mat-table>
+                    <mat-paginator #paginator
+                                   [pageSize]="10"
+                                   [pageSizeOptions]="[5, 10, 20]"
+                                   [showFirstLastButtons]="true">
+                    </mat-paginator>
+                </div>
+                <div class="generateBtn">
+
+                    <button type="button" class="btn ink-reaction btn-raised btn-primary" data-toggle="modal"
+                            data-target="#formModal" (click)="create()">
+                        Add Cargo
+                    </button>
+                </div>
+            </div>
+        </div>
     </div>
-    <div class="row">
-      <div class="col-lg-12">
+    <!-- BEGIN CARGO MODAL MARKUP -->
+    <div class="modal fade" id="formModal" tabindex="-1" role="dialog" aria-labelledby="formModalLabel"
+         aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                    <h4 class="modal-title" id="formModalLabel" *ngIf="isCreate">Add Cargo</h4>
+                    <h4 class="modal-title" id="formModalLabel1" *ngIf="!isCreate">Edit Cargo</h4>
+                </div>
+                <form class="form-horizontal" role="form">
+                    <div class="modal-body">
+                        <div class="form-group">
+                            <div class="col-sm-3">
+                                <label for="itemType" class="control-label">Item</label>
+                            </div>
+                            <div class="col-sm-9">
+                                <input type="text" class="form-control" name="itemType" id="itemType"
+                                       [(ngModel)]='cargo.description' placeholder="Item Type">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <div class="col-sm-3">
+                                <label for="weight" class="control-label">Weight</label>
+                            </div>
+                            <div class="col-sm-9">
+                                <input type="text" class="form-control" name="weight" id="weight"
+                                       [(ngModel)]='cargo.weight' placeholder="Weight (in ton)">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <div class="col-sm-3">
+                                <label for="status" class="control-label">Flight</label>
+                            </div>
+                            <div class="col-sm-9">
+                                <select id="status" name="status" class="form-control" [(ngModel)]="cargo.flight">
+                                    <option *ngFor="let flight of availFlight" [ngValue]="flight.id">
+                                        {{flight.flightNumber}} {{flight.departureTime|date}}
+                                    </option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+                        <button type="button" class="btn btn-primary" data-dismiss="modal" (click)="processCargo()">
+                            Done
+                        </button>
+                    </div>
+                </form>
+            </div><!-- /.modal-content -->
+        </div><!-- /.modal-dialog -->
+    </div><!-- /.modal -->
+    <!-- END CARGO MODAL MARKUP -->
 
-        <div class="table-container mat-elevation-z8">
-          <div class="table-header">
-            <div class="row">
-              <div class="col-lg-7 col-md-7 col-sm-12">
-                <h3 style="color: grey">Cargo List</h3>
-              </div>
-              <div class="col-lg-5 col-md-5 col-sm-12">
-                <mat-form-field>
-                  <input matInput (keyup)="applyFilter($event.target.value)" placeholder="Filter">
-                </mat-form-field>
-              </div>
-            </div>
-          </div>
+    <!-- BEGIN SIMPLE MODAL MARKUP -->
+    <div class="modal fade" id="deleteModal" tabindex="-1" role="dialog" aria-labelledby="simpleModalLabel"
+         aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                    <h4 class="modal-title" id="simpleModalLabel">Deleting Cargo</h4>
+                </div>
+                <div class="modal-body">
+                    <p>Do you want to delete this cargo?</p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-primary" data-dismiss="modal" (click)="deleteCargo()">Yes
+                    </button>
+                </div>
+            </div><!-- /.modal-content -->
+        </div><!-- /.modal-dialog -->
+    </div><!-- /.modal -->
+    <!-- END SIMPLE MODAL MARKUP -->
 
-          <mat-table #table [dataSource]="dataSource">
+    <!-- BEGIN FLIGHT MODAL MARKUP -->
+    <div class="modal fade" id="flightModal" tabindex="-1" role="dialog" aria-labelledby="flightModalLabel"
+         aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                    <h4 class="modal-title" id="formModalLabel2">View Flight Details</h4>
+                </div>
+                <form class="form-horizontal" role="form">
+                    <div class="modal-body">
+                        <div class="form-group">
+                            <div class="col-sm-2">
+                                <label for="flightNo" class="control-label">Flight No.</label>
+                            </div>
+                            <div class="col-sm-4">
+                                <input type="text" name="flightNo" id="flightNo" class="form-control"
+                                       [(ngModel)]='flight.flightNumber' placeholder="Flight No." [disabled]="true">
+                            </div>
+                            <div class="col-sm-2">
+                                <label for="departDate" class="control-label">Depart Date</label>
+                            </div>
+                            <div class="col-sm-4">
+                                <span id="departDate">{{flight.departureTime | date}}</span>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <div class="col-sm-2">
+                                <label for="depart" class="control-label">Departure</label>
+                            </div>
+                            <div class="col-sm-4">
+                                <input type="text" name="depart" id="depart" class="form-control"
+                                       [(ngModel)]='flight.origin' placeholder="Departure" [disabled]="true">
+                            </div>
+                            <div class="col-sm-2">
+                                <label for="landing" class="control-label">Landing</label>
+                            </div>
+                            <div class="col-sm-4">
+                                <input type="text" name="landing" id="landing" class="form-control"
+                                       [(ngModel)]='flight.destination' placeholder="Landing" [disabled]="true">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <div class="col-sm-5">
+                                <label for="delivery" class="control-label">Deliver Company</label>
+                            </div>
+                            <div class="col-sm-7">
+                                <input type="text" name="ccs" id="delivery" class="form-control"
+                                       [(ngModel)]='flight.deliverCompany' placeholder="Cargo Deliver"
+                                       [disabled]="true">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <div class="col-sm-5">
+                                <label for="collection" class="control-label">Collection Company</label>
+                            </div>
+                            <div class="col-sm-7">
+                                <input type="text" name="ccs" id="collection" class="form-control"
+                                       [(ngModel)]='flight.collectCompany' placeholder="Cargo Collection"
+                                       [disabled]="true">
+                            </div>
+                        </div>
 
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-default" data-dismiss="modal">Okay</button>
+                    </div>
+                </form>
+            </div><!-- /.modal-content -->
+        </div><!-- /.modal-dialog -->
+    </div><!-- /.modal -->
+    <!-- END FLIGHT MODAL MARKUP -->
 
+    <!-- BEGIN REQUEST MODAL MARKUP -->
+    <div class="modal fade" id="requestModal" *ngIf="cargoRequest" tabindex="-1" role="dialog"
+         aria-labelledby="formModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                    <h4 class="modal-title" id="formModalLabel4">Cargo Request</h4>
+                </div>
+                <form class="form-horizontal" role="form">
+                    <div class="modal-body">
+                        <div class="form-group">
+                            <div class="col-sm-3">
+                                <label for="requestItem" class="control-label">Item</label>
+                            </div>
+                            <div class="col-sm-9">
+                                <input type="text" class="form-control" name="requestItem" id="requestItem"
+                                       [(ngModel)]='cargo.description' placeholder="Item Type" [disabled]="true">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <div class="col-sm-3">
+                                <label for="description" class="control-label">Description</label>
+                            </div>
+                            <div class="col-sm-9">
+                                <input type="text" class="form-control" name="description" id="description"
+                                       [(ngModel)]='cargoRequest.description' placeholder="Request Description"
+                                       [disabled]="isPending">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <div class="col-sm-2">
+                                <label for="departure" class="control-label">Departure</label>
+                            </div>
+                            <div class="col-sm-4">
+                                <input type="text" class="form-control" name="departure" id="departure"
+                                       [(ngModel)]='cargoRequest.origin' placeholder="Origin" [disabled]="isPending">
+                            </div>
+                            <div class="col-sm-2">
+                                <label for="destination" class="control-label">Destination</label>
+                            </div>
+                            <div class="col-sm-4">
+                                <input type="text" class="form-control" name="destination" id="destination"
+                                       [(ngModel)]='cargoRequest.destination' placeholder="Destination"
+                                       [disabled]="isPending">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <div class="col-sm-2">
+                                <label for="earlyDepartDate" class="control-label">Early Time</label>
+                            </div>
+                            <div class="col-sm-4">
+                                <ngx-datetime-picker id="earlyDepartDate"
+                                                     [(selectedDateTime)]="cargoRequest.earlyDepartureTime"></ngx-datetime-picker>
+                            </div>
+                            <div class="col-sm-2">
+                                <label for="lateDepartDate" class="control-label">Late Time</label>
+                            </div>
+                            <div class="col-sm-4">
+                                <ngx-datetime-picker id="lateDepartDate"
+                                                     [(selectedDateTime)]="cargoRequest.lateDepartureTime"></ngx-datetime-picker>
+                            </div>
+                        </div>
 
-            <!-- Model Column -->
-            <ng-container matColumnDef="ItemType">
-              <mat-header-cell *matHeaderCellDef> Item  </mat-header-cell>
-              <mat-cell *matCellDef="let element"> {{element.description}} </mat-cell>
-            </ng-container>
-
-            <!-- Cargo Capacity Column -->
-            <ng-container matColumnDef="Weight">
-              <mat-header-cell *matHeaderCellDef> Weight (in ton) </mat-header-cell>
-              <mat-cell *matCellDef="let element"> {{element.weight}} </mat-cell>
-            </ng-container>
-
-            <!-- Cargo Capacity Column -->
-            <ng-container matColumnDef="Status">
-              <mat-header-cell *matHeaderCellDef> Status </mat-header-cell>
-              <mat-cell *matCellDef="let element"> {{element.status}} </mat-cell>
-            </ng-container>
-
-            <!-- Flight Column -->
-            <ng-container matColumnDef="CargoNo">
-              <mat-header-cell *matHeaderCellDef> Flight </mat-header-cell>
-              <mat-cell *matCellDef="let element" >
-                <a data-toggle="modal" data-target="#flightModal" (click)="viewFlight(element.flight)" *ngIf="element.flight">
-                  <span>View</span>
-                </a>
-              </mat-cell>
-            </ng-container>
-
-            <ng-container matColumnDef="Option">
-              <mat-header-cell *matHeaderCellDef> Option</mat-header-cell>
-              <mat-cell *matCellDef="let element">
-                <button class="btn btn-sm btn-default" data-toggle="modal" data-target="#formModal" (click)="update(element)">
-                <span class="glyphicon glyphicon-edit"></span>
-              </button>
-                <button class="btn btn-sm btn-default" data-toggle="modal" data-target="#formModal" (click)="request(element)">
-                  <span class="glyphicon glyphicon-send"></span>
-                </button>
-                <button class="btn btn-sm btn-default" data-toggle="modal" data-target="#deleteModal" (click)="update(element)">
-                  <span class="glyphicon glyphicon-trash"></span>
-                </button>
-              </mat-cell>
-            </ng-container>
-
-
-
-            <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
-            <mat-row *matRowDef="let row; columns: displayedColumns;"></mat-row>
-          </mat-table>
-          <mat-paginator #paginator
-                         [pageSize]="10"
-                         [pageSizeOptions]="[5, 10, 20]"
-                         [showFirstLastButtons]="true">
-          </mat-paginator>
-        </div>
-        <div class="generateBtn">
-
-          <button type="button" class="btn ink-reaction btn-raised btn-primary" data-toggle="modal"
-                  data-target="#formModal" (click)="create()">
-            Add Cargo
-          </button>
-        </div>
-      </div>
-    </div>
-  </div>
-  <!-- BEGIN CARGO MODAL MARKUP -->
-  <div class="modal fade" id="formModal" tabindex="-1" role="dialog" aria-labelledby="formModalLabel" aria-hidden="true">
-    <div class="modal-dialog">
-      <div class="modal-content">
-        <div class="modal-header">
-          <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-          <h4 class="modal-title" id="formModalLabel" *ngIf="isCreate">Add Cargo</h4>
-          <h4 class="modal-title" id="formModalLabel1" *ngIf="!isCreate">Edit Cargo</h4>
-        </div>
-        <form class="form-horizontal" role="form">
-          <div class="modal-body">
-            <div class="form-group">
-              <div class="col-sm-3">
-                <label for="itemType" class="control-label">Item</label>
-              </div>
-              <div class="col-sm-9">
-                <input type="text" class="form-control" name="itemType" id="itemType" [(ngModel)]='cargo.description' placeholder="Item Type">
-              </div>
-            </div>
-            <div class="form-group">
-              <div class="col-sm-2">
-                <label for="weight" class="control-label">Weight</label>
-              </div>
-              <div class="col-sm-4">
-                <input type="text" class="form-control" name="weight" id="weight" [(ngModel)]='cargo.weight' placeholder="Weight (in ton)">
-              </div>
-              <div class="col-sm-2">
-                <label for="status" class="control-label">Flight</label>
-              </div>
-              <div class="col-sm-4">
-                <select id="status" name="status" class="form-control" [(ngModel)]="cargo.flight">
-                  <option *ngFor="let flight of availFlight" [ngValue]="flight.id">{{flight.id}} {{flight.departureTime|date}}</option>
-                </select>
-              </div>
-            </div>
-          </div>
-          <div class="modal-footer">
-            <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
-            <button type="button" class="btn btn-primary" data-dismiss="modal" (click)="processCargo()">Done</button>
-          </div>
-        </form>
-      </div><!-- /.modal-content -->
-    </div><!-- /.modal-dialog -->
-  </div><!-- /.modal -->
-  <!-- END CARGO MODAL MARKUP -->
-
-  <!-- BEGIN SIMPLE MODAL MARKUP -->
-  <div class="modal fade" id="deleteModal" tabindex="-1" role="dialog" aria-labelledby="simpleModalLabel" aria-hidden="true">
-    <div class="modal-dialog">
-      <div class="modal-content">
-        <div class="modal-header">
-          <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-          <h4 class="modal-title" id="simpleModalLabel">Deleting Cargo</h4>
-        </div>
-        <div class="modal-body">
-          <p>Do you want to delete this cargo?</p>
-        </div>
-        <div class="modal-footer">
-          <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
-          <button type="button" class="btn btn-primary" data-dismiss="modal" (click)="deleteCargo()">Yes</button>
-        </div>
-      </div><!-- /.modal-content -->
-    </div><!-- /.modal-dialog -->
-  </div><!-- /.modal -->
-  <!-- END SIMPLE MODAL MARKUP -->
-
-  <!-- BEGIN FLIGHT MODAL MARKUP -->
-  <div class="modal fade" id="flightModal" tabindex="-1" role="dialog" aria-labelledby="flightModalLabel" aria-hidden="true">
-    <div class="modal-dialog">
-      <div class="modal-content">
-        <div class="modal-header">
-          <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-          <h4 class="modal-title" id="formModalLabel2">View Flight Details</h4>
-        </div>
-        <form class="form-horizontal" role="form">
-          <div class="modal-body">
-            <div class="form-group">
-              <div class="col-sm-2">
-                <label for="flightNo" class="control-label">Flight No.</label>
-              </div>
-              <div class="col-sm-4">
-                <input type="text" name="flightNo" id="flightNo" class="form-control" [(ngModel)]='flight.flightNumber' placeholder="Flight No." [disabled]="true">
-              </div>
-              <div class="col-sm-2">
-                <label for="departDate" class="control-label">Depart Date</label>
-              </div>
-              <div class="col-sm-4">
-                <span id="departDate">{{flight.departureTime | date}}</span>
-              </div>
-            </div>
-            <div class="form-group">
-              <div class="col-sm-2">
-                <label for="depart" class="control-label">Departure</label>
-              </div>
-              <div class="col-sm-4">
-                <input type="text" name="depart" id="depart" class="form-control" [(ngModel)]='flight.origin' placeholder="Departure" [disabled]="true">
-              </div>
-              <div class="col-sm-2">
-                <label for="landing" class="control-label">Landing</label>
-              </div>
-              <div class="col-sm-4">
-                <input type="text" name="landing" id="landing" class="form-control" [(ngModel)]='flight.destination' placeholder="Landing" [disabled]="true">
-              </div>
-            </div>
-            <div class="form-group">
-              <div class="col-sm-5">
-                <label for="delivery" class="control-label">Deliver Company</label>
-              </div>
-              <div class="col-sm-7">
-                <input type="text" name="ccs" id="delivery" class="form-control" [(ngModel)]='flight.deliverCompany' placeholder="Cargo Deliver" [disabled]="true">
-              </div>
-            </div>
-            <div class="form-group">
-              <div class="col-sm-5">
-                <label for="collection" class="control-label">Collection Company</label>
-              </div>
-              <div class="col-sm-7">
-                <input type="text" name="ccs" id="collection" class="form-control" [(ngModel)]='flight.collectCompany' placeholder="Cargo Collection" [disabled]="true">
-              </div>
-            </div>
-
-          </div>
-          <div class="modal-footer">
-            <button type="button" class="btn btn-default" data-dismiss="modal">Okay</button>
-          </div>
-        </form>
-      </div><!-- /.modal-content -->
-    </div><!-- /.modal-dialog -->
-  </div><!-- /.modal -->
-  <!-- END FLIGHT MODAL MARKUP -->
-
-  <!-- BEGIN REQUEST MODAL MARKUP -->
-  <div class="modal fade" id="requestModal" tabindex="-1" role="dialog" aria-labelledby="formModalLabel" aria-hidden="true">
-    <div class="modal-dialog">
-      <div class="modal-content">
-        <div class="modal-header">
-          <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-          <h4 class="modal-title" id="formModalLabel4">Cargo Request</h4>
-        </div>
-        <form class="form-horizontal" role="form">
-          <div class="modal-body">
-            <div class="form-group">
-              <div class="col-sm-3">
-                <label for="requestItem" class="control-label">Item</label>
-              </div>
-              <div class="col-sm-9">
-                <input type="text" class="form-control" name="requestItem" id="requestItem" [(ngModel)]='cargo.description' placeholder="Item Type" [disabled]="true">
-              </div>
-            </div>
-            <div class="form-group">
-              <div class="col-sm-3">
-                <label for="description" class="control-label">Description</label>
-              </div>
-              <div class="col-sm-9">
-                <input type="text" class="form-control" name="description" id="description" [(ngModel)]='cargoRequest.description' placeholder="Request Description" [disabled]="isPending" >
-              </div>
-            </div>
-            <div class="form-group">
-              <div class="col-sm-2">
-                <label for="departure" class="control-label">Departure</label>
-              </div>
-              <div class="col-sm-4">
-                <input type="text" class="form-control" name="departure" id="departure" [(ngModel)]='cargoRequest.origin' placeholder="Origin" [disabled]="isPending">
-              </div>
-              <div class="col-sm-2">
-                <label for="destination" class="control-label">Destination</label>
-              </div>
-              <div class="col-sm-4">
-                <input type="text" class="form-control" name="destination" id="destination" [(ngModel)]='cargoRequest.destination' placeholder="Destination" [disabled]="isPending">
-              </div>
-            </div>
-            <div class="form-group">
-              <div class="col-sm-2">
-                <label for="earlyDepartDate" class="control-label">Early Time</label>
-              </div>
-              <div class="col-sm-4">
-                <ngx-datetime-picker id="earlyDepartDate" [(selectedDateTime)]="cargoRequest.earlyDepartureTime" ></ngx-datetime-picker>
-              </div>
-              <div class="col-sm-2">
-                <label for="lateDepartDate" class="control-label">Late Time</label>
-              </div>
-              <div class="col-sm-4">
-                <ngx-datetime-picker id="lateDepartDate" [(selectedDateTime)]="cargoRequest.lateDepartureTime" ></ngx-datetime-picker>
-              </div>
-            </div>
-
-          </div>
-          <div class="modal-footer" *ngIf="!cargo.request">
-            <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
-            <button type="button" class="btn btn-primary" data-dismiss="modal" (click)="addRequest()">Send Reqeust</button>
-          </div>
-          <div class="modal-footer" *ngIf="cargo.request">
-            <button type="button" class="btn btn-default" data-dismiss="modal">Okay</button>
-            <button type="button" class="btn btn-danger" data-dismiss="modal" *ngIf="cargoRequest.status === 'PENDING'" (click)="cancelRequest()">Cancel Reqeust</button>
-            <button type="button" class="btn btn-primary" data-dismiss="modal" *ngIf="cargoRequest.status === 'PENDING'" (click)="editRequest()">Edit Reqeust</button>
-          </div>
-        </form>
-      </div><!-- /.modal-content -->
-    </div><!-- /.modal-dialog -->
-  </div><!-- /.modal -->
-  <!-- END REQUEST MODAL MARKUP -->
+                    </div>
+                    <div class="modal-footer" *ngIf="!cargo.request">
+                        <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+                        <button type="button" class="btn btn-primary" data-dismiss="modal" (click)="addRequest()">Send
+                            Reqeust
+                        </button>
+                    </div>
+                    <div class="modal-footer" *ngIf="cargo.request">
+                        <button type="button" class="btn btn-default" data-dismiss="modal">Okay</button>
+                        <button type="button" class="btn btn-danger" data-dismiss="modal"
+                                *ngIf="cargoRequest.status === 'PENDING'" (click)="cancelRequest()">Cancel Reqeust
+                        </button>
+                        <button type="button" class="btn btn-primary" data-dismiss="modal"
+                                *ngIf="cargoRequest.status === 'PENDING'" (click)="editRequest()">Edit Reqeust
+                        </button>
+                    </div>
+                </form>
+            </div><!-- /.modal-content -->
+        </div><!-- /.modal-dialog -->
+    </div><!-- /.modal -->
+    <!-- END REQUEST MODAL MARKUP -->
 
 </section>

@@ -5,11 +5,13 @@ import {LayoutComponent} from './page/layout/layout.component';
 import {FlightComponent} from "./page/flight/flight.component";
 import {DashboardComponent} from "./page/dashboard/dashboard.component";
 import {ServiceComponent} from "./page/service/service.component";
+import {AuthGuard} from "./service/auth.guard";
 
 const APP_ROUTES: Routes = [
     {
         path: 'main',
         component: LayoutComponent,
+        canActivate: [AuthGuard],
         children:[
             {
                 path: 'dashboard',

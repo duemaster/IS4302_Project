@@ -1,41 +1,15 @@
-import { Component, OnInit, ViewChild } from '@angular/core';
+import {AfterViewInit, Component, OnInit, ViewChild} from '@angular/core';
 import {MatTableDataSource, MatPaginator} from '@angular/material';
 import {HttpClient} from "@angular/common/http";
 import {SettingService} from "../../service/setting/setting.service";
 import {AuthService} from "../../service/auth.service";
 
 @Component({
-  selector: 'app-aircraft',
-  templateUrl: './aircraft.component.html',
-  styleUrls: ['./aircraft.component.scss']
+    selector: 'app-aircraft',
+    templateUrl: './aircraft.component.html',
+    styleUrls: ['./aircraft.component.scss']
 })
-export class AircraftComponent implements OnInit {
-
-  constructor(private http: HttpClient,
-              private service: SettingService,
-              public authService: AuthService) { }
-
-  ngOnInit() {
-  }
-    displayedColumns = ['id', 'Model', 'PaxCapacity', 'CargoCapacity', 'Option'];
-    dataSource = new MatTableDataSource([]);
-    aircraft: any = {
-        model: '',
-        id: '',
-        company:'Airline1',
-        passengerCapacity: 0,
-        cargoCapacity: 0,
-    };
-    isCreate = false;
-
-    applyFilter(filterValue: string) {
-        filterValue = filterValue.trim(); // Remove whitespace
-        filterValue = filterValue.toLowerCase(); // MatTableDataSource defaults to lowercase matches
-        this.dataSource.filter = filterValue;
-    }
-
-
-
+export class AircraftComponent implements AfterViewInit {
 
     @ViewChild(MatPaginator) paginator: MatPaginator;
 
@@ -44,15 +18,28 @@ export class AircraftComponent implements OnInit {
         this.fetchAircraftList();
     }
 
+
+    constructor(private http: HttpClient,
+                private service: SettingService,
+                public authService: AuthService) {
+    }
+
+    public loading = false;
+
+    displayedColumns = ['id', 'Model', 'PaxCapacity', 'CargoCapacity', 'Option'];
+    dataSource = new MatTableDataSource([]);
+    aircraft: any;
+    isCreate = false;
+
+    applyFilter(filterValue: string) {
+        filterValue = filterValue.trim(); // Remove whitespace
+        filterValue = filterValue.toLowerCase(); // MatTableDataSource defaults to lowercase matches
+        this.dataSource.filter = filterValue;
+    }
+
     create() {
         this.isCreate = true;
-        this.aircraft = {
-            model: '',
-            id: '',
-            company: 'Airline1',
-            passengerCapacity: 0,
-            cargoCapacity: 0,
-        };
+        this.aircraft = {};
     }
 
     processAircraft() {
@@ -63,30 +50,38 @@ export class AircraftComponent implements OnInit {
     }
 
     async addAircraft() {
+        this.loading = true;
+
         await this.http.post(
-            `${this.service.ENDPOINT}/blockchain/user/${this.authService.admin.id}/api/org.airline.airChain.Aircraft`,
+            `${this.service.ENDPOINT}/blockchain/user/${this.authService.admin.id}/api/org.airline.airChain.AddAircraft`,
             this.aircraft,
             {withCredentials: true})
             .toPromise();
 
         //Refresh Data Table
-        this.fetchAircraftList();
+        await this.fetchAircraftList();
+        this.loading = false;
     }
 
     async editAircraft() {
+        this.loading = true;
 
+        let aircraftToEdit = Object.assign({}, this.aircraft);
+        delete aircraftToEdit["id"];
 
         await this.http.put(
             `${this.service.ENDPOINT}/blockchain/user/${this.authService.admin.id}/api/org.airline.airChain.Aircraft/${this.aircraft.id}`,
-            this.aircraft,
+            aircraftToEdit,
             {withCredentials: true})
             .toPromise();
 
         //Refresh Data Table
-        this.fetchAircraftList();
+        await this.fetchAircraftList();
+        this.loading = false;
     }
 
     async deleteAircraft() {
+        this.loading = true;
         await this.http.delete(
             `${this.service.ENDPOINT}/blockchain/user/${this.authService.admin.id}/api/org.airline.airChain.Aircraft/${this.aircraft.id}`,
             {withCredentials: true})
@@ -94,6 +89,7 @@ export class AircraftComponent implements OnInit {
 
         //Refresh Data Table
         this.fetchAircraftList();
+        this.loading = false;
     }
 
     update(element) {

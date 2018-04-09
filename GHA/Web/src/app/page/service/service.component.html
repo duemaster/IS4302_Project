@@ -1,3 +1,4 @@
+<ngx-loading [show]="loading"></ngx-loading>
 <section>
   <div class="section-body contain-lg">
     <!-- BEGIN INTRO -->
@@ -24,11 +25,6 @@
 
           <mat-table #table [dataSource]="dataSource">
 
-            <!-- ID Column -->
-            <ng-container matColumnDef="id">
-              <mat-header-cell *matHeaderCellDef> Service ID </mat-header-cell>
-              <mat-cell *matCellDef="let element"> {{element.id}} </mat-cell>
-            </ng-container>
 
             <!-- Service Type Column -->
             <ng-container matColumnDef="Type">
@@ -50,9 +46,9 @@
 
             <!-- Flight No Column -->
             <ng-container matColumnDef="Flight">
-              <mat-header-cell *matHeaderCellDef> Flight No </mat-header-cell>
+              <mat-header-cell *matHeaderCellDef> Flight Info </mat-header-cell>
                 <mat-cell *matCellDef="let element">
-                  <a data-toggle="modal" data-target="#flightModal" (click)="viewFlight(element.flight)" *ngIf="element.flight">
+                  <a data-toggle="modal" data-target="#flightModal" (click)="viewFlight(element.flight)"  *ngIf="element.flight">
                     <span>View</span>
                   </a>
                 </mat-cell>
@@ -128,10 +124,10 @@
 
             <div class="form-group">
               <div class="col-sm-3">
-                <label for="flight" class="control-label">Flight</label>
+                <label for="flightattach" class="control-label">Flight</label>
               </div>
               <div class="col-sm-9">
-                <input id="flight" name="flight" [(ngModel)]='serviceInfo.flight' class="form-control" [disabled]="true">
+                <input id="flightattach" name="flightattach" [(ngModel)]='serviceInfo.flight' class="form-control" [disabled]="true">
               </div>
             </div>
           </div>
@@ -145,7 +141,7 @@
   <!-- END FORM MODAL MARKUP -->
 
   <!-- BEGIN FLIGHT MODAL MARKUP -->
-  <div class="modal fade" id="flightModal" tabindex="-1" role="dialog" aria-labelledby="flightModalLabel" aria-hidden="true">
+  <div *ngIf="flight != null" class="modal fade" id="flightModal" tabindex="-1" role="dialog" aria-labelledby="flightModalLabel" aria-hidden="true">
     <div class="modal-dialog">
       <div class="modal-content">
         <div class="modal-header">
@@ -182,20 +178,20 @@
                 <input type="text" name="landing" id="landing" class="form-control" [(ngModel)]='flight.destination' placeholder="Landing" [disabled]="true">
               </div>
             </div>
-            <div class="form-group">
-              <div class="col-sm-4">
-                <label for="ccs" class="control-label">Cabin Crew Supervisor</label>
-              </div>
-              <div class="col-sm-6">
-                <input type="text" name="ccs" id="ccs" class="form-control" [(ngModel)]='flight.cabinCrew' placeholder="Crew" [disabled]="true">
-              </div>
-            </div>
+            <!--<div class="form-group">-->
+              <!--<div class="col-sm-4">-->
+                <!--<label for="ccs" class="control-label">Cabin Crew Supervisor</label>-->
+              <!--</div>-->
+              <!--<div class="col-sm-6">-->
+                <!--<input type="text" name="ccs" id="ccs" class="form-control" [(ngModel)]='flight.cabinCrew' placeholder="Crew" [disabled]="true">-->
+              <!--</div>-->
+            <!--</div>-->
             <div class="form-group">
               <div class="col-sm-3">
                 <label for="paxload" class="control-label">Passenger Loading</label>
               </div>
               <div class="col-sm-9">
-                <input type="number" name="paxload" id="paxload" class="form-control" placeholder="Number of Passengers" [disabled]="true">
+                <input type="text" name="paxload" id="paxload" class="form-control" [(ngModel)]='flight.paxCount' placeholder="Number of Passengers" [disabled]="true">
               </div>
             </div>
           </div>

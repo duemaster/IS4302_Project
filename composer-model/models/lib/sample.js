@@ -20,6 +20,47 @@ var namespace = "org.airline.airChain";
 
 /**
  * Sample transaction processor function.
+ * @param {org.airline.airChain.AddFlightToCompany} tx The sample transaction instance.
+ * @transaction
+ */
+function AddFlightToCompany(tx) {
+    var flight = tx.flight;
+    var caller = getCurrentParticipant();
+
+    flight.company = caller.company;
+
+    if (!caller.company.flights) {
+        caller.company.flights = [];
+    }
+
+    caller.company.flights.push(flight);
+    saveCompany(caller.company);
+    saveFlight(flight);
+}
+
+/**
+ * Sample transaction processor function.
+ * @param {org.airline.airChain.AddAircraftToCompany} tx The sample transaction instance.
+ * @transaction
+ */
+function AddAircraftToCompany(tx) {
+    var aircraft = tx.aircraft;
+    var caller = getCurrentParticipant();
+
+    aircraft.company = caller.company;
+
+    if (!caller.company.aircrafts) {
+        caller.company.aircrafts = [];
+    }
+
+    caller.company.aircrafts.push(aircraft);
+
+    saveCompany(caller.company);
+    saveAircraft(aircraft);
+}
+
+/**
+ * Sample transaction processor function.
  * @param {org.airline.airChain.HandleFlightServiceRequest} tx The sample transaction instance.
  * @transaction
  */
@@ -28,10 +69,10 @@ function HandleFlightServiceRequest(tx) {
     var isApproved = tx.isApproved;
 
     //Get access to calling participant
-    var caller = getParticipant();
+    var caller = getCurrentParticipant();
 
     //Only allow if Service is attached to flight the participant is incharge of
-    var isAuthorised = caller.company.flights.filter(function (flight) {
+    var isAuthorised = caller.company.flights.filter(function(flight) {
         return flight.getIdentifier() == service.flight.getIdentifier();
     }).length === 1;
 
@@ -57,8 +98,8 @@ function ProcessFlightServiceDelivery(tx) {
     var service = tx.service;
     var isApproved = tx.isApproved;
 
-    var caller = getParticipant();
-    var isAuthorised = service.flight.cabinCrews.filter(function (crew) {
+    var caller = getCurrentParticipant();
+    var isAuthorised = service.flight.cabinCrews.filter(function(crew) {
         return crew.getIdentifier() == caller.getIdentifier();
     }).length == 1;
 
@@ -80,6 +121,27 @@ function ProcessFlightServiceDelivery(tx) {
 
 /**
  * Sample transaction processor function.
+ * @param {org.airline.airChain.AddServiceToCompany} tx The sample transaction instance.
+ * @transaction
+ */
+function AddServiceToCompany(tx) {
+    var service = tx.service;
+
+    var caller = getCurrentParticipant();
+
+    if (!caller.company.services) {
+        caller.company.services = [];
+    }
+
+    service.company = caller.company;
+    caller.company.services.push(service);
+
+    saveService(service);
+    saveCompany(caller.company);
+}
+
+/**
+ * Sample transaction processor function.
  * @param {org.airline.airChain.IssueFlightServiceRequest} tx The sample transaction instance.
  * @transaction
  */
@@ -91,6 +153,9 @@ function IssueFlightServiceRequest(tx) {
         throw new Error("Flight not in scheduled status");
 
     //Add Services to Flight
+    if (!flight.services)
+        flight.services = [];
+
     flight.services.push(service);
     service.flight = flight;
 
@@ -110,7 +175,7 @@ function CollectCargoFromWarehouse(tx) {
     //Update Cargo status
     cargo.status = "COLLECTED";
 
-    //Save cargos
+    //Save cargo
     saveCargo(cargo);
 }
 
@@ -118,6 +183,28 @@ function CollectCargoFromWarehouse(tx) {
 /*
  ** Cargo Company Action
  */
+
+
+/**
+ * Sample transaction processor function.
+ * @param {org.airline.airChain.AddCargoToCompany} tx The sample transaction instance.
+ * @transaction
+ */
+function AddCargoToCompany(tx) {
+    var cargo = tx.cargo;
+
+    var caller = getCurrentParticipant();
+
+    if (!caller.company.cargos) {
+        caller.company.cargos = [];
+    }
+
+    caller.company.cargos.push(cargo);
+    cargo.company = caller.company;
+
+    saveCargo(cargo);
+    saveCompany(caller.company);
+}
 
 /**
  * Sample transaction processor function.
@@ -144,13 +231,16 @@ function AssignCargoToFlight(tx) {
     var cargo = tx.cargo;
     var flight = tx.flight;
 
+    if (!flight.cargos) {
+        flight.cargos = [];
+    }
+
     //Ensure Cargo does not exceed weight limit
     var limit = flight.aircraft.cargoCapacity;
-    var loadedWeight = flight.cargos.reduce(function (a, b) { a + b.weight }, 0);
+    var loadedWeight = flight.cargos.reduce(function(a, b) { a + b.weight }, 0);
 
     if (loadedWeight + cargo.weight > limit)
         throw new Error('Total weight has exceeded limit');
-
 
     //Attach Cargo to flight
     flight.cargos.push(cargo);
@@ -185,9 +275,13 @@ function AcceptCargoRequest(tx) {
     if (cargoRequest.lateDepartureTime <= flight.departureTime || cargoRequest.earlyDepartureTime >= flight.departureTime)
         throw new Error('CargoRequest departureTime mismatch with flight departureTime!');
 
+    if (!flight.cargos) {
+        flight.cargos = [];
+    }
+
     //Ensure Cargo does not exceed weight limit
     var limit = flight.aircraft.cargoCapacity;
-    var loadedWeight = flight.cargos.reduce(function (a, b) { a + b.weight }, 0);
+    var loadedWeight = flight.cargos.reduce(function(a, b) { a + b.weight }, 0);
 
     if (loadedWeight + cargoRequest.cargo.weight > limit)
         throw new Error('Total weight has exceeded limit');
@@ -214,41 +308,51 @@ function AcceptCargoRequest(tx) {
 
 
 
+function saveEmployee(employee) {
+    return getAssetRegistry(namespace + ".Employee")
+        .then(function(employeeRegistry) {
+            return employeeRegistry.update(employee);
+        })
+}
 
-
-
+function saveCompany(company) {
+    return getAssetRegistry(namespace + ".Company")
+        .then(function(companyRegistry) {
+            return companyRegistry.update(company);
+        })
+}
 
 function saveCargo(cargo) {
     return getAssetRegistry(namespace + ".Cargo")
-        .then(function (cargoRegistry) {
+        .then(function(cargoRegistry) {
             return cargoRegistry.update(cargo);
         })
 }
 
 function saveService(service) {
     return getAssetRegistry(namespace + ".Service")
-        .then(function (serviceRegistry) {
+        .then(function(serviceRegistry) {
             return serviceRegistry.update(service);
         })
 }
 
 function saveAircraft(aircraft) {
     return getAssetRegistry(namespace + ".Aircraft")
-        .then(function (aircraftRegistry) {
+        .then(function(aircraftRegistry) {
             return aircraftRegistry.update(aircraft);
         })
 }
 
 function saveFlight(flight) {
     return getAssetRegistry(namespace + ".Flight")
-        .then(function (flightRegistry) {
+        .then(function(flightRegistry) {
             return flightRegistry.update(flight);
         })
 }
 
 function saveCargoRequest(cargoRequest) {
     return getAssetRegistry(namespace + ".CargoRequest")
-        .then(function (cargoRegistry) {
+        .then(function(cargoRegistry) {
             return cargoRegistry.update(cargoRequest);
         })
 }

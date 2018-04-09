@@ -1,6 +1,5 @@
 import {Injectable} from '@angular/core';
 import {HttpClient} from '@angular/common/http';
-import {environment} from '../../environments/environment';
 import {SettingService} from "./setting/setting.service";
 
 @Injectable()
@@ -10,7 +9,10 @@ export class AuthService {
 
     constructor(private http: HttpClient,
                 public setting: SettingService) {
-        this.admin = localStorage.getItem('admin');
+        let adminStorage = localStorage.getItem('admin');
+        if (adminStorage != null) {
+            this.admin = JSON.parse(adminStorage);
+        }
         console.log(this.admin);
     }
 
@@ -21,6 +23,8 @@ export class AuthService {
                 {name: userName, password: password},
                 {withCredentials: true}
             ).toPromise();
+
+            console.log(this.admin);
 
             //Save in Cookie
             localStorage.setItem("admin", JSON.stringify(this.admin));

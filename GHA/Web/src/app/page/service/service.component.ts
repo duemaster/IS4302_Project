@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewChild } from '@angular/core';
+import {AfterViewInit, Component, OnInit, ViewChild} from '@angular/core';
 import {MatTableDataSource, MatPaginator} from '@angular/material';
 import {BlockChainService} from "../../service/blockchain/block-chain.service";
 import {AuthService} from "../../service/auth.service";
@@ -10,27 +10,26 @@ import {SettingService} from "../../service/setting/setting.service";
   templateUrl: './service.component.html',
   styleUrls: ['./service.component.scss']
 })
-export class ServiceComponent implements OnInit {
+export class ServiceComponent implements AfterViewInit {
 
   constructor(private http: HttpClient,
               private service: SettingService,
               public authService: AuthService,
               public blockChainService: BlockChainService) { }
 
-  ngOnInit() {
-  }
-    displayedColumns = ['id', 'Type', 'Description', 'Status', 'Flight', 'Option'];
+    displayedColumns = ['Type', 'Description', 'Status', 'Flight', 'Option'];
     dataSource = new MatTableDataSource([]);
+
+    public loading = false;
     serviceInfo: any = {
         type: '',
         id: '',
         description: '',
         status: '',
         staff: '',
-        flight: {},
+        flight: '',
         flightList: ''
     };
-
 
     flight:any;
 
@@ -47,21 +46,21 @@ export class ServiceComponent implements OnInit {
         this.fetchServiceList();
     }
 
-
-
     update(element) {
         this.serviceInfo = element;
+        if(this.serviceInfo.flight)
+            this.serviceInfo.flight = this.serviceInfo.flight.replace(`${this.blockChainService.FLIGHT}#`, "");
     }
 
     async viewFlight(flight){
+        flight = flight.replace(`${this.blockChainService.FLIGHT}#`, "");
+
         this.flight = await this.http.get(
             `${this.service.ENDPOINT}/blockchain/user/${this.authService.admin.id}/api/org.airline.airChain.Flight/${flight}`,
             {withCredentials: true}
         ).toPromise();
         //Remove Cabin Crew NameSpace
-        if(flight.cabinCrew) {
-            flight.cabinCrew = flight.cabinCrew.replace(this.blockChainService.AIRLINE_EMPLOYEE, "");
-        }
+        console.log(this.flight);
 
     }
     async fetchServiceList() {

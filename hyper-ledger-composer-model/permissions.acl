@@ -6,7 +6,7 @@ rule AllowAirlineAddFlight {
   description:  "Allow Airline company to add Flights"
   participant (p): "org.airline.airChain.AirlineEmployee"
   operation: CREATE
-  resource (r): "org.airline.airChain.AddFlightToCompany"
+  resource (r): "org.airline.airChain.AddFlight"
   condition: (p.role == "OFFICER")
   action: ALLOW
 }
@@ -15,16 +15,7 @@ rule AllowAirlineAddAircraft {
   description:  "Allow Airline company to add Aircraft"
   participant (p): "org.airline.airChain.AirlineEmployee"
   operation: CREATE
-  resource (r): "org.airline.airChain.AddAircraftToCompany"
-  condition: (p.role == "OFFICER")
-  action: ALLOW
-}
-
-rule AllowGHAAddServices {
-  description:  "Allow GHA company to add Services"
-  participant (p): "org.airline.airChain.GHAEmployee"
-  operation: CREATE
-  resource (r): "org.airline.airChain.AddServiceToCompany"
+  resource (r): "org.airline.airChain.AddAircraft"
   condition: (p.role == "OFFICER")
   action: ALLOW
 }
@@ -33,7 +24,7 @@ rule AllowCargoAddCargo {
   description:  "Allow Cargo company to add Cargo"
   participant (p): "org.airline.airChain.CargoEmployee"
   operation: CREATE
-  resource (r): "org.airline.airChain.AddCargoToCompany"
+  resource (r): "org.airline.airChain.AddCargo"
   condition: (p.role == "OFFICER")
   action: ALLOW
 }
@@ -48,7 +39,7 @@ rule AllowAirlineHandleFlightServiceRequest {
   participant (p): "org.airline.airChain.AirlineEmployee"
   operation: CREATE
   resource (r): "org.airline.airChain.HandleFlightServiceRequest"
-  condition: (p.role == "OFFICER")
+  condition: (p.role == "OFFICER" && r.service.flight.status == "SCHEDULED" && r.service.flight.company.getIdentifier() == p.company.getIdentifier())
   action: ALLOW
 }
 
@@ -57,7 +48,7 @@ rule AllowAirlineProcessFlightServiceDelivery {
   participant (p): "org.airline.airChain.AirlineEmployee"
   operation: CREATE
   resource (r): "org.airline.airChain.ProcessFlightServiceDelivery"
-  condition: (p.role == "STAFF")
+  condition: (p.role == "STAFF" && r.service.flight.status == "SCHEDULED" && r.service.flight.cabinCrews.some(function(cabinCrew) {return cabinCrew.getIdentifier() == p.getIdentifier();}))
   action: ALLOW
 }
 
@@ -66,7 +57,7 @@ rule AllowGHAIssueFlightServiceRequest {
   participant (p): "org.airline.airChain.GHAEmployee"
   operation: CREATE
   resource (r): "org.airline.airChain.IssueFlightServiceRequest"
-  condition: (p.role == "OFFICER")
+  condition: (p.role == "OFFICER" && r.flight.status == "SCHEDULED")
   action: ALLOW
 }
 
@@ -137,7 +128,7 @@ rule AllowAirlineCabinCrewUpdateServiceDelivery {
    operation: UPDATE
    resource (r): "org.airline.airChain.Flight"
    transaction (txn): "org.airline.airChain.IssueFlightServiceRequest"
-   condition: (txn.service.status == "PENDING")
+   condition: (p.role == "OFFICER" && txn.flight.status == "SCHEDULED")
    action: ALLOW
  }
 
@@ -200,7 +191,7 @@ rule AllowAirlineManageAircraft {
   participant (p): "org.airline.airChain.AirlineEmployee"
   operation: ALL
   resource (r): "org.airline.airChain.Aircraft"
-  condition: (p.role == "OFFICER")
+  condition: (p.role == "OFFICER" && r.company.getIdentifier() == p.company.getIdentifier())
   action: ALLOW
 }
 
@@ -230,7 +221,7 @@ rule AllowAirlineManageFlight {
   participant (p): "org.airline.airChain.AirlineEmployee"
   operation: ALL
   resource (r): "org.airline.airChain.Flight"
-  condition: (true)
+  condition: (r.company.getIdentifier() == p.company.getIdentifier())
   action: ALLOW
 }
 
@@ -244,7 +235,7 @@ rule AllowAirlineOfficerViewCargo {
   participant (p): "org.airline.airChain.AirlineEmployee"
   operation: READ
   resource (r): "org.airline.airChain.Cargo"
-  condition: (p.role == "OFFICER")
+  condition: (p.role == "OFFICER" && r.flight.company.getIdentifier() == p.company.getIdentifier())
   action: ALLOW
 }
 
@@ -253,7 +244,7 @@ rule AllowGHAStaffViewCargo {
   participant (p): "org.airline.airChain.GHAEmployee"
   operation: READ
   resource (r): "org.airline.airChain.Cargo"
-  condition: (p.role == "STAFF")
+  condition: (p.role == "STAFF" && (r.flight.collectCompany.getIdentifier() == p.company.getIdentifier() || r.flight.deliverCompany.getIdentifier() == p.company.getIdentifier()))
   action: ALLOW
 }
 
@@ -271,7 +262,7 @@ rule AllowCargoCompanyToManageCargo {
   participant (p): "org.airline.airChain.CargoEmployee"
   operation: ALL
   resource (r): "org.airline.airChain.Cargo"
-  condition: (r.company.getIdentifier() == p.company.getIdentifier())
+  condition: (p.role == "OFFICER" && r.company.getIdentifier() == p.company.getIdentifier())
   action: ALLOW
 }
 
@@ -292,17 +283,26 @@ rule AllowGHACompanyToManageService {
   participant (p): "org.airline.airChain.GHAEmployee"
   operation: ALL
   resource (r): "org.airline.airChain.Service"
-  condition: (r.company.getIdentifier() == p.company.getIdentifier())
+  condition: (p.role == "OFFICER" && r.company.getIdentifier() == p.company.getIdentifier())
   action: ALLOW
 }
 
 /*
 * Cargo Request Management
 */
-rule AllowCargoCompanyViewAndCreateCargoRequest {
+rule AllowCargoCompanyViewCargoRequest {
   description:  "Allow all cargo company to view Cargo Request"
   participant (p): "org.airline.airChain.CargoEmployee"
-  operation: READ, CREATE
+  operation: READ
+  resource (r): "org.airline.airChain.CargoRequest"
+  condition: (p.role == "OFFICER")
+  action: ALLOW
+}
+
+rule AllowCargoCompanyCreateCargoRequest {
+  description:  "Allow all cargo company to view Cargo Request"
+  participant (p): "org.airline.airChain.CargoEmployee"
+  operation: CREATE
   resource (r): "org.airline.airChain.CargoRequest"
   condition: (p.role == "OFFICER" && r.cargo.company.getIdentifier() == p.company.getIdentifier())
   action: ALLOW
@@ -311,23 +311,55 @@ rule AllowCargoCompanyViewAndCreateCargoRequest {
 /*
 * Participant / Asset Management
 */
-rule AllowOfficerManageEmployees {
+rule AllowAirlineOfficerManageAirlineEmployees {
   description:  "Allow Officer to manage their own employees"
-  participant (p): "org.airline.airChain.Employee"
+  participant (p): "org.airline.airChain.AirlineEmployee"
   operation: ALL
-  resource (r): "org.airline.airChain.Employee"
+  resource (r): "org.airline.airChain.AirlineEmployee"
+  condition: (p.role == "OFFICER" && p.company.getIdentifier() == r.company.getIdentifier())
+  action: ALLOW
+}
+
+rule AllowGHAOfficerManageGHAEmployees {
+  description:  "Allow Officer to manage their own employees"
+  participant (p): "org.airline.airChain.GHAEmployee"
+  operation: ALL
+  resource (r): "org.airline.airChain.GHAEmployee"
+  condition: (p.role == "OFFICER" && p.company.getIdentifier() == r.company.getIdentifier())
+  action: ALLOW
+}
+
+rule AllowCargoOfficerManageCargoEmployees {
+  description:  "Allow Officer to manage their own employees"
+  participant (p): "org.airline.airChain.CargoEmployee"
+  operation: ALL
+  resource (r): "org.airline.airChain.CargoEmployee"
   condition: (p.role == "OFFICER" && p.company.getIdentifier() == r.company.getIdentifier())
   action: ALLOW
 }
 
 rule AllowOfficerCreateThings {
   description:  "Allow Officer to create related participants/assets"
-  participant (p): "org.airline.airChain.Employee"
+  participant (p): "org.hyperledger.composer.system.Participant"
   operation: CREATE
   resource (r): "org.hyperledger.composer.system.*"
   condition: (p.role == "OFFICER")
   action: ALLOW
 }
+
+/*
+* View of Companies
+*/
+
+rule AllowAirlineCompanyViewListofGHACompany {
+  description:  "Allow Airline Officer to view list of GHAs for Cargo Management"
+  participant (p): "org.airline.airChain.AirlineEmployee"
+  operation: READ
+  resource (r): "org.airline.airChain.GHACompany"
+  condition: (p.role == "OFFICER")
+  action: ALLOW
+}
+
 /*
 * System Configuration
 */
@@ -340,19 +372,56 @@ rule AllowRESTServerAccess {
   action: ALLOW
 }
 
-rule AllowEmployeeSeeOwnCompany {
+rule AllowAirlineEmployeeSeeOwnCompany {
   description:  "Allow All Participants see their own companies"
-  participant: "org.airline.airChain.Employee"
+  participant (p): "org.airline.airChain.AirlineEmployee"
   operation: READ
-  resource: "org.airline.airChain.Company"
+  resource (r): "org.airline.airChain.AirlineCompany"
+  condition: (p.company.getIdentifier() == r.getIdentifier())
   action: ALLOW
 }
 
-rule AllowOfficerUpdateOwnCompany {
+rule AllowGHAEmployeeSeeOwnCompany {
+  description:  "Allow All Participants see their own companies"
+  participant (p): "org.airline.airChain.GHAEmployee"
+  operation: READ
+  resource (r): "org.airline.airChain.GHACompany"
+  condition: (p.company.getIdentifier() == r.getIdentifier())
+  action: ALLOW
+}
+
+rule AllowCargoEmployeeSeeOwnCompany {
+  description:  "Allow All Participants see their own companies"
+  participant (p): "org.airline.airChain.CargoEmployee"
+  operation: READ
+  resource (r): "org.airline.airChain.CargoCompany"
+  condition: (p.company.getIdentifier() == r.getIdentifier())
+  action: ALLOW
+}
+
+rule AllowAirlineOfficerUpdateOwnCompany {
   description:  "Allow All Officer Update Own Company"
-  participant (p): "org.airline.airChain.Employee"
+  participant (p): "org.airline.airChain.AirlineEmployee"
   operation: UPDATE
-  resource (r): "org.airline.airChain.Company"
+  resource (r): "org.airline.airChain.AirlineCompany"
+  condition: (p.role == "OFFICER" && p.company.getIdentifier() == r.getIdentifier())
+  action: ALLOW
+}
+
+rule AllowGHAOfficerUpdateOwnCompany {
+  description:  "Allow All Officer Update Own Company"
+  participant (p): "org.airline.airChain.GHAEmployee"
+  operation: UPDATE
+  resource (r): "org.airline.airChain.GHACompany"
+  condition: (p.role == "OFFICER" && p.company.getIdentifier() == r.getIdentifier())
+  action: ALLOW
+}
+
+rule AllowCargoOfficerUpdateOwnCompany {
+  description:  "Allow All Officer Update Own Company"
+  participant (p): "org.airline.airChain.CargoEmployee"
+  operation: UPDATE
+  resource (r): "org.airline.airChain.CargoCompany"
   condition: (p.role == "OFFICER" && p.company.getIdentifier() == r.getIdentifier())
   action: ALLOW
 }

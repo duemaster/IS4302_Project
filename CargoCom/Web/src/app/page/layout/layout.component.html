@@ -34,7 +34,7 @@
               <img *ngIf="!authService.admin" src="../../assets/img/avatar1.jpg?1403934956" alt=""/>
               <img *ngIf="authService.admin" src="../../assets/img/profile.jpg" alt=""/>
               <span class="profile-info">
-									{{authService.admin}}
+									{{authService.admin.name}}
 									<small>Cargo Admin</small>
 								</span>
             </a>

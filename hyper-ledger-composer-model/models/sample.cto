@@ -3,24 +3,25 @@
  */
 namespace org.airline.airChain
 
-abstract asset Company identified by id {
+asset AirlineCompany identified by id {
     o String id
     o String name
-}
-
-asset AirlineCompany extends Company {
     --> Flight[] flights optional
     --> Aircraft[] aircrafts optional
     --> CargoCompany authorisedCargoCompany optional
     --> AirlineEmployee[] employees optional
 }
 
-asset GHACompany extends Company {
+asset GHACompany identified by id {
+    o String id
+    o String name
     --> Service[] services optional
     --> GHAEmployee[] employees optional
 }
 
-asset CargoCompany extends Company {
+asset CargoCompany identified by id {
+   o String id
+   o String name
     --> Cargo[] cargos optional
     --> CargoEmployee[] employees optional
 }
@@ -95,7 +96,7 @@ asset Service identified by id {
     o SERVICE_STATUS status
     o SERVICE_TYPE type
     --> GHACompany company
-    --> Flight flight optional
+    --> Flight flight
 }
 
 
@@ -121,33 +122,51 @@ enum ROLE {
     o STAFF
     o OFFICER
 }
+participant AirlineEmployee identified by id{
+      o String id
+    o String name
+    o ROLE role
+    --> AirlineCompany company
+}
 
-abstract participant Employee identified by id {
+participant CargoEmployee identified by id{
     o String id
     o String name
     o ROLE role
-    --> Company company
+    --> CargoCompany company
 }
 
-participant AirlineEmployee extends Employee {
-}
-
-participant CargoEmployee extends Employee {
-}
-
-participant GHAEmployee extends Employee {
+participant GHAEmployee identified by id {
+    o String id
+    o String name
+    o ROLE role
+    --> GHACompany company
 }
 
 /*
 ** Airline Company Action
 */
 
-transaction AddFlightToCompany {
-	 --> Flight flight
+transaction AddAircraft {
+  o String id
+  o String model
+  o Integer passengerCapacity
+  o Double cargoCapacity
 }
 
-transaction AddAircraftToCompany {
-  --> Aircraft aircraft
+transaction AddFlight {
+    o String id
+    o String origin
+    o String destination
+    o String flightNumber
+    o DateTime departureTime
+    o Integer paxCount
+
+    --> Aircraft aircraft
+    --> AirlineEmployee cabinCrew
+
+    --> GHACompany collectCompany
+    --> GHACompany deliverCompany
 }
 
 transaction HandleFlightServiceRequest {
@@ -163,14 +182,11 @@ transaction ProcessFlightServiceDelivery {
 /*
 ** GHA Company Action
 */
-
-transaction AddServiceToCompany {
-  --> Service service
-}
-
 transaction IssueFlightServiceRequest {
+    o String id
+    o String description
+    o SERVICE_TYPE type
     --> Flight flight
-    --> Service service
 }
 
 transaction CollectCargoFromWarehouse {
@@ -181,8 +197,10 @@ transaction CollectCargoFromWarehouse {
 ** Cargo Company Action
 */
 
-transaction AddCargoToCompany {
-  --> Cargo cargo
+transaction AddCargo {
+    o String id
+    o String description
+    o Double weight
 }
 
 transaction ConfirmCargoToWarehouse {
