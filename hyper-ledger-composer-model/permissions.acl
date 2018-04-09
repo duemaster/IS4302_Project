@@ -152,14 +152,13 @@ rule AllowAirlineCabinCrewUpdateServiceDelivery {
    action: ALLOW
  }
 
-
   rule AllowCargoCompanyOfficerUpdateFlight {
-    description:  "Allow Cargo Officer update cargo when assigning to flight"
+    description:  "Allow Cargo Officer update flight when attaching cargo"
     participant (p): "org.airline.airChain.CargoEmployee"
     operation: UPDATE
     resource (r): "org.airline.airChain.Flight"
     transaction (txn): "org.airline.airChain.AssignCargoToFlight"
-    condition: (r.company.authorisedCargoCompany.getIdentifier() == p.company.getIdentifier() && txn.cargo.status == "COLLECTED" && (txn.cargo.company.getIdentifier() == p.company.getIdentifier() || txn.cargo.request.acceptedCompany.getIdentifier() == p.company.getIdentifier()))
+    condition: (p.role == "OFFICER" && r.status == "SCHEDULED" && r.company.authorisedCargoCompany.getIdentifier() == p.company.getIdentifier())
     action: ALLOW
   }
 
@@ -357,6 +356,15 @@ rule AllowAirlineCompanyViewListofGHACompany {
   operation: READ
   resource (r): "org.airline.airChain.GHACompany"
   condition: (p.role == "OFFICER")
+  action: ALLOW
+}
+
+rule AllowCargoCompanyViewAirlineCompany {
+  description:  "Allow Cargo Office to view Aircraft Company details"
+  participant (p): "org.airline.airChain.CargoEmployee"
+  operation: READ
+  resource (r): "org.airline.airChain.AirlineCompany"
+  condition: (p.role == "OFFICER" && r.authorisedCargoCompany.getIdentifier() === p.company.getIdentifier())
   action: ALLOW
 }
 
