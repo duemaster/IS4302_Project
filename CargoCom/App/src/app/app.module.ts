@@ -3,38 +3,50 @@ import { BrowserModule } from '@angular/platform-browser';
 import { IonicApp, IonicModule, IonicErrorHandler } from 'ionic-angular';
 import { MyApp } from './app.component';
 
-import { AboutPage } from '../pages/about/about';
+import {ServiceDetailPage} from '../pages/serviceDetail/serviceDetail';
 import { HomePage } from '../pages/home/home';
 import { TabsPage } from '../pages/tabs/tabs';
 
 import { StatusBar } from '@ionic-native/status-bar';
 import { SplashScreen } from '@ionic-native/splash-screen';
 import {LoginPage} from "../pages/login/login";
+import { SettingsProvider } from '../providers/settings/settings';
+import { UserProvider } from '../providers/user/user';
+import { UtilityProvider } from '../providers/utility/utility';
+import {HttpClientModule} from "@angular/common/http";
+import {BarcodeScanner} from "@ionic-native/barcode-scanner";
+import {HomePageModule} from "../pages/home/home.module";
+import { CargoProvider } from '../providers/cargo/cargo';
 
 @NgModule({
   declarations: [
     MyApp,
-    AboutPage,
-    LoginPage,
-    HomePage,
-    TabsPage
+    ServiceDetailPage,
+    TabsPage,
+    LoginPage
   ],
   imports: [
     BrowserModule,
+    HttpClientModule,
+    HomePageModule,
     IonicModule.forRoot(MyApp)
   ],
   bootstrap: [IonicApp],
   entryComponents: [
     MyApp,
-    AboutPage,
-    LoginPage,
-    HomePage,
-    TabsPage
+    ServiceDetailPage,
+    TabsPage,
+    LoginPage
   ],
   providers: [
     StatusBar,
     SplashScreen,
-    {provide: ErrorHandler, useClass: IonicErrorHandler}
+    {provide: ErrorHandler, useClass: IonicErrorHandler},
+    SettingsProvider,
+    UserProvider,
+    UtilityProvider,
+    BarcodeScanner,
+    CargoProvider
   ]
 })
 export class AppModule {}

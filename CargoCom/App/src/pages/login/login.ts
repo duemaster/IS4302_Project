@@ -1,6 +1,8 @@
 import {Component, ViewChild} from '@angular/core';
-import {NavController} from 'ionic-angular';
+import {NavController, NavParams} from 'ionic-angular';
 import {HomePage} from "../home/home";
+import {UserProvider} from "../../providers/user/user";
+import {UtilityProvider} from "../../providers/utility/utility";
 
 @Component({
   selector: 'page-login',
@@ -9,18 +11,21 @@ import {HomePage} from "../home/home";
 export class LoginPage {
 
 
-  email: string;
-  password: string;
+  userName:string;
+  password:string;
+  constructor(public navCtrl: NavController, public navParams: NavParams,
+              public userProvider:UserProvider,public utility:UtilityProvider) {
+  }
 
-  errorMessage: string;
-  @ViewChild('input') myInput;
-
-
-  constructor(public navCtrl: NavController) {
-
+  ionViewDidLoad() {
+    console.log('ionViewDidLoad LoginPage');
   }
 
   login(){
-    this.navCtrl.setRoot(HomePage);
+    this.userProvider.login(this.userName,this.password,this.navCtrl);
+  }
+
+  contact(){
+    this.utility.showAlert("Contact Admin","Please contact your office admin")
   }
 }

@@ -1,0 +1,68 @@
+page-serviceDetail {
+  ion-navbar{
+    height: 14vw;
+
+    .toolbar-background{
+      border: none !important;
+    }
+    .toolbar-title{
+      font-weight: 400 !important;
+      letter-spacing: 1px;
+      //color: #005CAF !important;
+    }
+
+    .newTask{
+      margin-right: 2vw;
+    }
+  }
+
+  .GHA{
+    color: #aaa;
+  }
+
+  .ionContentDiv{
+    padding: 5vw;
+
+    .title{
+      font-weight: 400 !important;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+    }
+
+    hr{
+      color: #dddddd;
+    }
+  }
+
+  .description{
+    letter-spacing: 1px;
+  }
+
+
+  .submitDiv {
+    width: 100%;
+    left: 0;
+    bottom: 2rem;
+
+    .submit {
+      width: 100%;
+      height: 5rem;
+      background: #555;
+      color: white;
+      font-weight: 700;
+      border-radius: 2.5rem;
+      letter-spacing: 0.3rem;
+    }
+    div {
+      text-align: center;
+      font-size: 1.4rem;
+      font-weight: 500;
+      margin-top: 1rem;
+    }
+    .submit:hover {
+      background: #f55d54;
+    }
+
+  }
+
+}
