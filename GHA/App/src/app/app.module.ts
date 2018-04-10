@@ -16,6 +16,7 @@ import { UtilityProvider } from '../providers/utility/utility';
 import {HttpClientModule} from "@angular/common/http";
 import {BarcodeScanner} from "@ionic-native/barcode-scanner";
 import {HomePageModule} from "../pages/home/home.module";
+import { CargoProvider } from '../providers/cargo/cargo';
 
 @NgModule({
   declarations: [
@@ -44,7 +45,8 @@ import {HomePageModule} from "../pages/home/home.module";
     SettingsProvider,
     UserProvider,
     UtilityProvider,
-    BarcodeScanner
+    BarcodeScanner,
+    CargoProvider
   ]
 })
 export class AppModule {}

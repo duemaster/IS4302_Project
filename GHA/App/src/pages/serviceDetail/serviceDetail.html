@@ -8,27 +8,25 @@
   <img src="./assets/imgs/cargoDetail.jpg">
 
   <div class="ionContentDiv">
-    <h3 class="title">Cargo CH567</h3>
-    <span class="GHA">SATS (GHA)</span>
+    <h3 class="title">Cargo {{cargo.id}}</h3>
+    <span class="GHA">{{cargo.companyName}} (GHA)</span>
     <br>
     <br>
     <hr>
 
     <p class="description">
-      SATS Will provide delicious food for each of the customer taking the flight from Singapore to Chong Qing.
+      {{cargo.description}}
     </p>
     <br>
+    <br>
 
-    <p>* 186 Meals</p>
-    <p>* 10 Package of Drinks</p>
+    <p>Flight: {{cargo.flightObj.flightNumber}}</p>
   </div>
 
   <!--Requester Actions-->
   <div class="submitDiv" padding >
-    <button block class="submit" (click)="cancel()">CONFIRM</button>
-    <div tappable (click)="login()">
-      Reject this service
-    </div>
+    <button block class="submit" (click)="callTransaction()">CONFIRM</button>
+
   </div>
 
 </ion-content>
