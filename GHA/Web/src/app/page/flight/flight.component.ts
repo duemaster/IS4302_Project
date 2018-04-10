@@ -51,6 +51,10 @@ export class FlightComponent implements AfterViewInit {
         aircraft: {},
     };
 
+    isError = false;
+    errorMessage: string;
+    windowObj:any = window;
+
     newService: any;
 
     serviceList: any;
@@ -67,6 +71,7 @@ export class FlightComponent implements AfterViewInit {
     staffList: any;
 
     async viewService(flight) {
+        this.isError = false;
 
         this.newService = {};
 
@@ -89,23 +94,29 @@ export class FlightComponent implements AfterViewInit {
     }
 
     async addService() {
-        this.loading = true;
-        this.newService.id = new Date().getTime().toString();
+        if(!this.newService.description || !this.newService.type){
+            this.isError = true;
+            this.errorMessage = 'Please fill in all required fields';
+        }else {
+            this.isError = false;
+            this.loading = true;
+            this.newService.id = new Date().getTime().toString();
 
-        //add Flight Information
-        this.newService.flight = `${this.blockChainService.FLIGHT}#${this.flight.id}`;
+            //add Flight Information
+            this.newService.flight = `${this.blockChainService.FLIGHT}#${this.flight.id}`;
 
-        //Submit Transaction
-        await this.http.post(
-            `${this.service.ENDPOINT}/blockchain/user/${this.authService.admin.id}/api/org.airline.airChain.IssueFlightServiceRequest`,
-            this.newService,
-            {withCredentials: true}
-        ).toPromise();
+            //Submit Transaction
+            await this.http.post(
+                `${this.service.ENDPOINT}/blockchain/user/${this.authService.admin.id}/api/org.airline.airChain.IssueFlightServiceRequest`,
+                this.newService,
+                {withCredentials: true}
+            ).toPromise();
 
-        this.serviceList = await this.fetchServiceListForFlight(this.flight.id);
+            this.serviceList = await this.fetchServiceListForFlight(this.flight.id);
 
-        this.loading = false;
-        this.newService = {};
+            this.loading = false;
+            this.newService = {};
+        }
 
     }
 

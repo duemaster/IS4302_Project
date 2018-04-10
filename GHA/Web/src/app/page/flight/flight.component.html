@@ -148,6 +148,7 @@
                                        [disabled]="true">
                             </div>
                         </div>
+
                     </div>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-default" data-dismiss="modal">Okay</button>
@@ -233,6 +234,9 @@
                                         <option value="FOOD">Food</option>
                                         <option value="UTILITY">Utilities</option>
                                     </select>
+                                </div>
+                                <div *ngIf="isError">
+                                    <p style="color: red">*{{this.errorMessage}}</p>
                                 </div>
                             </div>
                             <button type="button" class="btn ink-reaction btn-raised btn-primary button1"

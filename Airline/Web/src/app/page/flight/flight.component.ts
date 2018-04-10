@@ -37,6 +37,7 @@ export class FlightComponent implements AfterViewInit {
 
     isError = false;
     errorMessage: string;
+    windowObj:any = window;
 
     applyFilter(filterValue: string) {
         filterValue = filterValue.trim(); // Remove whitespace
@@ -115,7 +116,7 @@ export class FlightComponent implements AfterViewInit {
     }
 
     processFlight() {
-        if(this.flight.flightNumber === '' || this.flight.origin === '' || this.flight.destination === ''){
+        if(!this.flight.flightNumber || !this.flight.origin || !this.flight.destination){
             this.isError = true;
             this.errorMessage = 'Please fill in all required fields';
         }else {
@@ -124,6 +125,7 @@ export class FlightComponent implements AfterViewInit {
                 this.addFlight();
             else
                 this.editFlight();
+            return this.windowObj.jQuery('.modal-backdrop').click();
         }
     }
 
