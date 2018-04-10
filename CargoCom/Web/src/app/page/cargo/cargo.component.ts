@@ -165,12 +165,18 @@ export class CargoComponent implements AfterViewInit {
 
     //Cargo Request
     async request(element) {
+        console.log("Entered REqyest");
         this.cargo = element;
+        this.loading = true;
+        console.log(this.cargo);
         if (this.cargo.request) {
-            this.cargoRequest = this.http.get(
-                `${this.service.ENDPOINT}/blockchain/user/${this.authService.admin.id}/api/org.airline.airChain.CargoRequest${this.cargo.request}`,
+            //Remove namespace
+            this.cargo.request = this.cargo.request.replace(`${this.blockChainService.CARGO_REQUEST}#`, "");
+            this.cargoRequest = await this.http.get(
+                `${this.service.ENDPOINT}/blockchain/user/${this.authService.admin.id}/api/org.airline.airChain.CargoRequest/${this.cargo.request}`,
                 {withCredentials: true})
                 .toPromise();
+            console.log(this.cargoRequest);
             if (this.cargoRequest.status === 'PENDING')
                 this.isPending = true;
             else
@@ -188,22 +194,26 @@ export class CargoComponent implements AfterViewInit {
                 cargo: `${this.blockChainService.CARGO}#${this.cargo.id}`
             };
         }
+        this.loading = false;
     }
 
     async addRequest() {
         if(this.cargoRequest.description === '' || this.cargo.origin === '' || this.cargo.destination === ''){
             this.isError = true;
             this.errorMessage = 'Please fill in all required fields';
-        }else if(this.cargo.lateDepartureTime.getTime()-this.cargo.earlyDepartureTime.getTime() < 0){
+        }else if(this.cargoRequest.lateDepartureTime.getTime() - this.cargoRequest.earlyDepartureTime.getTime() < 0){
             this.isError = true;
             this.errorMessage = 'Invalid Date Time';
         }else {
+            this.loading = true;
             this.isError = false;
             await this.http.post(
                 `${this.service.ENDPOINT}/blockchain/user/${this.authService.admin.id}/api/org.airline.airChain.CreateCargoRequest`,
                 this.cargoRequest,
                 {withCredentials: true})
                 .toPromise();
+
+            this.loading = false;
             return this.windowObj.jQuery('.modal-backdrop').click();
         }
 

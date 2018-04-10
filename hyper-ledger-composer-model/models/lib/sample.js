@@ -15,6 +15,125 @@
 var namespace = "org.airline.airChain";
 
 /*
+ ** Add Employees Transaction
+ */
+
+/**
+* Sample transaction processor function.
+* @param {org.airline.airChain.AddAirlineEmployee} tx The sample transaction instance.
+* @transaction
+*/
+function AddAirlineEmployee(tx) {
+    var caller = getCurrentParticipant();
+
+    //Get company
+    return getAssetRegistry(namespace + ".AirlineCompany")
+        .then(function (companyAssetRegistry) {
+
+            return companyAssetRegistry.get(caller.company.$identifier)
+                .then(function (company) {
+                    var newEmployee = getFactory().newResource(namespace, "AirlineEmployee", tx.id);
+                    newEmployee.name = tx.name;
+                    newEmployee.role = tx.role;
+                    newEmployee.company = company;
+
+                    if (!company.employees) {
+                        company.employees = [];
+                    }
+
+                    console.log(company.employees.length);
+
+                    company.employees.push(newEmployee);
+
+                    return getParticipantRegistry(namespace + ".AirlineEmployee")
+                        .then(function (employeeRegistry) {
+                            return employeeRegistry.add(newEmployee)
+                                .then(function () {
+                                    return saveAirlineCompany(company);
+                                })
+                        })
+
+                });
+        })
+}
+
+/**
+ * Sample transaction processor function.
+ * @param {org.airline.airChain.AddGHAEmployee} tx The sample transaction instance.
+ * @transaction
+ */
+function AddGHAEmployee(tx) {
+    var caller = getCurrentParticipant();
+
+    //Get company
+    return getAssetRegistry(namespace + ".GHACompany")
+        .then(function (companyAssetRegistry) {
+
+            return companyAssetRegistry.get(caller.company.$identifier)
+                .then(function (company) {
+                    var newEmployee = getFactory().newResource(namespace, "GHAEmployee", tx.id);
+                    newEmployee.name = tx.name;
+                    newEmployee.role = tx.role;
+                    newEmployee.company = company;
+
+                    if (!company.employees) {
+                        company.employees = [];
+                    }
+
+                    company.employees.push(newEmployee);
+
+                    return getParticipantRegistry(namespace + ".GHAEmployee")
+                        .then(function (employeeRegistry) {
+                            return employeeRegistry.add(newEmployee)
+                                .then(function () {
+                                    return saveGHACompany(company);
+                                })
+                        })
+
+                });
+        })
+}
+
+/**
+ * Sample transaction processor function.
+ * @param {org.airline.airChain.AddCargoEmployee} tx The sample transaction instance.
+ * @transaction
+ */
+function AddCargoEmployee(tx) {
+    var caller = getCurrentParticipant();
+
+    //Get company
+    return getAssetRegistry(namespace + ".CargoCompany")
+        .then(function (companyAssetRegistry) {
+
+            return companyAssetRegistry.get(caller.company.$identifier)
+                .then(function (company) {
+                    var newEmployee = getFactory().newResource(namespace, "CargoEmployee", tx.id);
+                    newEmployee.name = tx.name;
+                    newEmployee.role = tx.role;
+                    newEmployee.company = company;
+
+                    if (!company.employees) {
+                        company.employees = [];
+                    }
+
+                    company.employees.push(newEmployee);
+
+                    return getAssetRegistry(namespace + ".CargoEmployee")
+                        .then(function (employeeRegistry) {
+                            return employeeRegistry.add(newEmployee)
+                                .then(function () {
+                                    return saveCargoCompany(company);
+                                })
+                        })
+
+                });
+        })
+}
+
+
+
+/*
  ** Airline Company Action
  */
 
@@ -345,9 +464,14 @@ function CreateCargoRequest(tx) {
     cargoRequest.earlyDepartureTime = tx.earlyDepartureTime;
     cargoRequest.lateDepartureTime = tx.lateDepartureTime;
 
+    tx.cargo.request = cargoRequest;
+
     return getAssetRegistry(namespace + ".CargoRequest")
         .then(function (cargoRequestAssetRegistry) {
-            return cargoRequestAssetRegistry.add(cargoRequest);
+            return cargoRequestAssetRegistry.add(cargoRequest)
+                .then(function () {
+                    return saveCargo(tx.cargo);
+                });
         })
 }
 

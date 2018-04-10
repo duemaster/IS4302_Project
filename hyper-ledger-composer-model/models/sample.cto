@@ -147,6 +147,12 @@ participant GHAEmployee identified by id {
 ** Airline Company Action
 */
 
+transaction AddAirlineEmployee {
+  o String id
+  o String name
+  o ROLE role
+}
+
 transaction AddAircraft {
   o String id
   o String model
@@ -186,6 +192,13 @@ transaction UpdateFlightTakeOff {
 /*
 ** GHA Company Action
 */
+
+transaction AddGHAEmployee {
+  o String id
+  o String name
+  o ROLE role
+}
+
 transaction IssueFlightServiceRequest {
     o String id
     o String description
@@ -200,6 +213,12 @@ transaction CollectCargoFromWarehouse {
 /*
 ** Cargo Company Action
 */
+
+transaction AddCargoEmployee {
+  o String id
+  o String name
+  o ROLE role
+}
 
 transaction AddCargo {
     o String id

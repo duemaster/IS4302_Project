@@ -17,6 +17,8 @@ export class BlockChainService {
     readonly CARGO: string = `${this.namespace}.Cargo`;
     readonly FLIGHT: string = `${this.namespace}.Flight`;
 
+    readonly CARGO_REQUEST: string = `${this.namespace}.CargoRequest`;
+
     constructor() {
     }
 

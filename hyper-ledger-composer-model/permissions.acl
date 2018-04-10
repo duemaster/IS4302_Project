@@ -2,6 +2,33 @@
   * Helpful Transaction ACL
   */
 
+rule AllowAirlineAddEmployee {
+  description:  "Allow Airline company to add Employee"
+  participant (p): "org.airline.airChain.AirlineEmployee"
+  operation: CREATE
+  resource (r): "org.airline.airChain.AddAirlineEmployee"
+  condition: (p.role == "OFFICER")
+  action: ALLOW
+}
+
+rule AllowGHAAddEmployee {
+  description:  "Allow Airline company to add Employee"
+  participant (p): "org.airline.airChain.GHAEmployee"
+  operation: CREATE
+  resource (r): "org.airline.airChain.AddGHAEmployee"
+  condition: (p.role == "OFFICER")
+  action: ALLOW
+}
+
+rule AllowCargoAddEmployee {
+  description:  "Allow Airline company to add Employee"
+  participant (p): "org.airline.airChain.CargoEmployee"
+  operation: CREATE
+  resource (r): "org.airline.airChain.AddCargoEmployee"
+  condition: (p.role == "OFFICER")
+  action: ALLOW
+}
+
 rule AllowAirlineAddFlight {
   description:  "Allow Airline company to add Flights"
   participant (p): "org.airline.airChain.AirlineEmployee"
@@ -176,7 +203,7 @@ rule AllowAirlineCabinCrewUpdateServiceDelivery {
    operation: UPDATE
    resource (r): "org.airline.airChain.Cargo"
    transaction (txn): "org.airline.airChain.ConfirmCargoToWarehouse"
-   condition: (p.role == "STAFF" && r.status == "COLLECTED" && p.company.getIdentifier() == r.flight.deliverCompany.getIdentifier())
+   condition: (p.role == "STAFF" && r.status == "COLLECTED" && (r.company.getIdentifier() == p.company.getIdentifier() || r.request.acceptedCompany.getIdentifier() == p.company.getIdentifier()))
    action: ALLOW
  }
 
@@ -393,6 +420,15 @@ rule AllowCargoCompanyViewAirlineCompany {
   condition: (p.role == "OFFICER" && r.authorisedCargoCompany.getIdentifier() === p.company.getIdentifier())
   action: ALLOW
 }
+
+// rule AllowGHACompanyViewAirlineCompany {
+//   description:  "Allow GHA to view Airline Company"
+//   participant (p): "org.airline.airChain.GHAEmployee"
+//   operation: READ
+//   resource (r): "org.airline.airChain.AirlineCompany"
+//   condition: (true)
+//   action: ALLOW
+// }
 
 /*
 * System Configuration
