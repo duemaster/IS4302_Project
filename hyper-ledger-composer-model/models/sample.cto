@@ -213,7 +213,17 @@ transaction ConfirmCargoToWarehouse {
 
 transaction AssignCargoToFlight {
     --> Cargo cargo
-    --> Flight flight
+    --> Flight flight optional
+}
+
+transaction CreateCargoRequest {
+    --> Cargo cargo
+    o String id
+    o String description
+    o String origin
+    o String destination
+    o DateTime earlyDepartureTime
+    o DateTime lateDepartureTime
 }
 
 transaction AcceptCargoRequest {

@@ -31,6 +31,9 @@ export class AircraftComponent implements AfterViewInit {
     aircraft: any;
     isCreate = false;
 
+    isError = false;
+    errorMessage: string;
+
     applyFilter(filterValue: string) {
         filterValue = filterValue.trim(); // Remove whitespace
         filterValue = filterValue.toLowerCase(); // MatTableDataSource defaults to lowercase matches
@@ -38,15 +41,21 @@ export class AircraftComponent implements AfterViewInit {
     }
 
     create() {
+        this.isError = false;
         this.isCreate = true;
         this.aircraft = {};
     }
 
     processAircraft() {
-        if (this.isCreate)
-            this.addAircraft();
-        else
-            this.editAircraft();
+        if(!this.aircraft.id || !this.aircraft.model || !this.aircraft.passengerCapacity || !this.aircraft.cargoCapacity){
+            this.isError = true;
+            this.errorMessage = 'Please fill in all required fields';
+        }else {
+            if (this.isCreate)
+                this.addAircraft();
+            else
+                this.editAircraft();
+        }
     }
 
     async addAircraft() {
@@ -93,6 +102,7 @@ export class AircraftComponent implements AfterViewInit {
     }
 
     update(element) {
+        this.isError = false;
         this.isCreate = false;
         this.aircraft = element;
     }

@@ -101,7 +101,7 @@
                             </div>
                             <div class="col-sm-9">
                                 <input type="text" [disabled]="!isCreate" name="seriesId" id="seriesId"
-                                       class="form-control" [(ngModel)]="aircraft.id" placeholder="Series ID">
+                                       class="form-control" [(ngModel)]="aircraft.id" placeholder="Series ID" required>
                             </div>
                         </div>
                         <div class="form-group">
@@ -110,7 +110,7 @@
                             </div>
                             <div class="col-sm-9">
                                 <input type="text" name="model" id="model" class="form-control"
-                                       [(ngModel)]="aircraft.model" placeholder="Model">
+                                       [(ngModel)]="aircraft.model" placeholder="Model" required>
                             </div>
                         </div>
                         <div class="form-group">
@@ -119,7 +119,7 @@
                             </div>
                             <div class="col-sm-9">
                                 <input type="number" name="paxCap" id="paxCap" class="form-control"
-                                       [(ngModel)]="aircraft.passengerCapacity" placeholder="Pax Capacity">
+                                       [(ngModel)]="aircraft.passengerCapacity" placeholder="Pax Capacity" required>
                             </div>
                         </div>
                         <div class="form-group">
@@ -128,8 +128,11 @@
                             </div>
                             <div class="col-sm-9">
                                 <input type="number" name="cargo" id="cargo" class="form-control"
-                                       [(ngModel)]="aircraft.cargoCapacity" placeholder="Cargo Capacity/ton">
+                                       [(ngModel)]="aircraft.cargoCapacity" placeholder="Cargo Capacity/ton" required>
                             </div>
+                        </div>
+                        <div *ngIf="isError">
+                            <p style="color: red">*{{this.errorMessage}}</p>
                         </div>
                     </div>
                     <div class="modal-footer">
