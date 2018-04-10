@@ -31,7 +31,7 @@ export class ServiceComponent implements AfterViewInit {
         flightList: ''
     };
 
-    flight:any;
+    flight:any = {};
 
     applyFilter(filterValue: string) {
         filterValue = filterValue.trim(); // Remove whitespace

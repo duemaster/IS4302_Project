@@ -290,7 +290,7 @@ describe("Airline Testing", () => {
 
         //Retrieve Company
         const companyAssetRegistry = await businessNetworkConnection.getAssetRegistry(`${namespace}.${airlineCompanyAsset}`);
-        let newCompany = await companyAssetRegistry.get("AirlineCompany1");
+        let newCompany = await companyAssetRegistry.get();
 
         expect(newCompany.employees.length).to.be.above(2);
 

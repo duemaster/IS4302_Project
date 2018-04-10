@@ -319,6 +319,15 @@ rule AllowCargoCompanyToViewCargoUnderRequest {
   action: ALLOW
 }
 
+rule PreventCargoCompanyFromDeletingWhenCargoIsDelivered {
+  description:  "Allow Cargo Company to manage their own cargo"
+  participant (p): "org.airline.airChain.CargoEmployee"
+  operation: UPDATE
+  resource (r): "org.airline.airChain.Cargo"
+  condition: (r.status == "DELIVERED" && r.company.getIdentifier() == p.company.getIdentifier())
+  action: DENY
+}
+
 rule AllowCargoCompanyToManageCargo {
   description:  "Allow Cargo Company to manage their own cargo"
   participant (p): "org.airline.airChain.CargoEmployee"
