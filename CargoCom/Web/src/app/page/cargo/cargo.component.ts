@@ -91,8 +91,9 @@ export class CargoComponent implements AfterViewInit {
 
         //If there is flight
         if (this.assignedFlightId) {
-            await this.assignCargoToFlight(this.cargo.id, this.assignedFlightId);
+            let response = await this.assignCargoToFlight(this.cargo.id, this.assignedFlightId);
             this.assignedFlightId = null;
+            console.log(response);
         }
 
         //Refresh Data Table
@@ -149,6 +150,7 @@ export class CargoComponent implements AfterViewInit {
         ).toPromise();
     }
 
+    //Cargo Request
     async request(element) {
         this.cargo = element;
         if (this.cargo.request) {

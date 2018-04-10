@@ -78,23 +78,8 @@ export class FlightComponent implements AfterViewInit {
 
     async viewCargo(flight) {
         this.loading = true;
-        this.cargoList = [];
 
-        if (!flight.cargos) {
-            flight.cargos = [];
-        }
-
-        for (let item of flight.cargos) {
-            let cargoDetail: any = await this.http.get(
-                `${this.service.ENDPOINT}/blockchain/user/${this.authService.admin.id}/api/org.airline.airChain.Cargo/${item}`,
-                {withCredentials: true}
-            ).toPromise();
-            //Remove Cabin Crew NameSpace
-            if (cargoDetail.company) {
-                cargoDetail.company = cargoDetail.company.replace(this.blockChainService.CARGO_COMPANY, "");
-            }
-            this.cargoList.push(cargoDetail);
-        }
+        this.cargoList = await this.fetchCargoListForFlight(flight.id);
         this.loading = false;
 
     }
@@ -135,8 +120,8 @@ export class FlightComponent implements AfterViewInit {
 
         let response = await this.http.put(
             `${this.service.ENDPOINT}/blockchain/user/${this.authService.admin.id}/api/org.airline.airChain.Service/${service.id}`,
-            {withCredentials: true},
-            serviceToDelete
+            serviceToDelete,
+            {withCredentials: true}
         ).toPromise();
         console.log(response);
 
@@ -188,6 +173,22 @@ export class FlightComponent implements AfterViewInit {
         });
 
         return serviceList;
+    }
+
+    private async fetchCargoListForFlight(flightId: string) {
+        let entireCargoList: any = await this.http.get(
+            `${this.service.ENDPOINT}/blockchain/user/${this.authService.admin.id}/api/org.airline.airChain.Cargo`,
+            {withCredentials: true}
+        ).toPromise();
+
+        console.log(entireCargoList);
+
+        //Filter out those that do not belong to flight
+        let cargoList = entireCargoList.filter((cargo) => {
+            return cargo.flight === `${this.blockChainService.FLIGHT}#${flightId}`;
+        });
+
+        return cargoList;
     }
 
 

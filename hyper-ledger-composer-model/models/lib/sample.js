@@ -121,6 +121,37 @@ function ProcessFlightServiceDelivery(tx) {
     return saveService(service);
 }
 
+/**
+ * Sample transaction processor function.
+ * @param {org.airline.airChain.UpdateFlightTakeOff} tx The sample transaction instance.
+ * @transaction
+ */
+function UpdateFlightTakeOff(tx) {
+    var flight = tx.flight;
+
+    flight.status = "DEPARTED";
+    //Update Services to "NOT_DONE" for those not approved
+    if (!flight.services) {
+        flight.services = [];
+    }
+
+    var servicePromiseArr =
+        flight.services
+        .filter(function(service) {
+            return service.status === "APPROVED";
+        })
+        .map(function(service) {
+            service.status = "NOT_DONE";
+            return saveService(service);
+        });
+
+    //Update Services and Flight
+    return saveFlight(flight)
+        .then(function() {
+            return Promise.all(servicePromiseArr);
+        });
+}
+
 
 /*
  ** GHA Company Action
@@ -168,27 +199,6 @@ function IssueFlightServiceRequest(tx) {
                 });
         })
     });
-
-
-
-
-    // var service = tx.service;
-    // var flight = tx.flight;
-
-    // if (flight.status != "SCHEDULED")
-    //     throw new Error("Flight not in scheduled status");
-
-    // //Add Services to Flight
-    // if (!flight.services)
-    //     flight.services = [];
-
-    // flight.services.push(service);
-    // service.flight = flight;
-
-    // //Save Flight & service
-    // return saveFlight(flight).then(function() {
-    //     saveService(service);
-    // })
 }
 
 /**
@@ -271,6 +281,18 @@ function ConfirmCargoToWarehouse(tx) {
  */
 function AssignCargoToFlight(tx) {
     var cargo = tx.cargo;
+
+    //Remove cargo from old flight if possible
+    var oldFlight = cargo.flight;
+    if (oldFlight) {
+        var oldCargos = oldFlight.cargos;
+        var index = oldCargos.find(function(currCargo) {
+            return currCargo.getIdentifier() == cargo.getIdentifier();
+        });
+
+        oldCargos.splice(index, 1);
+    }
+
     var flight = tx.flight;
 
     if (!flight.cargos) {
@@ -294,7 +316,15 @@ function AssignCargoToFlight(tx) {
     //Save cargo
     return saveCargo(cargo).then(function() {
         //Save flight
-        return saveFlight(flight);
+        return saveFlight(flight)
+            .then(function() {
+                //Save old flight if exists
+                if (oldFlight) {
+                    return saveFlight(oldFlight);
+                } else {
+                    return;
+                }
+            });
     })
 }
 

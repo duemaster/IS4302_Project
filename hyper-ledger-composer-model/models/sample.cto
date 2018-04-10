@@ -88,6 +88,7 @@ enum SERVICE_STATUS {
     o REJECTED
     o DONE
     o NOT_DONE
+    o CANCELLED
 }
 
 asset Service identified by id {
@@ -98,7 +99,6 @@ asset Service identified by id {
     --> GHACompany company
     --> Flight flight
 }
-
 
 enum CARGO_SERVICE_STATUS {
     o PENDING
@@ -123,7 +123,7 @@ enum ROLE {
     o OFFICER
 }
 participant AirlineEmployee identified by id{
-      o String id
+    o String id
     o String name
     o ROLE role
     --> AirlineCompany company
@@ -177,6 +177,10 @@ transaction HandleFlightServiceRequest {
 transaction ProcessFlightServiceDelivery {
     --> Service service
     o Boolean isApproved
+}
+
+transaction UpdateFlightTakeOff {
+  --> Flight flight
 }
 
 /*
