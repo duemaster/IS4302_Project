@@ -47,7 +47,7 @@
                         <!-- Cargo Capacity Column -->
                         <ng-container matColumnDef="DeliveryDate">
                             <mat-header-cell *matHeaderCellDef> Expected Delivery Date</mat-header-cell>
-                            <mat-cell *matCellDef="let element"> {{element.lateDepartureTime}}</mat-cell>
+                            <mat-cell *matCellDef="let element"> {{element.lateDepartureTime | date}}</mat-cell>
                         </ng-container>
 
                         <ng-container matColumnDef="Option">

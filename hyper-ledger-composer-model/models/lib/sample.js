@@ -41,6 +41,8 @@ function AddAirlineEmployee(tx) {
                         company.employees = [];
                     }
 
+                    console.log(company.employees.length);
+
                     company.employees.push(newEmployee);
 
                     return getParticipantRegistry(namespace + ".AirlineEmployee")
@@ -462,9 +464,14 @@ function CreateCargoRequest(tx) {
     cargoRequest.earlyDepartureTime = tx.earlyDepartureTime;
     cargoRequest.lateDepartureTime = tx.lateDepartureTime;
 
+    tx.cargo.request = cargoRequest;
+
     return getAssetRegistry(namespace + ".CargoRequest")
         .then(function (cargoRequestAssetRegistry) {
-            return cargoRequestAssetRegistry.add(cargoRequest);
+            return cargoRequestAssetRegistry.add(cargoRequest)
+                .then(function () {
+                    return saveCargo(tx.cargo);
+                });
         })
 }
 

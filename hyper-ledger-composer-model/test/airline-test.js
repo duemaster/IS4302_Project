@@ -869,6 +869,7 @@ describe("Airline Testing", () => {
         const cargoAssetRegistry = await businessNetworkConnection.getAssetRegistry(`${namespace}.${cargoCargoAsset}`);
         let cargo = await cargoAssetRegistry.get("Cargo1");
         expect(cargoRequest.cargo.getFullyQualifiedIdentifier() === cargo.getFullyQualifiedIdentifier());
+        expect(cargo.request.getFullyQualifiedIdentifier() === cargoRequest.getFullyQualifiedIdentifier());
     })
 
     it("Cargo staff can collect cargo to warehouse (not via cargo request)", async () => {
