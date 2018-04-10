@@ -35,6 +35,9 @@ export class FlightComponent implements AfterViewInit {
     agentList: any;
     serviceList: any;
 
+    isError = false;
+    errorMessage: string;
+
     applyFilter(filterValue: string) {
         filterValue = filterValue.trim(); // Remove whitespace
         filterValue = filterValue.toLowerCase(); // MatTableDataSource defaults to lowercase matches
@@ -53,6 +56,7 @@ export class FlightComponent implements AfterViewInit {
     }
 
     update(element) {
+        this.isError = false;
         this.dateTimeExample = new Date(element.departureTime);
         this.isCreate = false;
         this.flight = element;
@@ -102,6 +106,7 @@ export class FlightComponent implements AfterViewInit {
     }
 
     create() {
+        this.isError = false;
         this.isCreate = true;
         this.flight = {
             id: new Date().getTime().toString()
@@ -110,10 +115,16 @@ export class FlightComponent implements AfterViewInit {
     }
 
     processFlight() {
-        if (this.isCreate)
-            this.addFlight();
-        else
-            this.editFlight();
+        if(this.flight.flightNumber === '' || this.flight.origin === '' || this.flight.destination === ''){
+            this.isError = true;
+            this.errorMessage = 'Please fill in all required fields';
+        }else {
+            this.isError = false;
+            if (this.isCreate)
+                this.addFlight();
+            else
+                this.editFlight();
+        }
     }
 
     async addFlight() {

@@ -22,6 +22,9 @@ export class DashboardComponent implements AfterViewInit {
 
     isCreate = false;
 
+    isError = false;
+    errorMessage: string;
+
     @ViewChild(MatPaginator) paginator: MatPaginator;
 
     constructor(private http: HttpClient,
@@ -41,6 +44,7 @@ export class DashboardComponent implements AfterViewInit {
     }
 
     create() {
+        this.isError = false;
         this.isCreate = true;
         this.staff = {
             name: '',
@@ -50,10 +54,16 @@ export class DashboardComponent implements AfterViewInit {
     }
 
     processStaff() {
-        if (this.isCreate)
-            this.addStaff();
-        else
-            this.editStaff();
+        if(this.staff.name === '' || this.staff.password === ''){
+            this.isError = true;
+            this.errorMessage = 'Please fill in all required fields';
+        }else {
+            this.isError = false;
+            if (this.isCreate)
+                this.addStaff();
+            else
+                this.editStaff();
+        }
     }
 
     async addStaff() {
@@ -96,6 +106,7 @@ export class DashboardComponent implements AfterViewInit {
     }
 
     update(element) {
+        this.isError = false;
         this.isCreate = false;
         this.staff = element;
     }
