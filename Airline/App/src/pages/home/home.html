@@ -61,6 +61,8 @@
       <p class="text">{{service.type}} Service <ion-icon [ngClass]="service.status" name="ios-checkmark-circle"></ion-icon></p>
     </div>
 
+    <button *ngIf="flightProvider.flight.status=='SCHEDULED'" class="scanBtn" ion-button (click)="flightProvider.takeoff()">Confirm Take Off</button>
   </div>
+
 
 </ion-content>

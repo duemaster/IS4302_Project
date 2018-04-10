@@ -1,0 +1,31 @@
+<ion-header>
+  <ion-navbar color="white">
+    <ion-title id="pageTitle">DETAILS</ion-title>
+  </ion-navbar>
+</ion-header>
+
+<ion-content padding>
+  <img src="./assets/imgs/cargoDetail.jpg">
+
+  <div class="ionContentDiv">
+    <h3 class="title">Cargo {{cargo.id}}</h3>
+    <span class="GHA">{{cargo.companyName}} (GHA)</span>
+    <br>
+    <br>
+    <hr>
+
+    <p class="description">
+      {{cargo.description}}
+    </p>
+    <br>
+    <br>
+
+  </div>
+
+  <!--Requester Actions-->
+  <div class="submitDiv" padding >
+    <button block class="submit" (click)="callTransaction()">CONFIRM</button>
+
+  </div>
+
+</ion-content>
