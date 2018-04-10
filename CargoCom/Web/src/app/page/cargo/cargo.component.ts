@@ -165,21 +165,21 @@ export class CargoComponent implements AfterViewInit {
         } else {
             this.isPending = true;
             this.cargoRequest = {
-                id: `${this.blockChainService.CARGO}#${(new Date()).getTime()}`,
+                id: `${(new Date()).getTime()}`,
                 description: '',
                 origin: '',
                 destination: '',
                 status: 'PENDING',
                 earlyDepartureTime: new Date(),
                 lateDepartureTime: new Date(),
-                cargo: this.cargo.id
+                cargo: `${this.blockChainService.CARGO}#${this.cargo.id}`
             };
         }
     }
 
     async addRequest() {
         await this.http.post(
-            `${this.service.ENDPOINT}/blockchain/user/${this.authService.admin.id}/api/org.airline.airChain.CargoRequest`,
+            `${this.service.ENDPOINT}/blockchain/user/${this.authService.admin.id}/api/org.airline.airChain.CreateCargoRequest`,
             this.cargoRequest,
             {withCredentials: true})
             .toPromise();
@@ -188,7 +188,7 @@ export class CargoComponent implements AfterViewInit {
 
     async editRequest() {
         await this.http.put(
-            `${this.service.ENDPOINT}/blockchain/user/${this.authService.admin.id}/api/org.airline.airChain.CargoRequest/${this.cargoRequest.id}`,
+            `${this.service.ENDPOINT}/blockchain/user/${this.authService.admin.id}/api/org.airline.airChain.CreateCargoRequest/${this.cargoRequest.id}`,
             this.cargoRequest,
             {withCredentials: true})
             .toPromise();
@@ -197,7 +197,7 @@ export class CargoComponent implements AfterViewInit {
     async cancelRequest() {
         this.cargoRequest.status = 'CANCELLED';
         await this.http.put(
-            `${this.service.ENDPOINT}/blockchain/user/${this.authService.admin.id}/api/org.airline.airChain.CargoRequest/${this.cargoRequest.id}`,
+            `${this.service.ENDPOINT}/blockchain/user/${this.authService.admin.id}/api/org.airline.airChain.CreateCargoRequest/${this.cargoRequest.id}`,
             this.cargoRequest,
             {withCredentials: true})
             .toPromise();
