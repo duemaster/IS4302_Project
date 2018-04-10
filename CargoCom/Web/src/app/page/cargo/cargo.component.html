@@ -71,6 +71,11 @@
                                         (click)="update(element)">
                                     <span class="glyphicon glyphicon-trash"></span>
                                 </button>
+                                <a href="{{service.ENDPOINT}}/cargo/qr/{{element.id}}" target="_blank" download>
+                                    <button class="btn btn-sm btn-default">
+                                        <span class="glyphicon glyphicon-qrcode"></span>
+                                    </button>
+                                </a>
                             </mat-cell>
                         </ng-container>
 

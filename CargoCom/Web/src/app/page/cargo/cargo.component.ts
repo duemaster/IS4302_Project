@@ -23,7 +23,7 @@ export class CargoComponent implements AfterViewInit {
     }
 
     constructor(private http: HttpClient,
-                private service: SettingService,
+                public service: SettingService,
                 public authService: AuthService,
                 public blockChainService: BlockChainService) {
     }

@@ -22,9 +22,8 @@ PUT           /blockchain/user/:id/*url        controllers.BlockChainController.
 DELETE        /blockchain/user/:id/*url        controllers.BlockChainController.redirectDELETE(id: Long, url)
 
 #*********************************************************************
-# 功能: Device System
+# 功能: QR Code
 # 说明：无
 #*********************************************************************
 ### Terminal Management Module
-#GET           /                                controllers.ServeFileController.adminPortalIndex()
-#GET           /*file                           controllers.ServeFileController.adminPortal(file)
+GET           /cargo/qr/:text                  controllers.ServeFileController.getQRcode(text:String)
