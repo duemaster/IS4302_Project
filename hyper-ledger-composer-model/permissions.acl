@@ -176,7 +176,7 @@ rule AllowAirlineCabinCrewUpdateServiceDelivery {
    operation: UPDATE
    resource (r): "org.airline.airChain.Cargo"
    transaction (txn): "org.airline.airChain.ConfirmCargoToWarehouse"
-   condition: (r.status == "COLLECTED" && p.company.getIdentifier() == r.flight.deliverCompany.getIdentifier())
+   condition: (p.role == "STAFF" && r.status == "COLLECTED" && p.company.getIdentifier() == r.flight.deliverCompany.getIdentifier())
    action: ALLOW
  }
 
@@ -283,12 +283,12 @@ rule AllowGHAEmployeeViewCargo {
   action: ALLOW
 }
 
-rule AllowCargoCompanyOfficerToViewCargoUnderRequest {
-  description:  "Allow Cargo Company Officer to view cargo listed under requests"
+rule AllowCargoCompanyToViewCargoUnderRequest {
+  description:  "Allow Cargo Company to view cargo listed under requests"
   participant (p): "org.airline.airChain.CargoEmployee"
   operation: READ
   resource (r): "org.airline.airChain.Cargo"
-  condition: (r.request && p.role == "OFFICER")
+  condition: (r.request.company.getIdentifier() == p.company.getIdentifier())
   action: ALLOW
 }
 
@@ -297,7 +297,7 @@ rule AllowCargoCompanyToManageCargo {
   participant (p): "org.airline.airChain.CargoEmployee"
   operation: ALL
   resource (r): "org.airline.airChain.Cargo"
-  condition: (p.role == "OFFICER" && r.company.getIdentifier() == p.company.getIdentifier())
+  condition: (r.company.getIdentifier() == p.company.getIdentifier())
   action: ALLOW
 }
 
