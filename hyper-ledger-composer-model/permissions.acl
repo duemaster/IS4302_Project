@@ -232,7 +232,27 @@ rule AllowAirlineCabinCrewUpdateServiceDelivery {
     operation: UPDATE
     resource (r): "org.airline.airChain.CargoRequest"
     transaction (txn): "org.airline.airChain.AcceptCargoRequest"
-    condition: (r.status == "CANCELLED" && !r.acceptedCompany && txn.flight.company.authorisedCargoCompany.getIdentifier() == p.company.getIdentifier())
+    condition: (r.status == "PENDING" && !r.acceptedCompany)
+    action: ALLOW
+  }
+
+    rule AllowCargoCompanyOfficerUpdateCargoStatusWhenAcceptingCargoRequest {
+    description:  "Allow Cargo Officer update Cargo when accepting"
+    participant (p): "org.airline.airChain.CargoEmployee"
+    operation: UPDATE
+    resource (r): "org.airline.airChain.Cargo"
+    transaction (txn): "org.airline.airChain.AcceptCargoRequest"
+    condition: (txn.cargoRequest.status == "PENDING" && !r.acceptedCompany )
+    action: ALLOW
+  }
+
+    rule AllowCargoCompanyOfficerUpdateFlightWhenAcceptingCargoRequest {
+    description:  "Allow Cargo Officer update flight when accepting"
+    participant (p): "org.airline.airChain.CargoEmployee"
+    operation: UPDATE
+    resource (r): "org.airline.airChain.Flight"
+    transaction (txn): "org.airline.airChain.AcceptCargoRequest"
+    condition: (p.role == "OFFICER" && r.status == "SCHEDULED" && r.company.authorisedCargoCompany.getIdentifier() == p.company.getIdentifier())
     action: ALLOW
   }
 
@@ -315,17 +335,8 @@ rule AllowCargoCompanyToViewCargoUnderRequest {
   participant (p): "org.airline.airChain.CargoEmployee"
   operation: READ
   resource (r): "org.airline.airChain.Cargo"
-  condition: (r.request.company.getIdentifier() == p.company.getIdentifier())
+  condition: (r.request.status == "PENDING" || r.request.acceptedCompany.getIdentifier() == p.company.getIdentifier())
   action: ALLOW
-}
-
-rule PreventCargoCompanyFromDeletingWhenCargoIsDelivered {
-  description:  "Allow Cargo Company to manage their own cargo"
-  participant (p): "org.airline.airChain.CargoEmployee"
-  operation: UPDATE
-  resource (r): "org.airline.airChain.Cargo"
-  condition: (r.status == "DELIVERED" && r.company.getIdentifier() == p.company.getIdentifier())
-  action: DENY
 }
 
 rule AllowCargoCompanyToManageCargo {
@@ -363,10 +374,9 @@ rule AllowGHACompanyToManageService {
 */
 rule AllowCargoCompanyViewCargoRequest {
   description:  "Allow all cargo company to view Cargo Request"
-  participant (p): "org.airline.airChain.CargoEmployee"
+  participant: "org.airline.airChain.CargoEmployee"
   operation: READ
-  resource (r): "org.airline.airChain.CargoRequest"
-  condition: (p.role == "OFFICER")
+  resource: "org.airline.airChain.CargoRequest"
   action: ALLOW
 }
 
@@ -429,15 +439,6 @@ rule AllowCargoCompanyViewAirlineCompany {
   condition: (p.role == "OFFICER" && r.authorisedCargoCompany.getIdentifier() === p.company.getIdentifier())
   action: ALLOW
 }
-
-// rule AllowGHACompanyViewAirlineCompany {
-//   description:  "Allow GHA to view Airline Company"
-//   participant (p): "org.airline.airChain.GHAEmployee"
-//   operation: READ
-//   resource (r): "org.airline.airChain.AirlineCompany"
-//   condition: (true)
-//   action: ALLOW
-// }
 
 /*
 * System Configuration
