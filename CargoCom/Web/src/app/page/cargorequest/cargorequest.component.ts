@@ -29,6 +29,10 @@ export class CargoRequestComponent implements OnInit {
 
     flightList:any;
 
+    isError = false;
+    errorMessage: string;
+    windowObj:any = window;
+
     availFlight = [
         {id:''},
         {flightNumber:''},
@@ -65,11 +69,18 @@ export class CargoRequestComponent implements OnInit {
     }
 
     async acceptRequest(){
-        await this.http.post(
-            `${this.service.ENDPOINT}/blockchain/user/${this.authService.admin.id}/api/org.airline.airChain.AcceptCargoRequest`,
-            {cargoRequest: this.cargoRequest.id, flight:this.cargoRequest.flight},
-            {withCredentials: true})
-            .toPromise();
+        if(!this.cargoRequest.flight || this.cargoRequest.flight === ''){
+            this.isError = true;
+            this.errorMessage = 'You must assign a flight to the cargo item';
+        }else {
+            this.isError = true;
+            await this.http.post(
+                `${this.service.ENDPOINT}/blockchain/user/${this.authService.admin.id}/api/org.airline.airChain.AcceptCargoRequest`,
+                {cargoRequest: this.cargoRequest.id, flight: this.cargoRequest.flight},
+                {withCredentials: true})
+                .toPromise();
+            return this.windowObj.jQuery('.modal-backdrop').click();
+        }
 
     }
 

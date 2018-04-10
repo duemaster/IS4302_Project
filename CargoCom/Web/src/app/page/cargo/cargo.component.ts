@@ -48,6 +48,10 @@ export class CargoComponent implements AfterViewInit {
     cargoRequest: any;
     isPending = true;
 
+    isError = false;
+    errorMessage: string;
+    windowObj:any = window;
+
     applyFilter(filterValue: string) {
         filterValue = filterValue.trim(); // Remove whitespace
         filterValue = filterValue.toLowerCase(); // MatTableDataSource defaults to lowercase matches
@@ -55,6 +59,7 @@ export class CargoComponent implements AfterViewInit {
     }
 
     update(element) {
+        this.isError = false;
         this.isCreate = false;
         this.cargo = element;
         this.assignedFlightId = this.cargo.flight;
@@ -67,15 +72,23 @@ export class CargoComponent implements AfterViewInit {
     }
 
     create() {
+        this.isError = false;
         this.isCreate = true;
         this.cargo = {};
     }
 
     processCargo() {
-        if (this.isCreate)
-            this.addCargo();
-        else
-            this.editCargo();
+        if(!this.cargo.weight || !this.cargo.description){
+            this.isError = true;
+            this.errorMessage = 'Please fill in all required fields';
+        }else {
+            this.isError = false;
+            if (this.isCreate)
+                this.addCargo();
+            else
+                this.editCargo();
+            return this.windowObj.jQuery('.modal-backdrop').click();
+        }
     }
 
     async addCargo() {
@@ -178,20 +191,40 @@ export class CargoComponent implements AfterViewInit {
     }
 
     async addRequest() {
-        await this.http.post(
-            `${this.service.ENDPOINT}/blockchain/user/${this.authService.admin.id}/api/org.airline.airChain.CreateCargoRequest`,
-            this.cargoRequest,
-            {withCredentials: true})
-            .toPromise();
+        if(this.cargoRequest.description === '' || this.cargo.origin === '' || this.cargo.destination === ''){
+            this.isError = true;
+            this.errorMessage = 'Please fill in all required fields';
+        }else if(this.cargo.lateDepartureTime.getTime()-this.cargo.earlyDepartureTime.getTime() < 0){
+            this.isError = true;
+            this.errorMessage = 'Invalid Date Time';
+        }else {
+            this.isError = false;
+            await this.http.post(
+                `${this.service.ENDPOINT}/blockchain/user/${this.authService.admin.id}/api/org.airline.airChain.CreateCargoRequest`,
+                this.cargoRequest,
+                {withCredentials: true})
+                .toPromise();
+            return this.windowObj.jQuery('.modal-backdrop').click();
+        }
 
     }
 
     async editRequest() {
-        await this.http.put(
-            `${this.service.ENDPOINT}/blockchain/user/${this.authService.admin.id}/api/org.airline.airChain.CreateCargoRequest/${this.cargoRequest.id}`,
-            this.cargoRequest,
-            {withCredentials: true})
-            .toPromise();
+        if(this.cargoRequest.description === '' || this.cargo.origin === '' || this.cargo.destination === ''){
+            this.isError = true;
+            this.errorMessage = 'Please fill in all required fields';
+        }else if(this.cargo.lateDepartureTime.getTime()-this.cargo.earlyDepartureTime.getTime() < 0){
+            this.isError = true;
+            this.errorMessage = 'Invalid Date Time';
+        }else {
+            this.isError = false;
+            await this.http.put(
+                `${this.service.ENDPOINT}/blockchain/user/${this.authService.admin.id}/api/org.airline.airChain.CreateCargoRequest/${this.cargoRequest.id}`,
+                this.cargoRequest,
+                {withCredentials: true})
+                .toPromise();
+            return this.windowObj.jQuery('.modal-backdrop').click();
+        }
     }
 
     async cancelRequest() {

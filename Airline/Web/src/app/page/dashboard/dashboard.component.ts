@@ -24,6 +24,7 @@ export class DashboardComponent implements AfterViewInit {
 
     isError = false;
     errorMessage: string;
+    windowObj:any = window;
 
     @ViewChild(MatPaginator) paginator: MatPaginator;
 
@@ -63,6 +64,7 @@ export class DashboardComponent implements AfterViewInit {
                 this.addStaff();
             else
                 this.editStaff();
+            return this.windowObj.jQuery('.modal-backdrop').click();
         }
     }
 

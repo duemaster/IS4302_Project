@@ -33,6 +33,8 @@ export class AircraftComponent implements AfterViewInit {
 
     isError = false;
     errorMessage: string;
+    windowObj:any = window;
+
 
     applyFilter(filterValue: string) {
         filterValue = filterValue.trim(); // Remove whitespace
@@ -55,6 +57,7 @@ export class AircraftComponent implements AfterViewInit {
                 this.addAircraft();
             else
                 this.editAircraft();
+            return this.windowObj.jQuery('.modal-backdrop').click();
         }
     }
 

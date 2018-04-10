@@ -116,10 +116,13 @@
                 </select>
               </div>
             </div>
+            <div *ngIf="isError">
+              <p style="color: red">*{{this.errorMessage}}</p>
+            </div>
           </div>
           <div class="modal-footer">
             <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
-            <button type="button" class="btn btn-primary" data-dismiss="modal" (click)="processStaff()">Done</button>
+            <button type="button" class="btn btn-primary" (click)="processStaff()">Done</button>
           </div>
         </form>
       </div><!-- /.modal-content -->

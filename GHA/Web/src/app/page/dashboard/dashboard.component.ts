@@ -29,6 +29,10 @@ export class DashboardComponent implements OnInit {
     };
     isCreate =false;
 
+    isError = false;
+    errorMessage: string;
+    windowObj:any = window;
+
     applyFilter(filterValue: string) {
         filterValue = filterValue.trim(); // Remove whitespace
         filterValue = filterValue.toLowerCase(); // MatTableDataSource defaults to lowercase matches
@@ -44,6 +48,7 @@ export class DashboardComponent implements OnInit {
 
 
     create() {
+        this.isError = false;
         this.isCreate = true;
         this.staff = {
             name: '',
@@ -53,10 +58,17 @@ export class DashboardComponent implements OnInit {
     }
 
     processStaff() {
-        if (this.isCreate)
-            this.addStaff();
-        else
-            this.editStaff();
+        if(this.staff.name === '' || this.staff.password === ''){
+            this.isError = true;
+            this.errorMessage = 'Please fill in all required fields';
+        }else {
+            this.isError = false;
+            if (this.isCreate)
+                this.addStaff();
+            else
+                this.editStaff();
+            return this.windowObj.jQuery('.modal-backdrop').click();
+        }
     }
 
     async addStaff() {
@@ -99,6 +111,7 @@ export class DashboardComponent implements OnInit {
     }
 
     update(element) {
+        this.isError = false;
         this.isCreate = false;
         this.staff = element;
     }

@@ -142,10 +142,13 @@
                                 </select>
                             </div>
                         </div>
+                        <div *ngIf="isError">
+                            <p style="color: red">*{{this.errorMessage}}</p>
+                        </div>
                     </div>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
-                        <button type="button" class="btn btn-primary" data-dismiss="modal" (click)="processCargo()">
+                        <button type="button" class="btn btn-primary" (click)="processCargo()">
                             Done
                         </button>
                     </div>
@@ -314,11 +317,13 @@
                                                      [(selectedDateTime)]="cargoRequest.lateDepartureTime"></ngx-datetime-picker>
                             </div>
                         </div>
-
+                        <div *ngIf="isError">
+                            <p style="color: red">*{{this.errorMessage}}</p>
+                        </div>
                     </div>
                     <div class="modal-footer" *ngIf="!cargo.request">
                         <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
-                        <button type="button" class="btn btn-primary" data-dismiss="modal" (click)="addRequest()">Send
+                        <button type="button" class="btn btn-primary"  (click)="addRequest()">Send
                             Reqeust
                         </button>
                     </div>
@@ -327,7 +332,7 @@
                         <button type="button" class="btn btn-danger" data-dismiss="modal"
                                 *ngIf="cargoRequest.status === 'PENDING'" (click)="cancelRequest()">Cancel Reqeust
                         </button>
-                        <button type="button" class="btn btn-primary" data-dismiss="modal"
+                        <button type="button" class="btn btn-primary"
                                 *ngIf="cargoRequest.status === 'PENDING'" (click)="editRequest()">Edit Reqeust
                         </button>
                     </div>
