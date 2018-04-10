@@ -15,25 +15,25 @@ import { UserProvider } from '../providers/user/user';
 import { UtilityProvider } from '../providers/utility/utility';
 import {HttpClientModule} from "@angular/common/http";
 import {BarcodeScanner} from "@ionic-native/barcode-scanner";
+import {HomePageModule} from "../pages/home/home.module";
 
 @NgModule({
   declarations: [
     MyApp,
     ServiceDetailPage,
-    HomePage,
     TabsPage,
     LoginPage
   ],
   imports: [
     BrowserModule,
     HttpClientModule,
+    HomePageModule,
     IonicModule.forRoot(MyApp)
   ],
   bootstrap: [IonicApp],
   entryComponents: [
     MyApp,
     ServiceDetailPage,
-    HomePage,
     TabsPage,
     LoginPage
   ],

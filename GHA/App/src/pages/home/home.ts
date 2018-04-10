@@ -1,10 +1,11 @@
 import { Component } from '@angular/core';
-import { NavController } from 'ionic-angular';
+import {IonicPage, NavController} from 'ionic-angular';
 import {ServiceDetailPage} from "../serviceDetail/serviceDetail";
 import {LoginPage} from "../login/login";
 import {BarcodeScanner} from "@ionic-native/barcode-scanner";
 import {UserProvider} from "../../providers/user/user";
 
+@IonicPage()
 @Component({
   selector: 'page-home',
   templateUrl: 'home.html'

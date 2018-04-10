@@ -24,7 +24,7 @@
   </div>
 
   <!--Requester Actions-->
-  <div class="submitDiv" padding >
+  <div class="submitDiv" padding *ngIf="service.status=='APPROVED'">
     <button block class="submit" (click)="callTransaction(true)">CONFIRM</button>
     <div tappable (click)="callTransaction(false)">
       Reject this service
