@@ -79,7 +79,7 @@ export class CargoComponent implements AfterViewInit {
     }
 
     async addCargo() {
-
+        this.loading = true;
         this.cargo.id = new Date().getTime().toString();
 
         //Create Cargo

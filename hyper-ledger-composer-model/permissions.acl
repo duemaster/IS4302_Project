@@ -97,6 +97,15 @@ rule AllowCargoAssignCargoToFlight {
   action: ALLOW
 }
 
+rule AllowCargoCreateCargoRequest {
+  description:  "Allow all cargo company to create cargo request"
+  participant (p): "org.airline.airChain.CargoEmployee"
+  operation: CREATE
+  resource (r): "org.airline.airChain.CreateCargoRequest"
+  condition: (p.role == "OFFICER" && r.cargo.company.getIdentifier() == p.company.getIdentifier() && !r.cargo.flight)
+  action: ALLOW
+}
+
 rule AllowCargoAcceptCargoRequest {
   description:  "Allow Cargo Employee to accept incoming cargo request"
   participant (p): "org.airline.airChain.CargoEmployee"
@@ -181,6 +190,14 @@ rule AllowAirlineCabinCrewUpdateServiceDelivery {
     action: ALLOW
   }
 
+  rule AllowCargoCompanyCreateCargoRequest {
+    description:  "Allow all cargo company to view Cargo Request"
+    participant (p): "org.airline.airChain.CargoEmployee"
+    operation: CREATE
+    resource (r): "org.airline.airChain.CargoRequest"
+    condition: (p.role == "OFFICER" && r.cargo.company.getIdentifier() == p.company.getIdentifier() && !r.cargo.flight)
+    action: ALLOW
+  }
 
   rule AllowCargoCompanyOfficerUpdateCargoRequest {
     description:  "Allow Cargo Officer update Cargo Request when accepting"
@@ -314,15 +331,6 @@ rule AllowCargoCompanyViewCargoRequest {
   operation: READ
   resource (r): "org.airline.airChain.CargoRequest"
   condition: (p.role == "OFFICER")
-  action: ALLOW
-}
-
-rule AllowCargoCompanyCreateCargoRequest {
-  description:  "Allow all cargo company to view Cargo Request"
-  participant (p): "org.airline.airChain.CargoEmployee"
-  operation: CREATE
-  resource (r): "org.airline.airChain.CargoRequest"
-  condition: (p.role == "OFFICER" && r.cargo.company.getIdentifier() == p.company.getIdentifier())
   action: ALLOW
 }
 

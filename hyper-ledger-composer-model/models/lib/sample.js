@@ -28,8 +28,8 @@ function AddFlightToCompany(tx) {
     var factory = getFactory();
 
     var company = getCurrentParticipant().company;
-    return getAssetRegistry(namespace + ".AirlineCompany").then(function(companyAssetRegistry) {
-        return companyAssetRegistry.get(company.$identifier).then(function(company) {
+    return getAssetRegistry(namespace + ".AirlineCompany").then(function (companyAssetRegistry) {
+        return companyAssetRegistry.get(company.$identifier).then(function (company) {
             var flight = factory.newResource(namespace, "Flight", tx.id);
             flight.origin = tx.origin;
             flight.destination = tx.destination;
@@ -51,9 +51,9 @@ function AddFlightToCompany(tx) {
             company.flights.push(flight);
 
             return getAssetRegistry(namespace + ".Flight")
-                .then(function(flightAssetRegistry) {
+                .then(function (flightAssetRegistry) {
                     return flightAssetRegistry.add(flight)
-                        .then(function() {
+                        .then(function () {
                             return saveAirlineCompany(company);
                         })
                 })
@@ -68,8 +68,8 @@ function AddFlightToCompany(tx) {
  */
 function AddAircraft(tx) {
     var company = getCurrentParticipant().company;
-    return getAssetRegistry(namespace + ".AirlineCompany").then(function(companyAssetRegistry) {
-        return companyAssetRegistry.get(company.$identifier).then(function(company) {
+    return getAssetRegistry(namespace + ".AirlineCompany").then(function (companyAssetRegistry) {
+        return companyAssetRegistry.get(company.$identifier).then(function (company) {
             var aircraft = getFactory().newResource(namespace, "Aircraft", tx.id);
             aircraft.model = tx.model;
             aircraft.passengerCapacity = tx.passengerCapacity;
@@ -83,8 +83,8 @@ function AddAircraft(tx) {
 
             company.aircrafts.push(aircraft);
 
-            return getAssetRegistry(namespace + ".Aircraft").then(function(assetRegistry) {
-                return assetRegistry.add(aircraft).then(function() {
+            return getAssetRegistry(namespace + ".Aircraft").then(function (assetRegistry) {
+                return assetRegistry.add(aircraft).then(function () {
                     return saveAirlineCompany(company);
                 })
             });
@@ -137,17 +137,17 @@ function UpdateFlightTakeOff(tx) {
 
     var servicePromiseArr =
         flight.services
-        .filter(function(service) {
-            return service.status === "APPROVED";
-        })
-        .map(function(service) {
-            service.status = "NOT_DONE";
-            return saveService(service);
-        });
+            .filter(function (service) {
+                return service.status === "APPROVED";
+            })
+            .map(function (service) {
+                service.status = "NOT_DONE";
+                return saveService(service);
+            });
 
     //Update Services and Flight
     return saveFlight(flight)
-        .then(function() {
+        .then(function () {
             return Promise.all(servicePromiseArr);
         });
 }
@@ -165,8 +165,8 @@ function UpdateFlightTakeOff(tx) {
 function IssueFlightServiceRequest(tx) {
 
     var company = getCurrentParticipant().company;
-    return getAssetRegistry(namespace + ".GHACompany").then(function(companyAssetRegistry) {
-        return companyAssetRegistry.get(company.$identifier).then(function(company) {
+    return getAssetRegistry(namespace + ".GHACompany").then(function (companyAssetRegistry) {
+        return companyAssetRegistry.get(company.$identifier).then(function (company) {
             var service = getFactory().newResource(namespace, "Service", tx.id);
             service.description = tx.description;
             service.type = tx.type;
@@ -188,11 +188,11 @@ function IssueFlightServiceRequest(tx) {
             service.flight.services.push(service);
 
             return getAssetRegistry(namespace + ".Service")
-                .then(function(assetRegistry) {
+                .then(function (assetRegistry) {
                     return assetRegistry.add(service)
-                        .then(function() {
+                        .then(function () {
                             return saveGHACompany(company)
-                                .then(function() {
+                                .then(function () {
                                     return saveFlight(service.flight);
                                 })
                         })
@@ -232,9 +232,9 @@ function AddCargoToCompany(tx) {
     var company = getCurrentParticipant().company;
 
     return getAssetRegistry(namespace + ".CargoCompany")
-        .then(function(companyAssetRegistry) {
+        .then(function (companyAssetRegistry) {
             return companyAssetRegistry.get(company.$identifier)
-                .then(function(company) {
+                .then(function (company) {
                     var cargo = getFactory().newResource(namespace, "Cargo", tx.id);
                     cargo.description = tx.description;
                     cargo.weight = tx.weight;
@@ -248,9 +248,9 @@ function AddCargoToCompany(tx) {
                     company.cargos.push(cargo);
 
                     return getAssetRegistry(namespace + ".Cargo")
-                        .then(function(cargoAssetRegistry) {
+                        .then(function (cargoAssetRegistry) {
                             return cargoAssetRegistry.add(cargo)
-                                .then(function() {
+                                .then(function () {
                                     return saveCargoCompany(company);
                                 });
                         });
@@ -280,52 +280,75 @@ function ConfirmCargoToWarehouse(tx) {
  * @transaction
  */
 function AssignCargoToFlight(tx) {
+    //Store all the promises to execute
+    var promiseArr = [];
+
     var cargo = tx.cargo;
 
     //Remove cargo from old flight if possible
     var oldFlight = cargo.flight;
     if (oldFlight) {
         var oldCargos = oldFlight.cargos;
-        var index = oldCargos.find(function(currCargo) {
+        var index = oldCargos.find(function (currCargo) {
             return currCargo.getIdentifier() == cargo.getIdentifier();
         });
 
         oldCargos.splice(index, 1);
+        promiseArr.push(saveFlight(oldFlight));
     }
 
     var flight = tx.flight;
+    //If there is a new flight assigned
+    if (flight) {
+        if (!flight.cargos) {
+            flight.cargos = [];
+        }
 
-    if (!flight.cargos) {
-        flight.cargos = [];
+        //Ensure Cargo does not exceed weight limit
+        var limit = flight.aircraft.cargoCapacity;
+        var loadedWeight = flight.cargos.reduce(function (a, b) { a + b.weight }, 0);
+
+        if (loadedWeight + cargo.weight > limit)
+            throw new Error('Total weight has exceeded limit');
+
+        //Attach Cargo to flight
+        flight.cargos.push(cargo);
+
+        //Update Cargo status
+        cargo.status = "APPROVED";
+        cargo.flight = flight;
+
+        promiseArr.push(saveFlight(flight));
+    } else {
+        //If there is no flight assigned
+        cargo.flight = null;
+        cargo.status = "PENDING";
     }
 
-    //Ensure Cargo does not exceed weight limit
-    var limit = flight.aircraft.cargoCapacity;
-    var loadedWeight = flight.cargos.reduce(function(a, b) { a + b.weight }, 0);
+    promiseArr.push(saveCargo(cargo));
 
-    if (loadedWeight + cargo.weight > limit)
-        throw new Error('Total weight has exceeded limit');
+    return Promise.all(promiseArr);
+}
 
-    //Attach Cargo to flight
-    flight.cargos.push(cargo);
+/**
+ * Sample transaction processor function.
+ * @param {org.airline.airChain.CreateCargoRequest} tx The sample transaction instance.
+ * @transaction
+ */
+function CreateCargoRequest(tx) {
+    var cargoRequest = getFactory().newResource(namespace, "CargoRequest", tx.id);
+    cargoRequest.cargo = tx.cargo;
+    cargoRequest.description = tx.description;
+    cargoRequest.origin = tx.origin;
+    cargoRequest.destination = tx.destination;
+    cargoRequest.status = "PENDING";
+    cargoRequest.earlyDepartureTime = tx.earlyDepartureTime;
+    cargoRequest.lateDepartureTime = tx.lateDepartureTime;
 
-    //Update Cargo status
-    cargo.status = "APPROVED";
-    cargo.flight = flight;
-
-    //Save cargo
-    return saveCargo(cargo).then(function() {
-        //Save flight
-        return saveFlight(flight)
-            .then(function() {
-                //Save old flight if exists
-                if (oldFlight) {
-                    return saveFlight(oldFlight);
-                } else {
-                    return;
-                }
-            });
-    })
+    return getAssetRegistry(namespace + ".CargoRequest")
+        .then(function (cargoRequestAssetRegistry) {
+            return cargoRequestAssetRegistry.add(cargoRequest);
+        })
 }
 
 /**
@@ -353,7 +376,7 @@ function AcceptCargoRequest(tx) {
 
     //Ensure Cargo does not exceed weight limit
     var limit = flight.aircraft.cargoCapacity;
-    var loadedWeight = flight.cargos.reduce(function(a, b) { a + b.weight }, 0);
+    var loadedWeight = flight.cargos.reduce(function (a, b) { a + b.weight }, 0);
 
     if (loadedWeight + cargoRequest.cargo.weight > limit)
         throw new Error('Total weight has exceeded limit');
@@ -369,8 +392,8 @@ function AcceptCargoRequest(tx) {
     cargoRequest.acceptedCompany = flight.company.authorisedCargoCompany;
 
     //Save cargos
-    return saveCargo(cargo).then(function() {
-        return saveFlight(flight).then(function() {
+    return saveCargo(cargo).then(function () {
+        return saveFlight(flight).then(function () {
             return saveCargoRequest(cargoRequest);
         });
     });
@@ -379,56 +402,56 @@ function AcceptCargoRequest(tx) {
 
 function saveAirlineCompany(airlineCompany) {
     return getAssetRegistry(namespace + ".AirlineCompany")
-        .then(function(companyRegistry) {
+        .then(function (companyRegistry) {
             return companyRegistry.update(airlineCompany);
         })
 }
 
 function saveGHACompany(ghaCompany) {
     return getAssetRegistry(namespace + ".GHACompany")
-        .then(function(companyRegistry) {
+        .then(function (companyRegistry) {
             return companyRegistry.update(ghaCompany);
         })
 }
 
 function saveCargoCompany(cargoCompany) {
     return getAssetRegistry(namespace + ".CargoCompany")
-        .then(function(companyRegistry) {
+        .then(function (companyRegistry) {
             return companyRegistry.update(cargoCompany);
         })
 }
 
 function saveCargo(cargo) {
     return getAssetRegistry(namespace + ".Cargo")
-        .then(function(cargoRegistry) {
+        .then(function (cargoRegistry) {
             return cargoRegistry.update(cargo);
         })
 }
 
 function saveService(service) {
     return getAssetRegistry(namespace + ".Service")
-        .then(function(serviceRegistry) {
+        .then(function (serviceRegistry) {
             return serviceRegistry.update(service);
         })
 }
 
 function saveAircraft(aircraft) {
     return getAssetRegistry(namespace + ".Aircraft")
-        .then(function(aircraftRegistry) {
+        .then(function (aircraftRegistry) {
             return aircraftRegistry.update(aircraft);
         })
 }
 
 function saveFlight(flight) {
     return getAssetRegistry(namespace + ".Flight")
-        .then(function(flightRegistry) {
+        .then(function (flightRegistry) {
             return flightRegistry.update(flight);
         })
 }
 
 function saveCargoRequest(cargoRequest) {
     return getAssetRegistry(namespace + ".CargoRequest")
-        .then(function(cargoRegistry) {
+        .then(function (cargoRegistry) {
             return cargoRegistry.update(cargoRequest);
         })
 }
