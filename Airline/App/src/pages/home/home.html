@@ -58,7 +58,7 @@
 
     <div class="service" tappable *ngFor="let service of flightProvider.flight.serviceList" (click)="viewDetail(service)">
       <p class="title">{{service.companyName}} (GHA)</p>
-      <p class="text">{{service.type}} Service <ion-icon [ngClass]="service.status" name="ios-checkmark-circle"></ion-icon></p>
+      <p class="text">{{service.description}} <ion-icon [ngClass]="service.status" name="ios-checkmark-circle"></ion-icon></p>
     </div>
 
     <button *ngIf="flightProvider.flight.status=='SCHEDULED'" class="scanBtn" ion-button (click)="flightProvider.takeoff()">Confirm Take Off</button>

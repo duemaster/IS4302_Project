@@ -40,7 +40,7 @@ export class FlightProvider {
   processFlight(flightList) {
     let flight: any = flightList
       .filter(item => item.status == 'SCHEDULED')
-      .sort((a, b) => a.departureTime.getTime() - b.departureTime.getTime())[0];
+      .sort((a, b) => new Date(b.departureTime).getTime() - new Date(a.departureTime).getTime())[0];
     if (!flight) {
       let alert = this.alertCtrl.create({
         title: 'Error',
@@ -70,7 +70,7 @@ export class FlightProvider {
       {withCredentials: true}
     ).toPromise();
 
-    serviceList = serviceList.filter(item => item.status != 'PENDING' && item.status != 'REJECTED' && item.flight.indexOf(this.flight.id));
+    serviceList = serviceList.filter(item => item.status != 'PENDING' && item.status != 'CANCELLED' && item.status != 'REJECTED' && item.flight.indexOf(this.flight.id)>-1);
     serviceList.forEach(item => item.companyName = item.company.split("#")[1]);
     this.flight.serviceList = serviceList;
 
