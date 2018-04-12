@@ -380,6 +380,15 @@ rule AllowCargoCompanyViewCargoRequest {
   action: ALLOW
 }
 
+rule AllowCargoCompanyUpdateCargoRequest {
+  description:  "Allow all cargo company to update Cargo Request"
+  participant (p): "org.airline.airChain.CargoEmployee"
+  operation: UPDATE
+  resource (r): "org.airline.airChain.CargoRequest"
+  condition: (p.role == "OFFICER" && r.cargo.company.getIdentifier() == p.company.getIdentifier() && r.status == "PENDING")
+  action: ALLOW
+}
+
 /*
 * Participant / Asset Management
 */

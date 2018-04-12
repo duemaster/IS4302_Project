@@ -71,7 +71,7 @@
                                         (click)="update(element)">
                                     <span class="glyphicon glyphicon-trash"></span>
                                 </button>
-                                <a href="{{service.ENDPOINT}}/cargo/qr/{{element.id}}" target="_blank" download>
+                                <a href="{{setting.ENDPOINT}}/cargo/qr/{{element.id}}" target="_blank" download>
                                     <button class="btn btn-sm btn-default">
                                         <span class="glyphicon glyphicon-qrcode"></span>
                                     </button>
@@ -135,7 +135,7 @@
                             </div>
                             <div class="col-sm-9">
                                 <select id="status" name="status" class="form-control" [(ngModel)]="assignedFlightId">
-                                    <option value="Optional"></option>
+                                    <option value="Optional">No Flight</option>
                                     <option *ngFor="let flight of availFlight" [ngValue]="flight.id">
                                         {{flight.flightNumber}} {{flight.departureTime|date}}
                                     </option>
@@ -148,7 +148,8 @@
                     </div>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
-                        <button type="button" class="btn btn-primary" (click)="processCargo()" [disabled]="cargo.status !=='PENDING' || cargo.status !== 'APPROVED'">
+                        <button type="button" class="btn btn-primary" (click)="processCargo()"
+                                [disabled]="!isCreate && (cargo.status !=='PENDING' && cargo.status !== 'APPROVED')">
                             Done
                         </button>
                     </div>
@@ -172,7 +173,8 @@
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
-                    <button type="button" class="btn btn-primary" data-dismiss="modal" (click)="deleteCargo()" [disabled]="cargo.status !=='PENDING' || cargo.status !== 'APPROVED'">Yes
+                    <button type="button" class="btn btn-primary" data-dismiss="modal" (click)="deleteCargo()"
+                            [disabled]="cargo.status !=='PENDING' && cargo.status !== 'APPROVED'">Yes
                     </button>
                 </div>
             </div><!-- /.modal-content -->
@@ -181,7 +183,7 @@
     <!-- END SIMPLE MODAL MARKUP -->
 
     <!-- BEGIN FLIGHT MODAL MARKUP -->
-    <div *ngIf="flight" class="modal fade" id="flightModal" tabindex="-1" role="dialog"
+    <div class="modal fade" id="flightModal" tabindex="-1" role="dialog"
          aria-labelledby="flightModalLabel"
          aria-hidden="true">
         <div class="modal-dialog">
@@ -255,7 +257,7 @@
     <!-- END FLIGHT MODAL MARKUP -->
 
     <!-- BEGIN REQUEST MODAL MARKUP -->
-    <div class="modal fade" id="requestModal" *ngIf="cargoRequest" tabindex="-1" role="dialog"
+    <div class="modal fade" id="requestModal" tabindex="-1" role="dialog"
          aria-labelledby="formModalLabel" aria-hidden="true">
         <div class="modal-dialog">
             <div class="modal-content">
@@ -323,7 +325,8 @@
                     </div>
                     <div class="modal-footer" *ngIf="!cargo.request">
                         <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
-                        <button type="button" class="btn btn-primary"  (click)="addRequest()" [disabled]="cargo.status !=='PENDING'">Send
+                        <button type="button" class="btn btn-primary" (click)="addRequest()"
+                                [disabled]="cargo.status !=='PENDING'">Send
                             Reqeust
                         </button>
                     </div>

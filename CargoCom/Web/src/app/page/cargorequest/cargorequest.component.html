@@ -27,9 +27,9 @@
                     <mat-table #table [dataSource]="dataSource">
 
                         <!-- ID Column -->
-                        <ng-container matColumnDef="Owner">
-                            <mat-header-cell *matHeaderCellDef> Cargo Owner</mat-header-cell>
-                            <mat-cell *matCellDef="let element"> {{element.company}}</mat-cell>
+                        <ng-container matColumnDef="Status">
+                            <mat-header-cell *matHeaderCellDef> Status</mat-header-cell>
+                            <mat-cell *matCellDef="let element"> {{element.status}}</mat-cell>
                         </ng-container>
 
                         <!-- Manufacturer Column -->
@@ -76,7 +76,7 @@
     </div>
 
     <!-- BEGIN SERVICE  MODAL MARKUP -->
-    <div *ngIf="cargoInfo" class="modal fade" id="serviceModal" tabindex="-1" role="dialog" aria-labelledby="formModalLabel"
+    <div class="modal fade" id="serviceModal" tabindex="-1" role="dialog" aria-labelledby="formModalLabel"
          aria-hidden="true">
         <div class="modal-dialog">
             <div class="modal-content">
@@ -86,6 +86,23 @@
                 </div>
                 <form class="form-horizontal" role="form">
                     <div class="modal-body">
+                        <div class="form-group">
+                            <div class="col-sm-2">
+                                <label for="weight" class="control-label">Weight(ton)</label>
+                            </div>
+                            <div class="col-sm-4">
+                                <input id="weight" name="weight" class="form-control" [(ngModel)]="cargoInfo.weight"
+                                       [disabled]="true">
+                            </div>
+                            <div class="col-sm-2">
+                                <label for="cargoOwner" class="control-label">Owner</label>
+                            </div>
+                            <div class="col-sm-4">
+                                <input id="cargoOwner" name="cargoOwner" class="form-control"
+                                       [(ngModel)]="cargoInfo.company"
+                                       [disabled]="true">
+                            </div>
+                        </div>
                         <div class="form-group">
                             <div class="col-sm-3">
                                 <label for="requestItem" class="control-label">Item</label>
@@ -137,20 +154,16 @@
                             </div>
                         </div>
                         <div class="form-group">
-                            <div class="col-sm-2">
-                                <label for="weight" class="control-label">Weight(ton)</label>
-                            </div>
                             <div class="col-sm-4">
-                                <input id="weight" name="weight" class="form-control" [(ngModel)]="cargoInfo.weight"
-                                       [disabled]="true">
-                            </div>
-                            <div class="col-sm-2">
                                 <label for="flight" class="control-label">Assign Flight</label>
                             </div>
-                            <div class="col-sm-4">
+                            <div class="col-sm-8">
                                 <select id="flight" name="flight" class="form-control"
-                                        [(ngModel)]="cargoRequest.flight">
-                                    <option *ngFor="let flight of availFlight" value=flight>{{flight.id}}</option>
+                                        [(ngModel)]="cargoInfo.flight"
+                                        [disabled]="cargoRequest.status !== 'PENDING'">
+                                    <option *ngFor="let flight of availFlight" [ngValue]="flight.id">
+                                        {{flight.flightNumber}} {{flight.departureTime | date}}
+                                    </option>
                                 </select>
                             </div>
                         </div>
@@ -161,7 +174,8 @@
 
                     <div class="modal-footer">
                         <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
-                        <button type="button" class="btn btn-primary" (click)="acceptRequest()">
+                        <button type="button" class="btn btn-primary" (click)="acceptRequest()"
+                                [disabled]="cargoRequest.status !== 'PENDING' || this.authService.user_profile?.company === this.cargoInfo.company">
                             Confirm
                         </button>
                     </div>

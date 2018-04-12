@@ -511,6 +511,7 @@ function AcceptCargoRequest(tx) {
     cargoRequest.cargo.flight = flight;
 
     //Update cargoRequest status
+    cargoRequest.status = "ACCEPTED";
     cargoRequest.acceptedCompany = flight.company.authorisedCargoCompany;
 
     //Save cargos

@@ -4,6 +4,7 @@ import {BlockChainService} from "../../service/blockchain/block-chain.service";
 import {AuthService} from "../../service/auth.service";
 import {SettingService} from "../../service/setting/setting.service";
 import {HttpClient} from "@angular/common/http";
+import * as Rx from "rxjs/Rx";
 
 @Component({
     selector: 'app-flight',
@@ -23,7 +24,7 @@ export class CargoComponent implements AfterViewInit {
     }
 
     constructor(private http: HttpClient,
-                public service: SettingService,
+                public setting: SettingService,
                 public authService: AuthService,
                 public blockChainService: BlockChainService) {
     }
@@ -31,13 +32,13 @@ export class CargoComponent implements AfterViewInit {
     displayedColumns = ['ItemType', 'Weight', 'Status', 'Flight', 'Option'];
     dataSource = new MatTableDataSource([]);
 
-    cargo: any;
+    cargo: any = {};
 
     isCreate = false;
 
 
     assignedFlightId: any;
-    flight: any;
+    flight: any = {};
     flightList: any;
 
     availFlight = [
@@ -45,12 +46,12 @@ export class CargoComponent implements AfterViewInit {
     ];
 
     public loading = false;
-    cargoRequest: any;
+    cargoRequest: any = {};
     isPending = true;
 
     isError = false;
     errorMessage: string;
-    windowObj:any = window;
+    windowObj: any = window;
 
     applyFilter(filterValue: string) {
         filterValue = filterValue.trim(); // Remove whitespace
@@ -78,10 +79,10 @@ export class CargoComponent implements AfterViewInit {
     }
 
     processCargo() {
-        if(!this.cargo.weight || !this.cargo.description){
+        if (!this.cargo.weight || !this.cargo.description) {
             this.isError = true;
             this.errorMessage = 'Please fill in all required fields';
-        }else {
+        } else {
             this.isError = false;
             if (this.isCreate)
                 this.addCargo();
@@ -97,7 +98,7 @@ export class CargoComponent implements AfterViewInit {
 
         //Create Cargo
         await this.http.post(
-            `${this.service.ENDPOINT}/blockchain/user/${this.authService.admin.id}/api/org.airline.airChain.AddCargo`,
+            `${this.setting.ENDPOINT}/blockchain/user/${this.authService.admin.id}/api/org.airline.airChain.AddCargo`,
             this.cargo,
             {withCredentials: true})
             .toPromise();
@@ -122,7 +123,7 @@ export class CargoComponent implements AfterViewInit {
         delete cargoToEdit["id"];
 
         let response = await this.http.put(
-            `${this.service.ENDPOINT}/blockchain/user/${this.authService.admin.id}/api/org.airline.airChain.Cargo/${this.cargo.id}`,
+            `${this.setting.ENDPOINT}/blockchain/user/${this.authService.admin.id}/api/org.airline.airChain.Cargo/${this.cargo.id}`,
             cargoToEdit,
             {withCredentials: true})
             .toPromise();
@@ -143,7 +144,7 @@ export class CargoComponent implements AfterViewInit {
     async deleteCargo() {
         this.loading = true;
         await this.http.delete(
-            `${this.service.ENDPOINT}/blockchain/user/${this.authService.admin.id}/api/org.airline.airChain.Cargo/${this.cargo.id}`,
+            `${this.setting.ENDPOINT}/blockchain/user/${this.authService.admin.id}/api/org.airline.airChain.Cargo/${this.cargo.id}`,
             {withCredentials: true})
             .toPromise();
 
@@ -154,7 +155,7 @@ export class CargoComponent implements AfterViewInit {
 
     private async assignCargoToFlight(cargoId: string, flightId: string) {
         await this.http.post(
-            `${this.service.ENDPOINT}/blockchain/user/${this.authService.admin.id}/api/org.airline.airChain.AssignCargoToFlight`,
+            `${this.setting.ENDPOINT}/blockchain/user/${this.authService.admin.id}/api/org.airline.airChain.AssignCargoToFlight`,
             {
                 cargo: `${this.blockChainService.CARGO}#${cargoId}`,
                 flight: `${this.blockChainService.FLIGHT}#${flightId}`
@@ -165,7 +166,6 @@ export class CargoComponent implements AfterViewInit {
 
     //Cargo Request
     async request(element) {
-        console.log("Entered REqyest");
         this.cargo = element;
         this.loading = true;
         console.log(this.cargo);
@@ -173,10 +173,14 @@ export class CargoComponent implements AfterViewInit {
             //Remove namespace
             this.cargo.request = this.cargo.request.replace(`${this.blockChainService.CARGO_REQUEST}#`, "");
             this.cargoRequest = await this.http.get(
-                `${this.service.ENDPOINT}/blockchain/user/${this.authService.admin.id}/api/org.airline.airChain.CargoRequest/${this.cargo.request}`,
+                `${this.setting.ENDPOINT}/blockchain/user/${this.authService.admin.id}/api/org.airline.airChain.CargoRequest/${this.cargo.request}`,
                 {withCredentials: true})
                 .toPromise();
-            console.log(this.cargoRequest);
+
+            //Parse Date to correct format
+            this.cargoRequest.earlyDepartureTime = new Date(this.cargoRequest.earlyDepartureTime);
+            this.cargoRequest.lateDepartureTime = new Date(this.cargoRequest.lateDepartureTime);
+
             if (this.cargoRequest.status === 'PENDING')
                 this.isPending = true;
             else
@@ -198,17 +202,17 @@ export class CargoComponent implements AfterViewInit {
     }
 
     async addRequest() {
-        if(this.cargoRequest.description === '' || this.cargo.origin === '' || this.cargo.destination === ''){
+        if (this.cargoRequest.description === '' || this.cargoRequest.origin === '' || this.cargoRequest.destination === '') {
             this.isError = true;
             this.errorMessage = 'Please fill in all required fields';
-        }else if(this.cargoRequest.lateDepartureTime.getTime() - this.cargoRequest.earlyDepartureTime.getTime() < 0){
+        } else if (this.cargoRequest.lateDepartureTime.getTime() - this.cargoRequest.earlyDepartureTime.getTime() < 0) {
             this.isError = true;
             this.errorMessage = 'Invalid Date Time';
-        }else {
+        } else {
             this.loading = true;
             this.isError = false;
             await this.http.post(
-                `${this.service.ENDPOINT}/blockchain/user/${this.authService.admin.id}/api/org.airline.airChain.CreateCargoRequest`,
+                `${this.setting.ENDPOINT}/blockchain/user/${this.authService.admin.id}/api/org.airline.airChain.CreateCargoRequest`,
                 this.cargoRequest,
                 {withCredentials: true})
                 .toPromise();
@@ -220,37 +224,46 @@ export class CargoComponent implements AfterViewInit {
     }
 
     async editRequest() {
-        if(this.cargoRequest.description === '' || this.cargo.origin === '' || this.cargo.destination === ''){
+        if (this.cargoRequest.description === '' || this.cargoRequest.origin === '' || this.cargoRequest.destination === '') {
             this.isError = true;
             this.errorMessage = 'Please fill in all required fields';
-        }else if(this.cargo.lateDepartureTime.getTime()-this.cargo.earlyDepartureTime.getTime() < 0){
+        } else if (this.cargoRequest.lateDepartureTime.getTime() - this.cargoRequest.earlyDepartureTime.getTime() < 0) {
             this.isError = true;
             this.errorMessage = 'Invalid Date Time';
-        }else {
+        } else {
             this.isError = false;
-            await this.http.put(
-                `${this.service.ENDPOINT}/blockchain/user/${this.authService.admin.id}/api/org.airline.airChain.CreateCargoRequest/${this.cargoRequest.id}`,
-                this.cargoRequest,
-                {withCredentials: true})
-                .toPromise();
-            return this.windowObj.jQuery('.modal-backdrop').click();
+            let isSuccess: boolean = await this.updateCargoRequest(this.cargoRequest);
+            if (isSuccess)
+                return this.windowObj.jQuery('.modal-backdrop').click();
         }
     }
 
     async cancelRequest() {
         this.cargoRequest.status = 'CANCELLED';
-        await this.http.put(
-            `${this.service.ENDPOINT}/blockchain/user/${this.authService.admin.id}/api/org.airline.airChain.CreateCargoRequest/${this.cargoRequest.id}`,
-            this.cargoRequest,
-            {withCredentials: true})
-            .toPromise();
-        this.cargo.request = '';
-        this.editCargo();
+        await this.updateCargoRequest(this.cargoRequest);
+    }
+
+    private async updateCargoRequest(cargoRequest): Promise<boolean> {
+        //Remove cargoRequest id
+        let editCargoRequest = Object.assign({}, cargoRequest);
+        delete editCargoRequest["id"];
+
+        try {
+            await this.http.put(
+                `${this.setting.ENDPOINT}/blockchain/user/${this.authService.admin.id}/api/org.airline.airChain.CargoRequest/${cargoRequest.id}`,
+                editCargoRequest,
+                {withCredentials: true})
+                .toPromise();
+
+            return true;
+        } catch (e) {
+            return false;
+        }
     }
 
     async fetchFlightList() {
         let flightList: any = await this.http.get(
-            `${this.service.ENDPOINT}/blockchain/user/${this.authService.admin.id}/api/org.airline.airChain.Flight`,
+            `${this.setting.ENDPOINT}/blockchain/user/${this.authService.admin.id}/api/org.airline.airChain.Flight`,
             {withCredentials: true}
         ).toPromise();
 
@@ -295,9 +308,14 @@ export class CargoComponent implements AfterViewInit {
 
     async fetchCargoList() {
         let cargoList: any = await this.http.get(
-            `${this.service.ENDPOINT}/blockchain/user/${this.authService.admin.id}/api/org.airline.airChain.Cargo`,
+            `${this.setting.ENDPOINT}/blockchain/user/${this.authService.admin.id}/api/org.airline.airChain.Cargo`,
             {withCredentials: true}
         ).toPromise();
+
+        //filter cargo only show those that belong to the company
+        cargoList = cargoList.filter((cargo) => {
+            return cargo.company.replace(`${this.blockChainService.CARGO_COMPANY}#`, "") === this.authService.user_profile.company;
+        });
 
         //Remove namespace
         cargoList = cargoList.map((cargo) => {

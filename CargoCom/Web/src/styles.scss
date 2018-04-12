@@ -83,6 +83,12 @@ tbody.substitute-rows {
   position: fixed !important;
 }
 
-input,button{
+.ngx-picker button {
   border: none !important;
+  background-color: transparent;
+}
+
+.ngx-picker input{
+  border: none !important;
+  border-bottom: 1px dotted grey;
 }

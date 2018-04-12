@@ -1065,4 +1065,65 @@ describe("Airline Testing", () => {
         expect(cargo.status).to.be.equal("DELIVERED");
 
     })
+
+    it("Cargo staff can update Cargo Request", async() => {
+
+        await useIdentity("AirlineOfficer");
+        //Create Aircraft
+        const addAircraftTransaction = factory.newTransaction(namespace, "AddAircraft");
+        addAircraftTransaction.id = "SQ123";
+        addAircraftTransaction.model = "QWE";
+        addAircraftTransaction.passengerCapacity = 12;
+        addAircraftTransaction.cargoCapacity = 12.2;
+        await businessNetworkConnection.submitTransaction(addAircraftTransaction);
+
+        const startDate = new Date();
+
+        //Create Flight
+        let addFlightTransaction = factory.newTransaction(namespace, "AddFlight");
+        addFlightTransaction.id = "Flight1";
+        addFlightTransaction.origin = "Singapore";
+        addFlightTransaction.destination = "Tianjin";
+        addFlightTransaction.flightNumber = "TZ189";
+        addFlightTransaction.departureTime = startDate;
+        addFlightTransaction.paxCount = 12;
+        addFlightTransaction.aircraft = factory.newRelationship(namespace, "Aircraft", "SQ123");
+        addFlightTransaction.cabinCrew = factory.newRelationship(namespace, airlineParticipant, "AirlineStaff");
+        addFlightTransaction.collectCompany = factory.newRelationship(namespace, ghaCompanyAsset, "GHACompany1");
+        addFlightTransaction.deliverCompany = factory.newRelationship(namespace, ghaCompanyAsset, "GHACompany1");
+        await businessNetworkConnection.submitTransaction(addFlightTransaction);
+
+        //Fetch Airline Company and add authorised cargo company
+        const airlineCompanyAssetRegistry = await businessNetworkConnection.getAssetRegistry(`${namespace}.${airlineCompanyAsset}`);
+        let airlineCompany = await airlineCompanyAssetRegistry.get("AirlineCompany1");
+        airlineCompany.authorisedCargoCompany = factory.newRelationship(namespace, cargoCompanyAsset, "CargoCompany1");
+        await airlineCompanyAssetRegistry.update(airlineCompany);
+
+        await useIdentity("CargoOfficer2");
+        //Add Cargo
+        const addCargoTransaction = factory.newTransaction(namespace, "AddCargo");
+        addCargoTransaction.id = "Cargo1";
+        addCargoTransaction.description = "Test Description";
+        addCargoTransaction.weight = 12.012;
+        await businessNetworkConnection.submitTransaction(addCargoTransaction);
+
+        //Submit Cargo Request
+        const createCargoRequestTransaction = factory.newTransaction(namespace, "CreateCargoRequest");
+        createCargoRequestTransaction.cargo = factory.newRelationship(namespace, cargoCargoAsset, "Cargo1");
+        createCargoRequestTransaction.id = "CargoRequest1";
+        createCargoRequestTransaction.description = "Test Description";
+        createCargoRequestTransaction.origin = "Singapore";
+        createCargoRequestTransaction.destination = "Tianjin";
+        createCargoRequestTransaction.earlyDepartureTime = new Date(startDate.getTime() - 100);
+        createCargoRequestTransaction.lateDepartureTime = new Date(startDate.getTime() + 100);
+        await businessNetworkConnection.submitTransaction(createCargoRequestTransaction);
+
+        const cargoRequestAssetRegistry = await businessNetworkConnection.getAssetRegistry(`${namespace}.${cargoRequestAsset}`);
+        let cargoRequest = await cargoRequestAssetRegistry.get("CargoRequest1");
+        cargoRequest.description = "Test Test";
+        await cargoRequestAssetRegistry.update(cargoRequest);
+
+        cargoRequest = await cargoRequestAssetRegistry.get("CargoRequest1");
+        expect(cargoRequest.description).to.be.equal("Test Test");
+    })
 })
