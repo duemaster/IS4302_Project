@@ -62,7 +62,7 @@ asset Flight identified by id {
 enum CARGO_STATUS {
     o PENDING
     o APPROVED
-    o REJECTED
+    o DELETED
     o COLLECTED
     o DELIVERED
 }

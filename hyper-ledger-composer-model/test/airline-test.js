@@ -954,11 +954,30 @@ describe("Airline Testing", () => {
         attachCargoToFlightTransaction.cargo = factory.newRelationship(namespace, cargoCargoAsset, "Cargo1");
         await businessNetworkConnection.submitTransaction(attachCargoToFlightTransaction);
 
+        //Check that Cargo is attached to flight
+        let cargoAssetRegistry = await businessNetworkConnection.getAssetRegistry(`${namespace}.${cargoCargoAsset}`);
+        let flightAssetRegistry = await businessNetworkConnection.getAssetRegistry(`${namespace}.${airlineFlightAsset}`);
+
+        let flight = await flightAssetRegistry.get("Flight1");
+        let cargo = await cargoAssetRegistry.get("Cargo1");
+
+        //Ensure Cargo is in flight
+        let isCargoInFlight = flight.cargos.some((currCargo) => {
+            return cargo.getFullyQualifiedIdentifier() === currCargo.getFullyQualifiedIdentifier();
+        })
+        expect(isCargoInFlight).to.be.equal(true);
+        expect(cargo.flight.getFullyQualifiedIdentifier() == flight.getFullyQualifiedIdentifier()).to.be.equal(true);
+
         await useIdentity("GHAStaff");
         //Collect Cargo from warehouse
         let collectCargoFromWarehouseTransaction = factory.newTransaction(namespace, "CollectCargoFromWarehouse")
         collectCargoFromWarehouseTransaction.cargo = factory.newRelationship(namespace, cargoCargoAsset, "Cargo1");
         await businessNetworkConnection.submitTransaction(collectCargoFromWarehouseTransaction);
+
+        //Check Cargo Status
+        cargoAssetRegistry = await businessNetworkConnection.getAssetRegistry(`${namespace}.${cargoCargoAsset}`);
+        cargo = await cargoAssetRegistry.get("Cargo1");
+        expect(cargo.status).to.be.equal("COLLECTED");
 
         await useIdentity("AirlineStaff");
         //Update Flight Takeoff
@@ -973,8 +992,8 @@ describe("Airline Testing", () => {
         await businessNetworkConnection.submitTransaction(confirmCargoToWarehouseTransaction);
 
         //check cargo status
-        const cargoAssetRegistry = await businessNetworkConnection.getAssetRegistry(`${namespace}.${cargoCargoAsset}`);
-        let cargo = await cargoAssetRegistry.get("Cargo1");
+        cargoAssetRegistry = await businessNetworkConnection.getAssetRegistry(`${namespace}.${cargoCargoAsset}`);
+        cargo = await cargoAssetRegistry.get("Cargo1");
 
         expect(cargo.status).to.be.equal("DELIVERED");
 
@@ -1033,12 +1052,31 @@ describe("Airline Testing", () => {
         createCargoRequestTransaction.lateDepartureTime = new Date(startDate.getTime() + 100);
         await businessNetworkConnection.submitTransaction(createCargoRequestTransaction);
 
+        //Check Cargo Request and Cargo Status
+        let cargoAssetRegistry = await businessNetworkConnection.getAssetRegistry(`${namespace}.${cargoCargoAsset}`);
+        let cargoRequestAssetRegistry = await businessNetworkConnection.getAssetRegistry(`${namespace}.${cargoRequestAsset}`);
+        let cargo = await cargoAssetRegistry.get("Cargo1");
+        let cargoRequest = await cargoRequestAssetRegistry.get("CargoRequest1");
+
+        expect(cargoRequest.status === "PENDING").to.be.equal(true);
+        expect(cargoRequest.cargo.getFullyQualifiedIdentifier() === cargo.getFullyQualifiedIdentifier()).to.be.equal(true);
+        expect(cargo.request.getFullyQualifiedIdentifier() === cargoRequest.getFullyQualifiedIdentifier()).to.be.equal(true);
+
         await useIdentity("CargoOfficer");
         //Accept Cargo Request
         const acceptCargoRequestTransaction = factory.newTransaction(namespace, "AcceptCargoRequest");
         acceptCargoRequestTransaction.cargoRequest = factory.newRelationship(namespace, cargoRequestAsset, "CargoRequest1");
         acceptCargoRequestTransaction.flight = factory.newRelationship(namespace, airlineFlightAsset, "Flight1");
         await businessNetworkConnection.submitTransaction(acceptCargoRequestTransaction);
+
+        cargoRequestAssetRegistry = await businessNetworkConnection.getAssetRegistry(`${namespace}.${cargoRequestAsset}`);
+        cargoAssetRegistry = await businessNetworkConnection.getAssetRegistry(`${namespace}.${cargoCargoAsset}`);
+
+        cargo = await cargoAssetRegistry.get("Cargo1");
+        cargoRequest = await cargoRequestAssetRegistry.get("CargoRequest1");
+
+        expect(cargo.status).to.be.equal("APPROVED");
+        expect(cargoRequest.status).to.be.equal("ACCEPTED");
 
         await useIdentity("GHAStaff");
         //Collect Cargo from warehouse
@@ -1059,8 +1097,8 @@ describe("Airline Testing", () => {
         await businessNetworkConnection.submitTransaction(confirmCargoToWarehouseTransaction);
 
         //check cargo status
-        const cargoAssetRegistry = await businessNetworkConnection.getAssetRegistry(`${namespace}.${cargoCargoAsset}`);
-        let cargo = await cargoAssetRegistry.get("Cargo1");
+        cargoAssetRegistry = await businessNetworkConnection.getAssetRegistry(`${namespace}.${cargoCargoAsset}`);
+        cargo = await cargoAssetRegistry.get("Cargo1");
 
         expect(cargo.status).to.be.equal("DELIVERED");
 
