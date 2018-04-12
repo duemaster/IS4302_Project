@@ -28,3 +28,5 @@ DELETE        /blockchain/user/:id/*url        controllers.BlockChainController.
 ### Terminal Management Module
 #GET           /                                controllers.ServeFileController.adminPortalIndex()
 #GET           /*file                           controllers.ServeFileController.adminPortal(file)
+### Terminal Management Module
+GET           /cargo/qr/:text                  controllers.ServeFileController.getQRcode(text:String)
