@@ -14,49 +14,22 @@ public class BlockChainUtil {
     public static boolean createUser(User caller, User userToBeCreated) {
 
         ObjectNode userNode = Json.newObject();
-        userNode.put("$class", User.BLOCKCHAIN_EMPLOYEE_CLASSNAME);
+//        userNode.put("$class", User.BLOCKCHAIN_EMPLOYEE_CLASSNAME);
         userNode.put("id", String.valueOf(userToBeCreated.getId()));
         userNode.put("name", userToBeCreated.getName());
         userNode.put("role", userToBeCreated.getRole());
-        userNode.put("company", User.COMPANY_ID);
+//        userNode.put("company", User.COMPANY_ID);
 
         try {
-            //Add User into composer
-            HttpResponse<JsonNode> memberReply =
-                    Unirest.post("http://localhost:" + caller.getPortNumber() + "/api/" + User.BLOCKCHAIN_EMPLOYEE_CLASSNAME)
+
+
+            HttpResponse<JsonNode> addMemberReply =
+                    Unirest.post("http://localhost:" + caller.getPortNumber() + "/api/org.airline.airChain.AddCargoEmployee")
                             .header("accept", "application/json")
                             .header("Content-Type", "application/json")
                             .body(new JsonNode(userNode.toString()))
                             .asJson();
 
-            //Get current copy of company
-            HttpResponse<JsonNode> companyReply =
-                    Unirest.get("http://localhost:" + caller.getPortNumber() + "/api/" + User.BLOCKCHAIN_COMPANY_CLASSNAME + "/" + User.COMPANY_ID)
-                            .header("accept", "application/json")
-                            .header("Content-Type", "application/json")
-                            .asJson();
-
-            JsonNode ghaJsonNode = companyReply.getBody();
-            ObjectNode gha = (ObjectNode) Json.parse(ghaJsonNode.toString());
-
-            ArrayNode employeeNode = (ArrayNode) gha.get("employees");
-
-            //If Employee Array is empty on blockchain
-            if (employeeNode == null) {
-                employeeNode = Json.newArray();
-            }
-
-            //Update Company with new employee
-            employeeNode.add(String.valueOf(userToBeCreated.getId()));
-            gha.set("employees", employeeNode);
-
-            //Save Company
-            HttpResponse<JsonNode> GHACompanyReply =
-                    Unirest.put("http://localhost:" + caller.getPortNumber() + "/api/" + User.BLOCKCHAIN_COMPANY_CLASSNAME + "/" + User.COMPANY_ID)
-                            .header("accept", "application/json")
-                            .header("Content-Type", "application/json")
-                            .body(new JsonNode(gha.toString()))
-                            .asJson();
 
         } catch (UnirestException e) {
             e.printStackTrace();
@@ -116,14 +89,14 @@ public class BlockChainUtil {
             }
 
             int indexToDelete = -1;
-            for(int i = 0; i < employeeNode.size(); i++){
-                if(employeeNode.get(i).toString().equals(User.BLOCKCHAIN_EMPLOYEE_CLASSNAME + "#" + userToBeDeleted.getId())){
+            for (int i = 0; i < employeeNode.size(); i++) {
+                if (employeeNode.get(i).toString().equals(User.BLOCKCHAIN_EMPLOYEE_CLASSNAME + "#" + userToBeDeleted.getId())) {
                     indexToDelete = i;
                     break;
                 }
             }
 
-            if(indexToDelete != -1) {
+            if (indexToDelete != -1) {
                 employeeNode.remove(indexToDelete);
             }
             company.set("employees", employeeNode);
