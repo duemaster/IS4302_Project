@@ -23,7 +23,8 @@ public class BlockChainController extends Controller {
                             .header("Content-Type", "application/json")
                             .asJson();
 
-            return ok(Json.parse(serverReply.getBody().toString()));
+            return status(serverReply.getStatus(), serverReply.getBody().toString());
+            //return ok(Json.parse(serverReply.getBody().toString()));
         } catch (UnirestException e) {
             e.printStackTrace();
             return internalServerError();
@@ -44,7 +45,8 @@ public class BlockChainController extends Controller {
                             .body(new JsonNode(request().body().asJson().toString()))
                             .asJson();
 
-            return ok(Json.parse(serverReply.getBody().toString()));
+            return status(serverReply.getStatus(), serverReply.getBody().toString());
+            //return ok(Json.parse(serverReply.getBody().toString()));
         } catch (UnirestException e) {
             e.printStackTrace();
             return internalServerError();
@@ -65,7 +67,8 @@ public class BlockChainController extends Controller {
                             .body(new JsonNode(request().body().asJson().toString()))
                             .asJson();
 
-            return ok(Json.parse(serverReply.getBody().toString()));
+            return status(serverReply.getStatus(), serverReply.getBody().toString());
+            //return ok(Json.parse(serverReply.getBody().toString()));
         } catch (UnirestException e) {
             e.printStackTrace();
             return internalServerError();
