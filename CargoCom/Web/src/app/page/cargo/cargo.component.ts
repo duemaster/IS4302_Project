@@ -1,10 +1,9 @@
-import {AfterViewInit, Component, ViewChild} from '@angular/core';
+import {AfterViewInit, ChangeDetectorRef, Component, ViewChild} from '@angular/core';
 import {MatTableDataSource, MatPaginator} from '@angular/material';
 import {BlockChainService} from "../../service/blockchain/block-chain.service";
 import {AuthService} from "../../service/auth.service";
 import {SettingService} from "../../service/setting/setting.service";
 import {HttpClient} from "@angular/common/http";
-import * as Rx from "rxjs/Rx";
 
 @Component({
     selector: 'app-flight',
@@ -14,14 +13,6 @@ import * as Rx from "rxjs/Rx";
 export class CargoComponent implements AfterViewInit {
 
     @ViewChild(MatPaginator) paginator: MatPaginator;
-
-    async ngAfterViewInit() {
-        //this.loading = true;
-        this.dataSource.paginator = this.paginator;
-        await this.fetchCargoList();
-        await this.fetchFlightList();
-        //this.loading = false;
-    }
 
     constructor(private http: HttpClient,
                 public setting: SettingService,
@@ -36,8 +27,7 @@ export class CargoComponent implements AfterViewInit {
 
     isCreate = false;
 
-
-    assignedFlightId: any;
+    assignedFlightId: any = "";
     flight: any = {};
     flightList: any;
 
@@ -53,6 +43,14 @@ export class CargoComponent implements AfterViewInit {
     errorMessage: string;
     windowObj: any = window;
 
+    async ngAfterViewInit() {
+        //this.loading = true;
+        this.dataSource.paginator = this.paginator;
+        await this.fetchCargoList();
+        await this.fetchFlightList();
+        //  this.loading = false;
+    }
+
     applyFilter(filterValue: string) {
         filterValue = filterValue.trim(); // Remove whitespace
         filterValue = filterValue.toLowerCase(); // MatTableDataSource defaults to lowercase matches
@@ -67,15 +65,22 @@ export class CargoComponent implements AfterViewInit {
     }
 
     async viewFlight(flightId) {
-        this.flight = this.flightList.filter((flight) => {
-            return flightId === flight.id;
-        })[0];
+        // this.flight = this.flightList.filter((flight) => {
+        //     return flightId === flight.id;
+        // })[0];
+
+        //Fetch Flight Information
+        this.flight = await this.http.get(
+            `${this.setting.ENDPOINT}/blockchain/user/${this.authService.admin.id}/api/org.airline.airChain.Flight/${flightId}`,
+            {withCredentials: true}
+        ).toPromise();
     }
 
     create() {
         this.isError = false;
         this.isCreate = true;
         this.cargo = {};
+        this.assignedFlightId = "";
     }
 
     processCargo() {
@@ -104,7 +109,7 @@ export class CargoComponent implements AfterViewInit {
             .toPromise();
 
         //If there is flight
-        if (this.assignedFlightId) {
+        if (this.assignedFlightId && this.assignedFlightId == "") {
             let response = await this.assignCargoToFlight(this.cargo.id, this.assignedFlightId);
             this.assignedFlightId = null;
             console.log(response);
@@ -120,18 +125,10 @@ export class CargoComponent implements AfterViewInit {
         this.loading = true;
 
         let cargoToEdit = Object.assign({}, this.cargo);
-        delete cargoToEdit["id"];
-
-        let response = await this.http.put(
-            `${this.setting.ENDPOINT}/blockchain/user/${this.authService.admin.id}/api/org.airline.airChain.Cargo/${this.cargo.id}`,
-            cargoToEdit,
-            {withCredentials: true})
-            .toPromise();
-
-        console.log(response);
+        await this.updateCargo(cargoToEdit);
 
         //If there is flight
-        if (this.assignedFlightId) {
+        if (this.assignedFlightId && this.assignedFlightId != "") {
             await this.assignCargoToFlight(this.cargo.id, this.assignedFlightId);
         }
 
@@ -143,25 +140,50 @@ export class CargoComponent implements AfterViewInit {
 
     async deleteCargo() {
         this.loading = true;
-        await this.http.delete(
-            `${this.setting.ENDPOINT}/blockchain/user/${this.authService.admin.id}/api/org.airline.airChain.Cargo/${this.cargo.id}`,
-            {withCredentials: true})
-            .toPromise();
 
+        let cargoToDelete = Object.assign({}, this.cargo);
+        cargoToDelete.status = "DELETED";
+        let deleteResult = await this.updateCargo(cargoToDelete);
         //Refresh Data Table
         await this.fetchCargoList();
         this.loading = false;
+
+        if (!deleteResult) {
+            alert("Delete Cargo Failed");
+        }
     }
 
-    private async assignCargoToFlight(cargoId: string, flightId: string) {
-        await this.http.post(
-            `${this.setting.ENDPOINT}/blockchain/user/${this.authService.admin.id}/api/org.airline.airChain.AssignCargoToFlight`,
-            {
-                cargo: `${this.blockChainService.CARGO}#${cargoId}`,
-                flight: `${this.blockChainService.FLIGHT}#${flightId}`
-            },
-            {withCredentials: true}
-        ).toPromise();
+    private async assignCargoToFlight(cargoId: string, flightId: string): Promise<boolean> {
+        try {
+            await this.http.post(
+                `${this.setting.ENDPOINT}/blockchain/user/${this.authService.admin.id}/api/org.airline.airChain.AssignCargoToFlight`,
+                {
+                    cargo: `${this.blockChainService.CARGO}#${cargoId}`,
+                    flight: `${this.blockChainService.FLIGHT}#${flightId}`
+                },
+                {withCredentials: true}
+            ).toPromise();
+
+            return true;
+        } catch (e) {
+            return false;
+        }
+    }
+
+    private async updateCargo(cargo): Promise<boolean> {
+        let cargoId = cargo.id;
+        delete cargo["id"];
+
+        try {
+            await this.http.put(
+                `${this.setting.ENDPOINT}/blockchain/user/${this.authService.admin.id}/api/org.airline.airChain.Cargo/${cargoId}`,
+                cargo,
+                {withCredentials: true}
+            ).toPromise();
+            return true;
+        } catch (e) {
+            return false;
+        }
     }
 
     //Cargo Request

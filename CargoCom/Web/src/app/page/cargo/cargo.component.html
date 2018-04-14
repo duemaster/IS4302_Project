@@ -49,25 +49,31 @@
                         <ng-container matColumnDef="Flight">
                             <mat-header-cell *matHeaderCellDef> Flight</mat-header-cell>
                             <mat-cell *matCellDef="let element">
-                                <a *ngIf="element.flight" data-toggle="modal" data-target="#flightModal"
+                                <a *ngIf="element.flight && !element.request" data-toggle="modal" data-target="#flightModal"
                                    (click)="viewFlight(element.flight)">
                                     View
                                 </a>
+                                <span *ngIf="!element.request && !element.flight">No Flight</span>
+                                <span *ngIf="element.request">Attached to Request</span>
                             </mat-cell>
                         </ng-container>
 
                         <ng-container matColumnDef="Option">
                             <mat-header-cell *matHeaderCellDef> Option</mat-header-cell>
                             <mat-cell *matCellDef="let element">
-                                <button class="btn btn-sm btn-default" data-toggle="modal" data-target="#formModal"
+                                <button class="btn btn-sm btn-default"
+                                        data-toggle="modal"
+                                        data-target="#formModal"
                                         (click)="update(element)">
                                     <span class="glyphicon glyphicon-edit"></span>
                                 </button>
                                 <button class="btn btn-sm btn-default" data-toggle="modal" data-target="#requestModal"
+                                        [disabled]="element.status !== 'PENDING'"
                                         (click)="request(element)">
                                     <span class="glyphicon glyphicon-send"></span>
                                 </button>
                                 <button class="btn btn-sm btn-default" data-toggle="modal" data-target="#deleteModal"
+                                        [disabled]="element.status !== 'PENDING'"
                                         (click)="update(element)">
                                     <span class="glyphicon glyphicon-trash"></span>
                                 </button>
@@ -100,7 +106,7 @@
         </div>
     </div>
     <!-- BEGIN CARGO MODAL MARKUP -->
-    <div *ngIf="cargo" class="modal fade" id="formModal" tabindex="-1" role="dialog" aria-labelledby="formModalLabel"
+    <div class="modal fade" id="formModal" tabindex="-1" role="dialog" aria-labelledby="formModalLabel"
          aria-hidden="true">
         <div class="modal-dialog">
             <div class="modal-content">
@@ -135,7 +141,7 @@
                             </div>
                             <div class="col-sm-9">
                                 <select id="status" name="status" class="form-control" [(ngModel)]="assignedFlightId">
-                                    <option value="Optional">No Flight</option>
+                                    <option value="">No Flight</option>
                                     <option *ngFor="let flight of availFlight" [ngValue]="flight.id">
                                         {{flight.flightNumber}} {{flight.departureTime|date}}
                                     </option>
@@ -149,7 +155,7 @@
                     <div class="modal-footer">
                         <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
                         <button type="button" class="btn btn-primary" (click)="processCargo()"
-                                [disabled]="!isCreate && (cargo.status !=='PENDING' && cargo.status !== 'APPROVED')">
+                                [disabled]="!isCreate && (cargo.status !=='PENDING' && cargo.status !== 'APPROVED') || cargo.request">
                             Done
                         </button>
                     </div>
@@ -247,9 +253,9 @@
                         </div>
 
                     </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-default" data-dismiss="modal">Okay</button>
-                    </div>
+                    <!--<div class="modal-footer">-->
+                        <!--<button type="button" class="btn btn-default" data-dismiss="modal">Okay</button>-->
+                    <!--</div>-->
                 </form>
             </div><!-- /.modal-content -->
         </div><!-- /.modal-dialog -->
@@ -324,19 +330,19 @@
                         </div>
                     </div>
                     <div class="modal-footer" *ngIf="!cargo.request">
-                        <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+                        <!--<button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>-->
                         <button type="button" class="btn btn-primary" (click)="addRequest()"
-                                [disabled]="cargo.status !=='PENDING'">Send
-                            Reqeust
+                                [disabled]="cargo.status !=='PENDING'">
+                            Send Request
                         </button>
                     </div>
                     <div class="modal-footer" *ngIf="cargo.request">
-                        <button type="button" class="btn btn-default" data-dismiss="modal">Okay</button>
+                        <!--<button type="button" class="btn btn-default" data-dismiss="modal">Okay</button>-->
                         <button type="button" class="btn btn-danger" data-dismiss="modal"
-                                *ngIf="cargoRequest.status === 'PENDING'" (click)="cancelRequest()">Cancel Reqeust
+                                *ngIf="cargoRequest.status === 'PENDING'" (click)="cancelRequest()">Cancel Request
                         </button>
                         <button type="button" class="btn btn-primary"
-                                *ngIf="cargoRequest.status === 'PENDING'" (click)="editRequest()">Edit Reqeust
+                                *ngIf="cargoRequest.status === 'PENDING'" (click)="editRequest()">Edit Request
                         </button>
                     </div>
                 </form>

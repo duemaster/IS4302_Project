@@ -335,16 +335,16 @@ rule AllowCargoCompanyToViewCargoUnderRequest {
   participant (p): "org.airline.airChain.CargoEmployee"
   operation: READ
   resource (r): "org.airline.airChain.Cargo"
-  condition: (r.request.status == "PENDING" || r.request.acceptedCompany.getIdentifier() == p.company.getIdentifier())
+  condition: (r.status == "PENDING" || r.company.getIdentifier() == p.company.getIdentifier() || (!r.request || r.request.acceptedCompany.getIdentifier() == p.company.getIdentifier()) )
   action: ALLOW
 }
 
 rule AllowCargoCompanyToManageCargo {
   description:  "Allow Cargo Company to manage their own cargo"
   participant (p): "org.airline.airChain.CargoEmployee"
-  operation: ALL
+  operation: CREATE, READ, UPDATE
   resource (r): "org.airline.airChain.Cargo"
-  condition: (r.company.getIdentifier() == p.company.getIdentifier())
+  condition: (r.company.getIdentifier() == p.company.getIdentifier() && (!r.request || r.request.status !== "PENDING"))
   action: ALLOW
 }
 
@@ -374,9 +374,10 @@ rule AllowGHACompanyToManageService {
 */
 rule AllowCargoCompanyViewCargoRequest {
   description:  "Allow all cargo company to view Cargo Request"
-  participant: "org.airline.airChain.CargoEmployee"
+  participant (p): "org.airline.airChain.CargoEmployee"
   operation: READ
-  resource: "org.airline.airChain.CargoRequest"
+  resource (r): "org.airline.airChain.CargoRequest"
+  condition: (r.status == "PENDING" || r.acceptedCompany.getIdentifier() == p.company.getIdentifier() || r.cargo.company.getIdentifier() == p.company.getIdentifier())
   action: ALLOW
 }
 
