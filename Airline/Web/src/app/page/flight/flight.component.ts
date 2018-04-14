@@ -4,7 +4,7 @@ import {HttpClient} from '@angular/common/http';
 import {SettingService} from '../../service/setting/setting.service';
 import {AuthService} from '../../service/auth.service';
 import {BlockChainService} from '../../service/blockchain/block-chain.service';
-import {Observable} from 'rxjs/Observable';
+import * as Rx from "rxjs/Rx";
 
 @Component({
     selector: 'app-flight',
@@ -37,7 +37,7 @@ export class FlightComponent implements AfterViewInit {
 
     isError = false;
     errorMessage: string;
-    windowObj:any = window;
+    windowObj: any = window;
 
     applyFilter(filterValue: string) {
         filterValue = filterValue.trim(); // Remove whitespace
@@ -68,17 +68,25 @@ export class FlightComponent implements AfterViewInit {
     async viewCargo(flight) {
         //If Flight currently have not cargo attached
         if (!flight.cargos) {
-            this.cargoList = [];
+            flight.cargos = [];
             return;
         }
 
-        this.cargoList = flight.cargos.flatMap(async (cargo) => {
-            cargo.id = cargo.id.replace(`${this.blockChainService.CARGO}#`, '');
-            return await this.http.get(
-                `${this.service.ENDPOINT}/blockchain/user/${this.authService.admin.id}/api/org.airline.airChain.Cargo/${cargo.id}`,
+        this.cargoList = [];
+
+        flight.cargos.forEach(async (cargoId) => {
+            //Remove Namespace
+            cargoId = cargoId.replace(`${this.blockChainService.CARGO}#`, "");
+
+            let cargo = await this.http.get(
+                `${this.service.ENDPOINT}/blockchain/user/${this.authService.admin.id}/api/org.airline.airChain.Cargo/${cargoId}`,
                 {withCredentials: true}
             ).toPromise();
+
+            this.cargoList.push(cargo);
         });
+        
+        console.log(this.cargoList);
     }
 
     async viewService(flight) {
@@ -116,10 +124,10 @@ export class FlightComponent implements AfterViewInit {
     }
 
     processFlight() {
-        if(!this.flight.flightNumber || !this.flight.origin || !this.flight.destination){
+        if (!this.flight.flightNumber || !this.flight.origin || !this.flight.destination) {
             this.isError = true;
             this.errorMessage = 'Please fill in all required fields';
-        }else {
+        } else {
             this.isError = false;
             if (this.isCreate)
                 this.addFlight();
