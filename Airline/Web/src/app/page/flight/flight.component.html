@@ -227,15 +227,13 @@
                                 <tr>
                                     <th>Item</th>
                                     <th>Weight/ton</th>
-                                    <th>Owner</th>
                                     <th>Status</th>
                                 </tr>
                                 </thead>
                                 <tbody>
                                 <tr *ngFor="let item of cargoList">
-                                    <td>{{item.id}}</td>
+                                    <td>{{item.description}}</td>
                                     <td>{{item.weight}}</td>
-                                    <td>{{item.company.id}}</td>
                                     <td>{{item.status}}</td>
                                 </tr>
                                 </tbody>
