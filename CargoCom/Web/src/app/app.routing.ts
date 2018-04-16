@@ -3,7 +3,6 @@ import {ModuleWithProviders} from '@angular/core';
 import {LoginComponent} from './page/login/login.component';
 import {LayoutComponent} from './page/layout/layout.component';
 import {CargoComponent} from "./page/cargo/cargo.component";
-import {FlightComponent} from "./page/flight/flight.component";
 import {CargoRequestComponent} from "./page/cargorequest/cargorequest.component";
 import {DashboardComponent} from "./page/dashboard/dashboard.component";
 import {AuthGuard} from "./service/auth.guard";
@@ -21,10 +20,6 @@ const APP_ROUTES: Routes = [
             {
                 path: 'cargo',
                 component: CargoComponent
-            },
-            {
-                path: 'flight',
-                component: FlightComponent
             },
             {
                 path: 'cargorequest',

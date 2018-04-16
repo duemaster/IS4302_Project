@@ -15,7 +15,6 @@ import {Util} from "./util/util";
 import {SettingService} from "./service/setting/setting.service";
 import { LoadingModule, ANIMATION_TYPES } from 'ngx-loading';
 import { CargoComponent } from './page/cargo/cargo.component';
-import { FlightComponent } from './page/flight/flight.component';
 import { CargoRequestComponent } from './page/cargorequest/cargorequest.component';
 import { DashboardComponent } from './page/dashboard/dashboard.component';
 import { MatFormFieldModule } from "@angular/material/form-field";
@@ -32,7 +31,6 @@ import {DateTimePickerModule} from "ngx-datetime-picker";
         LoginComponent,
         LayoutComponent,
         CargoComponent,
-        FlightComponent,
         CargoRequestComponent,
         DashboardComponent
     ],

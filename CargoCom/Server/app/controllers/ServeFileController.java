@@ -20,4 +20,20 @@ public class ServeFileController extends Controller {
 
         return ok(file);
     }
+
+    public Result adminPortal(String file) {
+
+        String angularDirectory = "dist";
+        File f = new File(angularDirectory + fs + file);
+
+        if (!f.exists()) {
+            f = new File("dist" + fs + "index.html");
+        }
+
+        return ok(f);
+    }
+
+    public Result adminPortalIndex() {
+        return ok(new File("dist" + fs + "index.html"));
+    }
 }
