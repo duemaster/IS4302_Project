@@ -60,11 +60,11 @@
                             <mat-header-cell *matHeaderCellDef> Option</mat-header-cell>
                             <mat-cell *matCellDef="let element">
                                 <button class="btn btn-sm btn-default" data-toggle="modal" data-target="#formModal"
-                                        (click)="update(element)">
+                                        (click)="update(element)" >
                                     <span class="glyphicon glyphicon-edit"></span>
                                 </button>
                                 <button class="btn btn-sm btn-default" data-toggle="modal" data-target="#cargoModal"
-                                        (click)="viewCargo(element)">
+                                        (click)="viewCargo(element)" >
                                     <span class="glyphicon glyphicon-shopping-cart"></span>
                                 </button>
                                 <button class="btn btn-sm btn-default" data-toggle="modal" data-target="#serviceModal"
@@ -72,7 +72,7 @@
                                     <span class="glyphicon glyphicon-cutlery"></span>
                                 </button>
                                 <button class="btn btn-sm btn-default" data-toggle="modal" data-target="#deleteModal"
-                                        (click)="update(element)">
+                                        (click)="update(element)" [disabled]="element.status === 'CANCELLED' || element.status === 'DEPARTED'">
                                     <span class="glyphicon glyphicon-trash"></span>
                                 </button>
                             </mat-cell>
@@ -200,7 +200,7 @@
                     </div>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
-                        <button type="button" class="btn btn-primary" (click)="processFlight()">
+                        <button type="button" class="btn btn-primary" (click)="processFlight()" [disabled]="flight.status === 'CANCELLED' || flight.status === 'DEPARTED'">
                             Done
                         </button>
                     </div>
@@ -278,7 +278,7 @@
                                 <td>{{item.status}}</td>
                                 <td>
                                     <button type="button" class="btn btn-primary" *ngIf="item.status==='PENDING'"
-                                            (click)="acceptService(item)">Accept
+                                            (click)="acceptService(item)" [disabled]="flight.status === 'CANCELLED' ||flight.status === 'DEPARTED'">Accept
                                     </button>
                                 </td>
                             </tr>

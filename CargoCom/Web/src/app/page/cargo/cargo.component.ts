@@ -74,6 +74,13 @@ export class CargoComponent implements AfterViewInit {
             `${this.setting.ENDPOINT}/blockchain/user/${this.authService.admin.id}/api/org.airline.airChain.Flight/${flightId}`,
             {withCredentials: true}
         ).toPromise();
+
+        //Remove GHA company namespace
+        if(this.flight.collectCompany)
+            this.flight.collectCompany = this.flight.collectCompany.replace(`${this.blockChainService.GHA_COMPANY}#`, "");
+
+        if(this.flight.deliverCompany)
+            this.flight.deliverCompany = this.flight.deliverCompany.replace(`${this.blockChainService.GHA_COMPANY}#`, "");
     }
 
     create() {
@@ -297,10 +304,12 @@ export class CargoComponent implements AfterViewInit {
 
             //Remove GHA Company Namespace
             if (flight.deliverCompany) {
+                console.log(flight.deliverCompany);
                 flight.deliverCompany = flight.deliverCompany.replace(`${this.blockChainService.GHA_COMPANY}#`, "");
             }
 
             if (flight.collectCompany) {
+                console.log(flight.collectCompany);
                 flight.collectCompany = flight.collectCompany.replace(`${this.blockChainService.GHA_COMPANY}#`, "");
             }
 
@@ -341,8 +350,9 @@ export class CargoComponent implements AfterViewInit {
 
         //Remove namespace
         cargoList = cargoList.map((cargo) => {
-            if (cargo.flight)
+            if (cargo.flight) {
                 cargo.flight = cargo.flight.replace(`${this.blockChainService.FLIGHT}#`, "");
+            }
             return cargo;
         });
 
