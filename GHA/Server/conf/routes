@@ -2,16 +2,6 @@
 # This file defines all application routes (Higher priority routes first)
 # ~~~~
 
-# Map static resources from the /public folder to the /assets URL path
-GET        /assets/*file        controllers.Assets.versioned(path="/public", file: Asset)
-
-#*********************************************************************
-# 功能: Device System
-# 说明：无
-#*********************************************************************
-### Terminal Management Module
-GET        /                    controllers.Application.indexPage
-
 #*********************************************************************
 # 功能: User System
 # 说明：无
@@ -31,3 +21,11 @@ GET           /blockchain/user/:id/*url        controllers.BlockChainController.
 POST          /blockchain/user/:id/*url        controllers.BlockChainController.redirectPOST(id: Long, url)
 PUT           /blockchain/user/:id/*url        controllers.BlockChainController.redirectPUT(id: Long, url)
 DELETE        /blockchain/user/:id/*url        controllers.BlockChainController.redirectDELETE(id: Long, url)
+
+#*********************************************************************
+# 功能: Device System
+# 说明：无
+#*********************************************************************
+### Terminal Management Module
+GET           /                                controllers.ServeFileController.adminPortalIndex()
+GET           /*file                           controllers.ServeFileController.adminPortal(file)
