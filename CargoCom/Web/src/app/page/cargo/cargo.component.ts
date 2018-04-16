@@ -116,7 +116,7 @@ export class CargoComponent implements AfterViewInit {
             .toPromise();
 
         //If there is flight
-        if (this.assignedFlightId && this.assignedFlightId == "") {
+        if (this.assignedFlightId && this.assignedFlightId != "") {
             let response = await this.assignCargoToFlight(this.cargo.id, this.assignedFlightId);
             this.assignedFlightId = null;
             console.log(response);

@@ -93,7 +93,7 @@ export class CargoRequestComponent implements AfterViewInit {
         return eligibleFlights;
     }
 
-    private async canFlightFitRequestSchedule(cargoRequest: any, flight: any): Promise<boolean> {
+    private canFlightFitRequestSchedule(cargoRequest: any, flight: any): boolean {
         let isValid = true;
         //Check destination
         if (flight.origin != cargoRequest.origin || flight.destination != cargoRequest.destination)
@@ -101,6 +101,9 @@ export class CargoRequestComponent implements AfterViewInit {
 
         //Check Timing
         if (flight.departureTime.getTime() < cargoRequest.earlyDepartureTime.getTime() || flight.departureTime.getTime() > cargoRequest.lateDepartureTime.getTime())
+            isValid = false;
+
+        if(flight.status != "SCHEDULED")
             isValid = false;
 
         return isValid;
@@ -133,6 +136,8 @@ export class CargoRequestComponent implements AfterViewInit {
                 .reduce((currentWeight: number, cargo: any) => {
                     return currentWeight + cargo.weight;
                 }, 0);
+
+        console.log(currentTotalCargoWeight);
 
         return currentTotalCargoWeight + cargo.weight > flightCargoCap;
     }
