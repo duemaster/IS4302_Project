@@ -9,7 +9,7 @@ import { Injectable } from '@angular/core';
 */
 @Injectable()
 export class SettingsProvider {
-  readonly ENDPOINT: string = "http://172.25.105.138:9002";
+  readonly ENDPOINT: string = "http://172.25.98.22:9002";
   constructor(public http: HttpClient) {
     console.log('Hello SettingsProvider Provider');
   }
