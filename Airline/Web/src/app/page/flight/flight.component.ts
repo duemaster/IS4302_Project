@@ -90,6 +90,7 @@ export class FlightComponent implements AfterViewInit {
     }
 
     async viewService(flight) {
+        this.flight = flight;
 
         //If Flight currently have not service attached
         if (!flight.services) {
