@@ -25,7 +25,7 @@ export class DashboardComponent implements OnInit {
     staff: any = {
         password: '',
         name: '',
-        role: ''
+        role: 'OFFICER'
     };
     isCreate =false;
 
@@ -52,7 +52,7 @@ export class DashboardComponent implements OnInit {
         this.staff = {
             name: '',
             password: '',
-            role: '',
+            role: 'OFFICER',
         };
     }
 
