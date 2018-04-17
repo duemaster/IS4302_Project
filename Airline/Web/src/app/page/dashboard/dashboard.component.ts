@@ -17,7 +17,7 @@ export class DashboardComponent implements AfterViewInit {
     staff: any = {
         password: '',
         name: '',
-        role: ''
+        role: 'OFFICER'
     };
 
     isCreate = false;
@@ -50,7 +50,7 @@ export class DashboardComponent implements AfterViewInit {
         this.staff = {
             name: '',
             password: '',
-            role: '',
+            role: 'OFFICER',
         };
     }
 

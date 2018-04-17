@@ -4,7 +4,6 @@ import {HttpClient} from '@angular/common/http';
 import {SettingService} from '../../service/setting/setting.service';
 import {AuthService} from '../../service/auth.service';
 import {BlockChainService} from '../../service/blockchain/block-chain.service';
-import * as Rx from "rxjs/Rx";
 
 @Component({
     selector: 'app-flight',
