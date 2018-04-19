@@ -23,9 +23,18 @@ vagrant global-status
 - Cargo Company 2 (id: Cargo2)
 - GHA Company (id: GHA1)
 
-## Set up Vagrant Environment
-We have configured a special vagrant file inside our project folder
+2. Default generated login credentials for all officers (All companies) is 
+```
+Username: admin
+Password: password
+```
 
+
+## Set up Vagrant Environment
+We have configured a special vagrant file inside our project folder.
+The vagrant file pulls the setup files from this [repo](https://github.com/duemaster/fabric-tutorial-vagrant) 
+
+To setup:
 ```bash
 vagrant up
 cd composer-playground
@@ -33,7 +42,8 @@ cd composer-playground
 ./setup.sh
 ```
 
-### Note: ./setup.sh starts a composer rest server at port 3000, this is needed by the play server to generate user accounts during initial setup
+### Note: 
+./setup.sh starts a composer rest server at port 3000, this is needed by the play server to generate user accounts during initial setup
 
 ## Upgrade Network (optional)
 If there is a need to update bna
