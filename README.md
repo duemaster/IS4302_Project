@@ -1,6 +1,28 @@
 # IS4302_Project
 
 
+## Project Setup
+
+### Technology Stack
+1. BlockChain - Hyperledger Composer (Running in vagrant container)
+2. FrontEnd (Web) - Angular 5
+3. FrontEnd (Mobile App) - Ionic 3
+4. BackEnd - Play
+
+#### Play Server communicates with Composer via Vagrant SSH.
+#### By default, the Play server will use first vagrant boxId recovered via the 
+``` bash
+vagrant global-status
+```
+#### command
+
+### Auto Generated Data Setup
+1. The project is configured to generate the following companies by default
+- Airline Company (id: Airline1)
+- Cargo Company (id: Cargo1) [default authorisedCargoCompany of Airline Company]
+- Cargo Company 2 (id: Cargo2)
+- GHA Company (id: GHA1)
+
 ## Set up Vagrant Environment
 We have configured a special vagrant file inside our project folder
 
@@ -10,6 +32,8 @@ cd composer-playground
 ./playground.sh
 ./setup.sh
 ```
+
+### Note: ./setup.sh starts a composer rest server at port 3000, this is needed by the play server to generate user accounts during initial setup
 
 ## Upgrade Network (optional)
 If there is a need to update bna
@@ -135,8 +159,8 @@ Do **change Ip address** in app/src/providers/settings/settings.ts for each app
 
 ## Testing Blockchain
 ```bash
-cd to hyper-ledger-composer-model
+cd hyper-ledger-composer-model
 npm test
 ```
 
-If any problem is appeared please contact us 
+If any problem is appeared please contact us (Tut3Grp2)
