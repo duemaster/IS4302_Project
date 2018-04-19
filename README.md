@@ -124,7 +124,7 @@ Do **change Ip address** in app/src/providers/settings/settings.ts for each app
 ionic serve
 ```
 
-### Option 2 
+### Option 2 Install on android phone (ios needs other configuration)
 Install on android phone and android development is required.
 Do **change Ip address** in app/src/providers/settings/settings.ts for each app
 
